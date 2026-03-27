@@ -2,20 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#08080d" />
   <title>Degen Desk - Meme Coin Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="app">
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay"></div>
+
     <!-- Sidebar -->
     <aside id="sidebar">
       <div class="sidebar-header">
-        <div class="logo">
-          <span class="logo-icon">&#9000;</span>
-          <span class="logo-text">Degen Desk</span>
+        <div class="sidebar-header-top">
+          <div class="logo">
+            <span class="logo-icon">&#9000;</span>
+            <span class="logo-text">Degen Desk</span>
+          </div>
+          <button id="sidebar-close" aria-label="Close sidebar">&times;</button>
         </div>
         <p class="tagline">Meme Coin Intelligence &bull; Solana-First</p>
       </div>
@@ -112,11 +121,20 @@
     <!-- Main Chat Area -->
     <main id="chat-area">
       <header id="chat-header">
-        <button id="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+        <button id="sidebar-toggle" aria-label="Toggle sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
         <div class="header-info">
-          <h1>Degen Desk</h1>
-          <span class="status-dot"></span>
-          <span class="status-text">Online &mdash; Meme coin intelligence at your fingertips</span>
+          <div class="header-brand">
+            <span class="header-logo-icon">&#9000;</span>
+            <h1>Degen Desk</h1>
+          </div>
+          <div class="header-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Online &mdash; Meme coin intelligence at your fingertips</span>
+          </div>
         </div>
       </header>
 
@@ -137,8 +155,31 @@
                 <li><strong>Scam Detection</strong> &mdash; bundled launches, honeypots, mint/freeze authority, LP manipulation, cabal identification</li>
                 <li><strong>Risk &amp; Strategy</strong> &mdash; position sizing, narrative rotation, entry/exit frameworks, profit-taking systems</li>
               </ul>
-              <p>Ask me anything, or select a topic from the sidebar to dive in.</p>
+              <p class="desktop-only">Ask me anything, or select a topic from the sidebar to dive in.</p>
+              <p class="mobile-only">Ask me anything, or tap a topic below to get started.</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Mobile Quick Topics (visible only on mobile, inside messages area) -->
+        <div id="mobile-topics">
+          <div class="mobile-topics-label">Quick Topics</div>
+          <div class="mobile-topics-scroll">
+            <button class="mobile-topic-pill" data-query="What are meme coins and how do they work?">&#128640; Basics</button>
+            <button class="mobile-topic-pill" data-query="How do I buy meme coins on Solana step by step?">&#9728;&#65039; Buy on Solana</button>
+            <button class="mobile-topic-pill" data-query="Tell me about Axiom, Photon, BullX, and GMGN trading platforms">&#128187; Terminals</button>
+            <button class="mobile-topic-pill" data-query="How do I detect rug pulls, scams, and bundled launches?">&#128721; Scam Detection</button>
+            <button class="mobile-topic-pill" data-query="What Telegram trading bots should I use for Solana?">&#129302; TG Bots</button>
+            <button class="mobile-topic-pill" data-query="Tell me about pump.fun, bonding curves, and meme coin launchpads">&#127880; pump.fun</button>
+            <button class="mobile-topic-pill" data-query="How do I copy trade and track smart money wallets on Solana?">&#128065; Copy Trading</button>
+            <button class="mobile-topic-pill" data-query="Explain slippage, MEV, Jito bundles, and sandwich attacks">&#9889; MEV</button>
+            <button class="mobile-topic-pill" data-query="What are the best tools for researching meme coins?">&#128736; Tools</button>
+            <button class="mobile-topic-pill" data-query="How do I snipe new token launches on Solana?">&#127919; Sniping</button>
+            <button class="mobile-topic-pill" data-query="What are the best entry and exit strategies for meme coins?">&#127919; Entry/Exit</button>
+            <button class="mobile-topic-pill" data-query="How do narratives and metas work in meme coin trading?">&#127754; Narratives</button>
+            <button class="mobile-topic-pill" data-query="What wallets should I use for meme coin trading?">&#128091; Wallets</button>
+            <button class="mobile-topic-pill" data-query="What is market cap, liquidity, volume, and FDV?">&#128202; Metrics</button>
+            <button class="mobile-topic-pill" data-query="What meme coin terminology and slang should I know?">&#128218; Glossary</button>
           </div>
         </div>
       </div>
@@ -152,12 +193,12 @@
             </svg>
           </button>
         </div>
-        <p class="input-hint">Press Enter to send &bull; Shift+Enter for new line</p>
+        <p class="input-hint desktop-only">Press Enter to send &bull; Shift+Enter for new line</p>
       </div>
     </main>
   </div>
 
-  <script src="knowledge-base.js?v=3"></script>
-  <script src="agent.js?v=3"></script>
+  <script src="knowledge-base.js?v=4"></script>
+  <script src="agent.js?v=4"></script>
 </body>
 </html>

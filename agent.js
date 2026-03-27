@@ -7,8 +7,26 @@
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
   const sidebarToggle = document.getElementById("sidebar-toggle");
+  const sidebarClose = document.getElementById("sidebar-close");
   const sidebar = document.getElementById("sidebar");
+  const sidebarOverlay = document.getElementById("sidebar-overlay");
   const topicButtons = document.querySelectorAll(".topic-btn");
+  const mobileTopicPills = document.querySelectorAll(".mobile-topic-pill");
+  const mobileTopics = document.getElementById("mobile-topics");
+
+  // =============================================
+  // SIDEBAR MANAGEMENT
+  // =============================================
+
+  function openSidebar() {
+    sidebar.classList.add("open");
+    sidebarOverlay.classList.add("visible");
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("open");
+    sidebarOverlay.classList.remove("visible");
+  }
 
   // =============================================
   // MATCHING ENGINE
@@ -19,7 +37,6 @@
     const words = q.split(/\s+/).filter((w) => w.length > 2);
     let score = 0;
 
-    // Exact phrase match in keywords (highest weight)
     for (const kw of entry.keywords) {
       if (q === kw) {
         score += 100;
@@ -30,7 +47,6 @@
       }
     }
 
-    // Individual word matches against keywords
     for (const word of words) {
       for (const kw of entry.keywords) {
         if (kw === word) {
@@ -43,7 +59,6 @@
       }
     }
 
-    // Check against aliases for exact platform/tool name matches
     if (entry.aliases) {
       for (const alias of entry.aliases) {
         if (q.includes(alias)) {
@@ -57,7 +72,6 @@
       }
     }
 
-    // Check against the response content for broader matches
     const responseText = entry.response.toLowerCase().replace(/<[^>]*>/g, "");
     for (const word of words) {
       if (word.length > 3 && responseText.includes(word)) {
@@ -89,7 +103,6 @@
 
     let response = matches[0].entry.response;
 
-    // Suggest related topics if there are decent secondary matches
     if (matches.length >= 2 && matches[1].score >= 12 && matches[1].entry.id !== matches[0].entry.id) {
       const relatedName = matches[1].entry.keywords[0].replace(/^\w/, (c) => c.toUpperCase());
       response += `<div class="info-box" style="margin-top:12px;"><strong>&#128204; Related:</strong> You might also want to ask about <strong>${relatedName}</strong> for more context.</div>`;
@@ -163,6 +176,13 @@
     return div.innerHTML;
   }
 
+  // Hide mobile topics after first message is sent
+  function hideMobileTopics() {
+    if (mobileTopics) {
+      mobileTopics.style.display = "none";
+    }
+  }
+
   // =============================================
   // SEND MESSAGE HANDLER
   // =============================================
@@ -170,6 +190,9 @@
   function sendMessage(text) {
     const query = text.trim();
     if (!query) return;
+
+    // Hide mobile topic pills after first interaction
+    hideMobileTopics();
 
     const userMsg = createMessageElement(query, true);
     messagesContainer.appendChild(userMsg);
@@ -198,10 +221,12 @@
   // EVENT LISTENERS
   // =============================================
 
+  // Send button
   sendBtn.addEventListener("click", () => {
     sendMessage(userInput.value);
   });
 
+  // Enter key
   userInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -209,37 +234,53 @@
     }
   });
 
+  // Auto-resize textarea
   userInput.addEventListener("input", () => {
     userInput.style.height = "auto";
     userInput.style.height = Math.min(userInput.scrollHeight, 120) + "px";
   });
 
-  sidebarToggle.addEventListener("click", () => {
-    sidebar.classList.toggle("open");
+  // Sidebar open
+  sidebarToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openSidebar();
   });
 
-  document.addEventListener("click", (e) => {
-    if (
-      window.innerWidth <= 768 &&
-      sidebar.classList.contains("open") &&
-      !sidebar.contains(e.target) &&
-      e.target !== sidebarToggle
-    ) {
-      sidebar.classList.remove("open");
-    }
-  });
+  // Sidebar close button
+  if (sidebarClose) {
+    sidebarClose.addEventListener("click", () => {
+      closeSidebar();
+    });
+  }
 
+  // Overlay click closes sidebar
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener("click", () => {
+      closeSidebar();
+    });
+  }
+
+  // Sidebar topic buttons
   topicButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const query = btn.getAttribute("data-query");
       userInput.value = query;
       sendMessage(query);
-
-      if (window.innerWidth <= 768) {
-        sidebar.classList.remove("open");
-      }
+      closeSidebar();
     });
   });
 
-  userInput.focus();
+  // Mobile topic pill buttons
+  mobileTopicPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      const query = pill.getAttribute("data-query");
+      userInput.value = query;
+      sendMessage(query);
+    });
+  });
+
+  // Focus input on load (desktop only)
+  if (window.innerWidth > 768) {
+    userInput.focus();
+  }
 })();
