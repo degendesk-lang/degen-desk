@@ -260,6 +260,14 @@
     });
   }
 
+  // Accordion section toggles
+  document.querySelectorAll(".nav-section-toggle").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      const section = toggle.parentElement;
+      section.classList.toggle("open");
+    });
+  });
+
   // Sidebar topic buttons
   topicButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
