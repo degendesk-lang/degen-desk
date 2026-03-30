@@ -82,24 +82,34 @@
     return scored.slice(0, maxResults);
   }
 
+  // Track queries that came from sidebar/pill clicks
+  const sidebarQueries = new Set();
+
+  // Register all sidebar and pill queries
+  document.querySelectorAll(".topic-btn, .mobile-topic-pill").forEach((btn) => {
+    const q = btn.getAttribute("data-query");
+    if (q) sidebarQueries.add(q.trim());
+  });
+
   function getLocalResponse(query) {
+    // ONLY use local knowledge base for exact sidebar/pill topic clicks
+    // All other queries go to the AI for intelligent, custom responses
+    if (!sidebarQueries.has(query.trim())) {
+      return null; // Not a sidebar click — let AI handle it
+    }
+
     const matches = findBestMatches(query, 3);
 
-    if (matches.length === 0 || matches[0].score < 5) {
-      return null; // No good local match — let AI handle it
+    if (matches.length === 0 || matches[0].score < 20) {
+      return null;
     }
 
-    // Only use local response if it's a strong match (sidebar topic clicks etc.)
-    if (matches[0].score >= 30) {
-      let response = matches[0].entry.response;
-      if (matches.length >= 2 && matches[1].score >= 12 && matches[1].entry.id !== matches[0].entry.id) {
-        const relatedName = matches[1].entry.keywords[0].replace(/^\w/, (c) => c.toUpperCase());
-        response += `<div class="info-box" style="margin-top:12px;"><strong>&#128204; Related:</strong> You might also want to ask about <strong>${relatedName}</strong> for more context.</div>`;
-      }
-      return response;
+    let response = matches[0].entry.response;
+    if (matches.length >= 2 && matches[1].score >= 12 && matches[1].entry.id !== matches[0].entry.id) {
+      const relatedName = matches[1].entry.keywords[0].replace(/^\w/, (c) => c.toUpperCase());
+      response += `<div class="info-box" style="margin-top:12px;"><strong>&#128204; Related:</strong> You might also want to ask about <strong>${relatedName}</strong> for more context.</div>`;
     }
-
-    return null; // Weak match — let AI handle it
+    return response;
   }
 
   // =============================================
