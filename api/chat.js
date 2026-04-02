@@ -468,17 +468,15 @@ Points meta: Many protocols now award "points" for usage, later convertible to t
 Sybil detection: Protocols increasingly use analytics to detect and exclude wallet farmers running many wallets with the same patterns. Use organic behavior, varied timing, different amounts.
 
 === PAID ALPHA GROUPS & COMMUNITIES ===
-Paid alpha groups are private communities (usually Telegram or Discord) where experienced traders share early calls, on-chain finds, and trading strategies. They charge monthly fees ranging from $50-$500+/month. Can be worth it if the group has genuinely skilled callers, but many are just KOLs dumping on members.
+Paid alpha groups are private Discord communities where experienced traders share early calls, on-chain finds, and trading strategies. They typically charge monthly fees ranging from $50-$500+/month. Can be worth it if the group has genuinely skilled callers, but many are just KOLs dumping on members.
 
-Top known paid meme coin alpha groups (Solana-focused):
-- Potion Alpha: One of the most well-known Solana meme coin alpha groups. Known for early calls on pump.fun launches and trending narratives. Active community with multiple callers. Telegram-based.
-- Pastel Alpha: Respected Solana alpha group with a strong track record. Focuses on early meme coin plays, smart money tracking, and narrative identification. Known for quality over quantity in calls.
-- FunHouse: Popular paid group in the Solana meme coin space. Community-driven with active discussion, early token finds, and trading strategies shared among members.
-- Chill Alpha: Solana-focused alpha community known for a laid-back but knowledgeable approach. Shares early plays and on-chain analysis.
-- Zero Edge: Trading-focused alpha group with emphasis on data-driven calls, on-chain analytics, and smart money tracking.
-- Elite Traders: Group focused on meme coin trading with experienced callers sharing entries, exits, and market analysis.
-- Degen Den / Degen Alpha: Various groups under "degen" branding catering to high-risk meme coin traders.
-- KOL-run groups: Many prominent Crypto Twitter influencers run their own paid Telegram groups. Quality varies wildly — some provide genuine alpha, others primarily use members as exit liquidity for their own bags.
+Top known paid meme coin alpha groups (Solana-focused, Discord-based):
+- Potion Alpha: One of the most well-known Solana meme coin alpha groups. Known for early calls on pump.fun launches and trending narratives. Active community with multiple callers. Discord-based.
+- Pastel Alpha: Respected Solana alpha group with a strong track record. Focuses on early meme coin plays, smart money tracking, and narrative identification. Known for quality over quantity in calls. Discord-based.
+- FunHouse: Popular paid group in the Solana meme coin space. Community-driven with active discussion, early token finds, and trading strategies shared among members. Discord-based.
+- Chill Alpha: Solana-focused alpha community known for a laid-back but knowledgeable approach. Shares early plays and on-chain analysis. Discord-based.
+- Zero Edge: Trading-focused alpha group with emphasis on data-driven calls, on-chain analytics, and smart money tracking. Discord-based.
+- KOL-run groups: Many prominent Crypto Twitter influencers run their own paid Discord or Telegram groups. Quality varies wildly — some provide genuine alpha, others primarily use members as exit liquidity for their own bags.
 
 How to evaluate a paid group before joining:
 - Check the caller's PUBLIC track record first (their free Twitter calls — are they consistently early?)
