@@ -1,11 +1,8 @@
 /**
- * Degen Desk - Firebase Auth + Firestore Chat Persistence
+ * Degen Desk - Firebase Auth + Multi-Conversation Firestore Persistence
  */
 
 window.DegenAuth = (function () {
-  // =============================================
-  // FIREBASE CONFIG — Replace with your project's config
-  // =============================================
   const firebaseConfig = {
     apiKey: "AIzaSyAJ0MogernylRUNde0ni0obpSVjOgiOPms",
     authDomain: "degen-desk-7cbe6.firebaseapp.com",
@@ -16,16 +13,16 @@ window.DegenAuth = (function () {
     measurementId: "G-YKPPMB9SSH",
   };
 
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
 
   let currentUser = null;
+  let currentConversationId = null;
   let authChangeCallbacks = [];
 
   // =============================================
-  // AUTH METHODS
+  // AUTH
   // =============================================
 
   async function signIn() {
@@ -33,7 +30,6 @@ window.DegenAuth = (function () {
       const provider = new firebase.auth.GoogleAuthProvider();
       await auth.signInWithPopup(provider);
     } catch (err) {
-      // If popup blocked, try redirect
       if (err.code === "auth/popup-blocked") {
         const provider = new firebase.auth.GoogleAuthProvider();
         await auth.signInWithRedirect(provider);
@@ -45,6 +41,7 @@ window.DegenAuth = (function () {
 
   async function signOut() {
     try {
+      currentConversationId = null;
       await auth.signOut();
     } catch (err) {
       console.error("Sign out error:", err);
@@ -55,76 +52,129 @@ window.DegenAuth = (function () {
     authChangeCallbacks.push(callback);
   }
 
-  // Listen for auth state changes
   auth.onAuthStateChanged((user) => {
     currentUser = user;
     authChangeCallbacks.forEach((cb) => cb(user));
   });
 
   // =============================================
-  // FIRESTORE CHAT PERSISTENCE
+  // CONVERSATIONS
   // =============================================
 
-  function getConversationRef(uid) {
-    return db.collection("users").doc(uid).collection("conversations").doc("default");
+  function conversationsRef(uid) {
+    return db.collection("users").doc(uid).collection("conversations");
   }
 
-  async function loadHistory() {
+  // Create a new conversation, return its ID
+  async function createConversation(title) {
+    if (!currentUser) return null;
+    try {
+      const ref = await conversationsRef(currentUser.uid).add({
+        title: title || "New chat",
+        messages: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      currentConversationId = ref.id;
+      return ref.id;
+    } catch (err) {
+      console.error("Failed to create conversation:", err);
+      return null;
+    }
+  }
+
+  // List all conversations for current user (newest first)
+  async function listConversations() {
     if (!currentUser) return [];
     try {
-      const doc = await getConversationRef(currentUser.uid).get();
+      const snapshot = await conversationsRef(currentUser.uid)
+        .orderBy("updatedAt", "desc")
+        .limit(50)
+        .get();
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (err) {
+      console.error("Failed to list conversations:", err);
+      return [];
+    }
+  }
+
+  // Load messages from a specific conversation
+  async function loadConversation(convId) {
+    if (!currentUser) return [];
+    try {
+      currentConversationId = convId;
+      const doc = await conversationsRef(currentUser.uid).doc(convId).get();
       if (doc.exists && doc.data().messages) {
         return doc.data().messages;
       }
       return [];
     } catch (err) {
-      console.error("Failed to load chat history:", err);
+      console.error("Failed to load conversation:", err);
       return [];
     }
   }
 
+  // Save a message to the current conversation
   async function saveMessage(role, content) {
-    if (!currentUser) return;
+    if (!currentUser || !currentConversationId) return;
     try {
-      const ref = getConversationRef(currentUser.uid);
+      const ref = conversationsRef(currentUser.uid).doc(currentConversationId);
       const doc = await ref.get();
       let messages = [];
+      let isFirstUserMessage = false;
 
       if (doc.exists && doc.data().messages) {
         messages = doc.data().messages;
       }
 
+      // Check if this is the first user message (for auto-titling)
+      if (role === "user" && messages.filter((m) => m.role === "user").length === 0) {
+        isFirstUserMessage = true;
+      }
+
       messages.push({
         role,
-        content: content.substring(0, 2000), // Limit content size
+        content: content.substring(0, 2000),
         timestamp: Date.now(),
       });
 
-      // Keep last 100 messages to stay under Firestore doc limit
       if (messages.length > 100) {
         messages = messages.slice(-100);
       }
 
-      await ref.set(
-        {
-          messages,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          displayName: currentUser.displayName || "",
-          photoURL: currentUser.photoURL || "",
-        },
-        { merge: true }
-      );
+      const updateData = {
+        messages,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+
+      // Auto-title from first user message
+      if (isFirstUserMessage) {
+        updateData.title = content.substring(0, 50) + (content.length > 50 ? "..." : "");
+      }
+
+      await ref.update(updateData);
+
+      // Return whether title was updated so UI can refresh
+      return isFirstUserMessage;
     } catch (err) {
       console.error("Failed to save message:", err);
+      return false;
     }
   }
 
-  async function clearHistory() {
+  // Delete a conversation
+  async function deleteConversation(convId) {
     if (!currentUser) return;
     try {
-      await getConversationRef(currentUser.uid).delete();
+      await conversationsRef(currentUser.uid).doc(convId).delete();
+      if (currentConversationId === convId) {
+        currentConversationId = null;
+      }
     } catch (err) {
-      console.error("Failed to clear history:", err);
+      console.error("Failed to delete conversation:", err);
     }
   }
 
@@ -136,11 +186,19 @@ window.DegenAuth = (function () {
     get currentUser() {
       return currentUser;
     },
+    get currentConversationId() {
+      return currentConversationId;
+    },
+    set currentConversationId(val) {
+      currentConversationId = val;
+    },
     signIn,
     signOut,
     onAuthChange,
-    loadHistory,
+    createConversation,
+    listConversations,
+    loadConversation,
     saveMessage,
-    clearHistory,
+    deleteConversation,
   };
 })();

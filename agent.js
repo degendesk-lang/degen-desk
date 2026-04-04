@@ -1,5 +1,5 @@
 /**
- * Degen Desk - Chat engine with AI backend + local knowledge base fallback
+ * Degen Desk - Chat engine with AI backend, local KB fallback, multi-conversation support
  */
 
 (function () {
@@ -13,94 +13,136 @@
   const topicButtons = document.querySelectorAll(".topic-btn");
   const mobileTopicPills = document.querySelectorAll(".mobile-topic-pill");
   const mobileTopics = document.getElementById("mobile-topics");
+  const welcomeMessage = document.getElementById("welcome-message");
 
-  // Auth UI elements
+  // Auth / conversation UI elements
+  const newChatBtn = document.getElementById("new-chat-btn");
+  const chatList = document.getElementById("chat-list");
+  const chatListEmpty = document.getElementById("chat-list-empty");
   const googleSignInBtn = document.getElementById("google-sign-in");
   const userProfile = document.getElementById("user-profile");
   const userAvatar = document.getElementById("user-avatar");
   const userName = document.getElementById("user-name");
   const signOutBtn = document.getElementById("sign-out-btn");
-  const clearHistoryBtn = document.getElementById("clear-history-btn");
+  const topicsToggle = document.getElementById("topics-toggle");
+  const topicsContent = document.getElementById("topics-content");
 
   // Chat history for AI context
-  const chatHistory = [];
+  let chatHistory = [];
 
   // =============================================
-  // AUTH INTEGRATION
+  // TOPICS ACCORDION
+  // =============================================
+
+  let topicsOpen = false;
+  if (topicsToggle) {
+    topicsToggle.addEventListener("click", () => {
+      topicsOpen = !topicsOpen;
+      topicsToggle.classList.toggle("open", topicsOpen);
+      topicsContent.classList.toggle("open", topicsOpen);
+    });
+  }
+
+  // =============================================
+  // AUTH & CONVERSATION INTEGRATION
   // =============================================
 
   if (window.DegenAuth) {
     DegenAuth.onAuthChange(async (user) => {
       if (user) {
-        // User signed in — show profile, hide sign-in button
         googleSignInBtn.style.display = "none";
         userProfile.style.display = "flex";
         userAvatar.src = user.photoURL || "";
-        userName.textContent = user.displayName ? user.displayName.split(" ")[0] : "User";
-
-        // Load saved chat history
-        const savedMessages = await DegenAuth.loadHistory();
-        if (savedMessages.length > 0) {
-          renderSavedHistory(savedMessages);
-        }
+        userName.textContent = user.displayName || "User";
+        chatListEmpty.innerHTML = "<p>No conversations yet</p>";
+        await refreshChatList();
       } else {
-        // User signed out — show sign-in button, hide profile
         googleSignInBtn.style.display = "flex";
         userProfile.style.display = "none";
         userAvatar.src = "";
         userName.textContent = "";
+        chatListEmpty.innerHTML = "<p>Sign in to save your chats</p>";
+        chatListEmpty.style.display = "block";
+        // Clear any rendered conversation items
+        const items = chatList.querySelectorAll(".chat-list-item");
+        items.forEach((el) => el.remove());
+        // Reset to welcome view
+        startNewChat();
       }
     });
 
-    googleSignInBtn.addEventListener("click", () => {
-      DegenAuth.signIn();
-    });
+    googleSignInBtn.addEventListener("click", () => DegenAuth.signIn());
+    signOutBtn.addEventListener("click", () => DegenAuth.signOut());
 
-    signOutBtn.addEventListener("click", () => {
-      DegenAuth.signOut();
-    });
-
-    clearHistoryBtn.addEventListener("click", async () => {
-      if (confirm("Clear your saved chat history?")) {
-        await DegenAuth.clearHistory();
-        // Remove all messages except the welcome message and mobile topics
-        const allMessages = messagesContainer.querySelectorAll(".message");
-        allMessages.forEach((msg, index) => {
-          if (index > 0) msg.remove(); // Keep welcome message (index 0)
-        });
-        const mt = document.getElementById("mobile-topics");
-        if (mt) mt.style.display = "";
-        chatHistory.length = 0;
-      }
+    newChatBtn.addEventListener("click", () => {
+      startNewChat();
+      closeSidebar();
     });
   }
 
-  function renderSavedHistory(messages) {
-    // Hide mobile topics when there's history
-    hideMobileTopics();
+  async function refreshChatList() {
+    if (!DegenAuth.currentUser) return;
+    const conversations = await DegenAuth.listConversations();
 
-    // Remove existing messages except welcome message
-    const existingMessages = messagesContainer.querySelectorAll(".message");
-    existingMessages.forEach((msg, index) => {
-      if (index > 0) msg.remove();
+    // Remove existing items
+    const items = chatList.querySelectorAll(".chat-list-item");
+    items.forEach((el) => el.remove());
+
+    if (conversations.length === 0) {
+      chatListEmpty.style.display = "block";
+      return;
+    }
+
+    chatListEmpty.style.display = "none";
+
+    conversations.forEach((conv) => {
+      const item = document.createElement("div");
+      item.className = "chat-list-item";
+      if (conv.id === DegenAuth.currentConversationId) {
+        item.classList.add("active");
+      }
+
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "chat-list-title";
+      titleSpan.textContent = conv.title || "New chat";
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "chat-list-delete";
+      deleteBtn.title = "Delete chat";
+      deleteBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+
+      deleteBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        await DegenAuth.deleteConversation(conv.id);
+        await refreshChatList();
+        if (conv.id === DegenAuth.currentConversationId) {
+          startNewChat();
+        }
+      });
+
+      item.addEventListener("click", async () => {
+        await loadConversation(conv.id);
+        closeSidebar();
+      });
+
+      item.appendChild(titleSpan);
+      item.appendChild(deleteBtn);
+      chatList.appendChild(item);
     });
+  }
 
-    // Remove mobile topics temporarily to append after messages
-    const mt = document.getElementById("mobile-topics");
-    const mtParent = mt ? mt.parentNode : null;
-    if (mt) mt.remove();
+  async function loadConversation(convId) {
+    const messages = await DegenAuth.loadConversation(convId);
+    clearChatUI();
+    chatHistory = [];
 
-    // Render each saved message
     for (const msg of messages) {
       const isUser = msg.role === "user";
       const el = createMessageElement(msg.content, isUser);
-      // For bot messages, the content is HTML
       if (!isUser) {
         el.querySelector(".message-bubble").innerHTML = msg.content;
       }
       messagesContainer.appendChild(el);
-
-      // Rebuild chatHistory for AI context
       chatHistory.push({
         role: msg.role,
         content: isUser ? msg.content : msg.content.replace(/<[^>]*>/g, "").substring(0, 500),
@@ -108,6 +150,64 @@
     }
 
     scrollToBottom();
+
+    // Update active state in sidebar
+    const items = chatList.querySelectorAll(".chat-list-item");
+    items.forEach((el) => el.classList.remove("active"));
+    // Find and mark active
+    const allItems = chatList.querySelectorAll(".chat-list-item");
+    // Refresh to show active state
+    await refreshChatList();
+  }
+
+  function startNewChat() {
+    DegenAuth.currentConversationId = null;
+    chatHistory = [];
+    clearChatUI();
+
+    // Re-show welcome message
+    const existingWelcome = document.getElementById("welcome-message");
+    if (!existingWelcome) {
+      messagesContainer.innerHTML = "";
+      // Recreate welcome
+      const welcomeHTML = `
+        <div class="message bot-message" id="welcome-message">
+          <div class="message-avatar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <div class="message-content">
+            <div class="message-bubble">
+              <h2>Welcome to Degen Desk</h2>
+              <p>I'm an expert-level meme coin intelligence agent built with the knowledge of experienced <strong>Solana meme coin traders</strong>. I also cover Ethereum, BNB Chain, Base, and the broader crypto ecosystem.</p>
+              <div class="welcome-grid">
+                <div class="welcome-card"><div class="welcome-card-icon">&#128187;</div><div class="welcome-card-text"><strong>Trading Platforms</strong><span>Axiom, Photon, BullX, GMGN, TG bots</span></div></div>
+                <div class="welcome-card"><div class="welcome-card-icon">&#9889;</div><div class="welcome-card-text"><strong>Execution &amp; MEV</strong><span>Jito bundles, slippage, sandwich protection</span></div></div>
+                <div class="welcome-card"><div class="welcome-card-icon">&#128373;</div><div class="welcome-card-text"><strong>On-Chain Intel</strong><span>Smart money, bundle detection, wallets</span></div></div>
+                <div class="welcome-card"><div class="welcome-card-icon">&#128721;</div><div class="welcome-card-text"><strong>Scam Detection</strong><span>Rug pulls, honeypots, cabal identification</span></div></div>
+              </div>
+              <p style="margin-top:4px;">Ask me anything, or select a topic from the sidebar.</p>
+            </div>
+          </div>
+        </div>
+      `;
+      messagesContainer.innerHTML = welcomeHTML;
+    }
+
+    // Show mobile topics again
+    if (mobileTopics) mobileTopics.style.display = "";
+  }
+
+  function clearChatUI() {
+    // Remove all messages
+    const allMsgs = messagesContainer.querySelectorAll(".message");
+    allMsgs.forEach((m) => m.remove());
+    // Remove mobile topics
+    if (mobileTopics) mobileTopics.style.display = "none";
+    // Remove welcome if exists
+    const welcome = document.getElementById("welcome-message");
+    if (welcome) welcome.remove();
   }
 
   // =============================================
@@ -175,28 +275,20 @@
     return scored.slice(0, maxResults);
   }
 
-  // Track queries that came from sidebar/pill clicks
   const sidebarQueries = new Set();
-
-  // Register all sidebar and pill queries
   document.querySelectorAll(".topic-btn, .mobile-topic-pill").forEach((btn) => {
     const q = btn.getAttribute("data-query");
     if (q) sidebarQueries.add(q.trim());
   });
 
   function getLocalResponse(query) {
-    // ONLY use local knowledge base for exact sidebar/pill topic clicks
-    // All other queries go to the AI for intelligent, custom responses
     if (!sidebarQueries.has(query.trim())) {
-      return null; // Not a sidebar click — let AI handle it
+      return null;
     }
-
     const matches = findBestMatches(query, 3);
-
     if (matches.length === 0 || matches[0].score < 20) {
       return null;
     }
-
     let response = matches[0].entry.response;
     if (matches.length >= 2 && matches[1].score >= 12 && matches[1].entry.id !== matches[0].entry.id) {
       const relatedName = matches[1].entry.keywords[0].replace(/^\w/, (c) => c.toUpperCase());
@@ -219,12 +311,10 @@
           history: chatHistory.slice(-6),
         }),
       });
-
       if (!response.ok) {
         console.error("API error:", response.status);
         return null;
       }
-
       const data = await response.json();
       return data.reply || null;
     } catch (err) {
@@ -278,8 +368,7 @@
 
     const bubble = document.createElement("div");
     bubble.className = "message-bubble";
-    bubble.innerHTML =
-      '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    bubble.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
 
     contentDiv.appendChild(bubble);
     messageDiv.appendChild(avatar);
@@ -299,9 +388,12 @@
   }
 
   function hideMobileTopics() {
-    if (mobileTopics) {
-      mobileTopics.style.display = "none";
-    }
+    if (mobileTopics) mobileTopics.style.display = "none";
+  }
+
+  function hideWelcome() {
+    const welcome = document.getElementById("welcome-message");
+    if (welcome) welcome.remove();
   }
 
   function showBotMessage(html) {
@@ -323,6 +415,12 @@
 
     isProcessing = true;
     hideMobileTopics();
+    hideWelcome();
+
+    // If logged in and no current conversation, create one
+    if (window.DegenAuth && DegenAuth.currentUser && !DegenAuth.currentConversationId) {
+      await DegenAuth.createConversation("New chat");
+    }
 
     // Add user message to UI
     const userMsg = createMessageElement(query, true);
@@ -336,9 +434,10 @@
     // Add to chat history
     chatHistory.push({ role: "user", content: query });
 
-    // Save user message if logged in
+    // Save user message
     if (window.DegenAuth && DegenAuth.currentUser) {
-      DegenAuth.saveMessage("user", query);
+      const titleUpdated = await DegenAuth.saveMessage("user", query);
+      if (titleUpdated) refreshChatList();
     }
 
     // Show typing indicator
@@ -346,37 +445,33 @@
     messagesContainer.appendChild(typing);
     scrollToBottom();
 
-    // 1. Try strong local match first (for sidebar topic clicks)
+    // 1. Try strong local match first (sidebar topic clicks)
     const localResponse = getLocalResponse(query);
 
     if (localResponse) {
-      // Strong local match — use it immediately
-      setTimeout(() => {
+      setTimeout(async () => {
         typing.remove();
         showBotMessage(localResponse);
         chatHistory.push({ role: "assistant", content: localResponse.replace(/<[^>]*>/g, "").substring(0, 500) });
-        // Save bot response if logged in
         if (window.DegenAuth && DegenAuth.currentUser) {
-          DegenAuth.saveMessage("assistant", localResponse);
+          await DegenAuth.saveMessage("assistant", localResponse);
         }
         isProcessing = false;
       }, 300 + Math.random() * 400);
       return;
     }
 
-    // 2. No strong local match — call AI API
+    // 2. Call AI API
     const aiResponse = await getAIResponse(query);
     typing.remove();
 
     if (aiResponse) {
       showBotMessage(aiResponse);
       chatHistory.push({ role: "assistant", content: aiResponse.replace(/<[^>]*>/g, "").substring(0, 500) });
-      // Save bot response if logged in
       if (window.DegenAuth && DegenAuth.currentUser) {
-        DegenAuth.saveMessage("assistant", aiResponse);
+        await DegenAuth.saveMessage("assistant", aiResponse);
       }
     } else {
-      // 3. AI failed — fall back to best local match or generic fallback
       const matches = findBestMatches(query, 2);
       let fallbackResponse;
       if (matches.length > 0 && matches[0].score > 0) {
@@ -387,7 +482,7 @@
       }
       showBotMessage(fallbackResponse);
       if (window.DegenAuth && DegenAuth.currentUser) {
-        DegenAuth.saveMessage("assistant", fallbackResponse);
+        await DegenAuth.saveMessage("assistant", fallbackResponse);
       }
     }
 
@@ -398,9 +493,7 @@
   // EVENT LISTENERS
   // =============================================
 
-  sendBtn.addEventListener("click", () => {
-    sendMessage(userInput.value);
-  });
+  sendBtn.addEventListener("click", () => sendMessage(userInput.value));
 
   userInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -420,24 +513,12 @@
   });
 
   if (sidebarClose) {
-    sidebarClose.addEventListener("click", () => {
-      closeSidebar();
-    });
+    sidebarClose.addEventListener("click", closeSidebar);
   }
 
   if (sidebarOverlay) {
-    sidebarOverlay.addEventListener("click", () => {
-      closeSidebar();
-    });
+    sidebarOverlay.addEventListener("click", closeSidebar);
   }
-
-  // Accordion section toggles
-  document.querySelectorAll(".nav-section-toggle").forEach((toggle) => {
-    toggle.addEventListener("click", () => {
-      const section = toggle.parentElement;
-      section.classList.toggle("open");
-    });
-  });
 
   // Sidebar topic buttons
   topicButtons.forEach((btn) => {
