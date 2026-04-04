@@ -1,6 +1,41 @@
+// Simple in-memory rate limiter (per IP, resets on cold start)
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX = 15; // max 15 requests per minute per IP
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now - entry.start > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(ip, { start: now, count: 1 });
+    return false;
+  }
+
+  entry.count++;
+  if (entry.count > RATE_LIMIT_MAX) {
+    return true;
+  }
+  return false;
+}
+
+// Clean up old entries every 5 minutes to prevent memory leak
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap) {
+    if (now - entry.start > RATE_LIMIT_WINDOW * 2) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000);
+
 export default async function handler(req, res) {
-  // CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // CORS — only allow requests from your domain
+  const allowedOrigins = ["https://degendesk.xyz", "https://www.degendesk.xyz", "http://localhost:3000"];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -12,6 +47,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  // Rate limiting
+  const clientIP = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket?.remoteAddress || "unknown";
+  if (isRateLimited(clientIP)) {
+    return res.status(429).json({ error: "Too many requests. Please slow down and try again in a minute." });
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: "API key not configured" });
@@ -21,6 +62,11 @@ export default async function handler(req, res) {
 
   if (!message) {
     return res.status(400).json({ error: "No message provided" });
+  }
+
+  // Block excessively long messages
+  if (message.length > 2000) {
+    return res.status(400).json({ error: "Message too long. Please keep it under 2000 characters." });
   }
 
   const systemPrompt = `You are "Degen Desk" — an expert-level meme coin intelligence agent AND broadly knowledgeable crypto expert. You have the deep knowledge of an experienced Solana meme coin trader who has been actively trading since 2023 through multiple bull and bear cycles. You also cover Ethereum, BNB Chain, Base, and cross-chain strategies, but Solana is your primary expertise.
