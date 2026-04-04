@@ -7,7 +7,7 @@ window.DegenAuth = (function () {
   // FIREBASE CONFIG — Replace with your project's config
   // =============================================
   const firebaseConfig = {
-    apiKey: "AIzaSyAJ0MogernylRUNde0ni0obpSVjQgiOPms",
+    apiKey: "AIzaSyAJ0MogernylRUNde0ni0obpSVjOgiOPms",
     authDomain: "degen-desk-7cbe6.firebaseapp.com",
     projectId: "degen-desk-7cbe6",
     storageBucket: "degen-desk-7cbe6.firebasestorage.app",
