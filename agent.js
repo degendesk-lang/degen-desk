@@ -14,8 +14,101 @@
   const mobileTopicPills = document.querySelectorAll(".mobile-topic-pill");
   const mobileTopics = document.getElementById("mobile-topics");
 
+  // Auth UI elements
+  const googleSignInBtn = document.getElementById("google-sign-in");
+  const userProfile = document.getElementById("user-profile");
+  const userAvatar = document.getElementById("user-avatar");
+  const userName = document.getElementById("user-name");
+  const signOutBtn = document.getElementById("sign-out-btn");
+  const clearHistoryBtn = document.getElementById("clear-history-btn");
+
   // Chat history for AI context
   const chatHistory = [];
+
+  // =============================================
+  // AUTH INTEGRATION
+  // =============================================
+
+  if (window.DegenAuth) {
+    DegenAuth.onAuthChange(async (user) => {
+      if (user) {
+        // User signed in — show profile, hide sign-in button
+        googleSignInBtn.style.display = "none";
+        userProfile.style.display = "flex";
+        userAvatar.src = user.photoURL || "";
+        userName.textContent = user.displayName ? user.displayName.split(" ")[0] : "User";
+
+        // Load saved chat history
+        const savedMessages = await DegenAuth.loadHistory();
+        if (savedMessages.length > 0) {
+          renderSavedHistory(savedMessages);
+        }
+      } else {
+        // User signed out — show sign-in button, hide profile
+        googleSignInBtn.style.display = "flex";
+        userProfile.style.display = "none";
+        userAvatar.src = "";
+        userName.textContent = "";
+      }
+    });
+
+    googleSignInBtn.addEventListener("click", () => {
+      DegenAuth.signIn();
+    });
+
+    signOutBtn.addEventListener("click", () => {
+      DegenAuth.signOut();
+    });
+
+    clearHistoryBtn.addEventListener("click", async () => {
+      if (confirm("Clear your saved chat history?")) {
+        await DegenAuth.clearHistory();
+        // Remove all messages except the welcome message and mobile topics
+        const allMessages = messagesContainer.querySelectorAll(".message");
+        allMessages.forEach((msg, index) => {
+          if (index > 0) msg.remove(); // Keep welcome message (index 0)
+        });
+        const mt = document.getElementById("mobile-topics");
+        if (mt) mt.style.display = "";
+        chatHistory.length = 0;
+      }
+    });
+  }
+
+  function renderSavedHistory(messages) {
+    // Hide mobile topics when there's history
+    hideMobileTopics();
+
+    // Remove existing messages except welcome message
+    const existingMessages = messagesContainer.querySelectorAll(".message");
+    existingMessages.forEach((msg, index) => {
+      if (index > 0) msg.remove();
+    });
+
+    // Remove mobile topics temporarily to append after messages
+    const mt = document.getElementById("mobile-topics");
+    const mtParent = mt ? mt.parentNode : null;
+    if (mt) mt.remove();
+
+    // Render each saved message
+    for (const msg of messages) {
+      const isUser = msg.role === "user";
+      const el = createMessageElement(msg.content, isUser);
+      // For bot messages, the content is HTML
+      if (!isUser) {
+        el.querySelector(".message-bubble").innerHTML = msg.content;
+      }
+      messagesContainer.appendChild(el);
+
+      // Rebuild chatHistory for AI context
+      chatHistory.push({
+        role: msg.role,
+        content: isUser ? msg.content : msg.content.replace(/<[^>]*>/g, "").substring(0, 500),
+      });
+    }
+
+    scrollToBottom();
+  }
 
   // =============================================
   // SIDEBAR MANAGEMENT
@@ -243,6 +336,11 @@
     // Add to chat history
     chatHistory.push({ role: "user", content: query });
 
+    // Save user message if logged in
+    if (window.DegenAuth && DegenAuth.currentUser) {
+      DegenAuth.saveMessage("user", query);
+    }
+
     // Show typing indicator
     const typing = createTypingIndicator();
     messagesContainer.appendChild(typing);
@@ -257,6 +355,10 @@
         typing.remove();
         showBotMessage(localResponse);
         chatHistory.push({ role: "assistant", content: localResponse.replace(/<[^>]*>/g, "").substring(0, 500) });
+        // Save bot response if logged in
+        if (window.DegenAuth && DegenAuth.currentUser) {
+          DegenAuth.saveMessage("assistant", localResponse);
+        }
         isProcessing = false;
       }, 300 + Math.random() * 400);
       return;
@@ -269,14 +371,23 @@
     if (aiResponse) {
       showBotMessage(aiResponse);
       chatHistory.push({ role: "assistant", content: aiResponse.replace(/<[^>]*>/g, "").substring(0, 500) });
+      // Save bot response if logged in
+      if (window.DegenAuth && DegenAuth.currentUser) {
+        DegenAuth.saveMessage("assistant", aiResponse);
+      }
     } else {
       // 3. AI failed — fall back to best local match or generic fallback
       const matches = findBestMatches(query, 2);
+      let fallbackResponse;
       if (matches.length > 0 && matches[0].score > 0) {
-        showBotMessage(matches[0].entry.response);
+        fallbackResponse = matches[0].entry.response;
       } else {
         const idx = Math.floor(Math.random() * FALLBACK_RESPONSES.length);
-        showBotMessage(FALLBACK_RESPONSES[idx]);
+        fallbackResponse = FALLBACK_RESPONSES[idx];
+      }
+      showBotMessage(fallbackResponse);
+      if (window.DegenAuth && DegenAuth.currentUser) {
+        DegenAuth.saveMessage("assistant", fallbackResponse);
       }
     }
 
