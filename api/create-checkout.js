@@ -18,6 +18,11 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("STRIPE_SECRET_KEY is not set in environment variables");
+    return res.status(500).json({ error: "Server configuration error: missing Stripe key" });
+  }
+
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   const { plan, uid, email } = req.body;
