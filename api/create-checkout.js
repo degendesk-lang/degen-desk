@@ -49,7 +49,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error("Stripe checkout error:", err);
-    return res.status(500).json({ error: "Failed to create checkout session" });
+    console.error("Stripe checkout error:", err.message, err.type);
+    return res.status(500).json({ error: "Stripe error: " + err.message });
   }
 };
