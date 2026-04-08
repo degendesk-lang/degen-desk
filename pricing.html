@@ -549,7 +549,8 @@
         } else {
           btn.textContent = "Upgrade to Pro";
           btn.disabled = false;
-          alert("Something went wrong. Please try again.");
+          console.error("Checkout API error:", data);
+          alert("Something went wrong: " + (data.error || "Unknown error"));
         }
       } catch (err) {
         console.error("Checkout error:", err);
