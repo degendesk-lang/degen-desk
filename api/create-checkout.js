@@ -1,9 +1,9 @@
 const Stripe = require("stripe");
 
 const PRICE_IDS = {
-  monthly: "price_1TJjUJImLIzJxo34JDfJGF1w",
-  quarterly: "price_1TJjazImLIzJxo34MAN8DHgj",
-  yearly: "price_1TJjazImLIzJxo34PxLMdmNr",
+  monthly: "price_1TJnRDEkzJoUY82MAfeYyf3j",
+  quarterly: "price_1TJnS1EkzJoUY82MC3tK2Cm6",
+  yearly: "price_1TJnS1EkzJoUY82MJ1XmeMdw",
 };
 
 module.exports = async function handler(req, res) {
