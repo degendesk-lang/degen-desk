@@ -15,7 +15,7 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // Vercel needs raw body for Stripe signature verification
-export const config = {
+module.exports.config = {
   api: { bodyParser: false },
 };
 
@@ -144,7 +144,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ received: true });
   } catch (err) {
-    console.error("Webhook processing error:", err);
-    return res.status(500).json({ error: "Webhook processing failed" });
+    console.error("Webhook processing error:", err.message, err.stack);
+    return res.status(500).json({ error: "Webhook processing failed: " + err.message });
   }
 };
