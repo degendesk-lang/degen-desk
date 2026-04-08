@@ -194,6 +194,33 @@
         </div>
       </div>
 
+      <div id="price-ticker">
+        <div class="ticker-coin" id="ticker-btc">
+          <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC" class="ticker-icon" />
+          <span class="ticker-symbol">BTC</span>
+          <span class="ticker-price" id="price-btc">--</span>
+          <span class="ticker-change" id="change-btc"></span>
+        </div>
+        <div class="ticker-coin" id="ticker-eth">
+          <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH" class="ticker-icon" />
+          <span class="ticker-symbol">ETH</span>
+          <span class="ticker-price" id="price-eth">--</span>
+          <span class="ticker-change" id="change-eth"></span>
+        </div>
+        <div class="ticker-coin" id="ticker-sol">
+          <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL" class="ticker-icon" />
+          <span class="ticker-symbol">SOL</span>
+          <span class="ticker-price" id="price-sol">--</span>
+          <span class="ticker-change" id="change-sol"></span>
+        </div>
+        <div class="ticker-coin" id="ticker-xrp">
+          <img src="https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png" alt="XRP" class="ticker-icon" />
+          <span class="ticker-symbol">XRP</span>
+          <span class="ticker-price" id="price-xrp">--</span>
+          <span class="ticker-change" id="change-xrp"></span>
+        </div>
+      </div>
+
       <div id="input-area">
         <div class="input-wrapper">
           <textarea id="user-input" placeholder="Ask anything about meme coins..." rows="1"></textarea>
@@ -213,8 +240,33 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-  <script src="auth.js?v=10"></script>
-  <script src="knowledge-base.js?v=10"></script>
-  <script src="agent.js?v=10"></script>
+  <script src="auth.js?v=11"></script>
+  <script src="knowledge-base.js?v=11"></script>
+  <script src="agent.js?v=11"></script>
+  <script>
+    // Price ticker
+    async function updatePriceTicker() {
+      try {
+        const res = await fetch("/api/prices");
+        if (!res.ok) return;
+        const prices = await res.json();
+        for (const [symbol, data] of Object.entries(prices)) {
+          const sym = symbol.toLowerCase();
+          const priceEl = document.getElementById("price-" + sym);
+          const changeEl = document.getElementById("change-" + sym);
+          if (priceEl && data.price != null) {
+            priceEl.textContent = "$" + (data.price >= 1 ? data.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : data.price.toFixed(4));
+          }
+          if (changeEl && data.change != null) {
+            const pct = data.change.toFixed(1);
+            changeEl.textContent = (data.change >= 0 ? "+" : "") + pct + "%";
+            changeEl.className = "ticker-change " + (data.change >= 0 ? "green" : "red");
+          }
+        }
+      } catch (e) { console.error("Ticker error:", e); }
+    }
+    updatePriceTicker();
+    setInterval(updatePriceTicker, 30000);
+  </script>
 </body>
 </html>

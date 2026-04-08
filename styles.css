@@ -784,6 +784,55 @@ html, body {
   30% { transform: translateY(-8px); opacity: 1; }
 }
 
+/* === Price Ticker === */
+#price-ticker {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 8px 16px;
+  background: rgba(6, 6, 11, 0.9);
+  border-top: 1px solid var(--border-color);
+  z-index: 2;
+}
+
+.ticker-coin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.ticker-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.ticker-symbol {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.ticker-price {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.ticker-change {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ticker-change.green {
+  color: var(--accent-green);
+}
+
+.ticker-change.red {
+  color: #ff4757;
+}
+
 /* === Input Area === */
 #input-area {
   padding: 12px 24px 16px;
@@ -866,6 +915,13 @@ html, body {
 @media (max-width: 768px) {
   .mobile-only { display: block; }
   .desktop-only { display: none !important; }
+
+  #price-ticker { gap: 12px; padding: 6px 10px; }
+  .ticker-coin { gap: 4px; }
+  .ticker-symbol { font-size: 10px; }
+  .ticker-price { font-size: 11px; }
+  .ticker-change { font-size: 10px; }
+  .ticker-icon { width: 14px; height: 14px; }
 
   #sidebar {
     position: fixed;

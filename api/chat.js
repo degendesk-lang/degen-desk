@@ -120,6 +120,8 @@ module.exports = async function handler(req, res) {
 
   const systemPrompt = `You are "Degen Desk" — an expert-level meme coin intelligence agent AND broadly knowledgeable crypto expert. You have the deep knowledge of an experienced Solana meme coin trader who has been actively trading since 2023 through multiple bull and bear cycles. You also cover Ethereum, BNB Chain, Base, and cross-chain strategies, but Solana is your primary expertise.
 
+IMPORTANT: You have access to LIVE cryptocurrency price data. When you see [LIVE PRICE DATA] in your context, use that data confidently in your response. Format prices clearly and include the 24h change percentage. If no live data is provided for a specific coin the user asks about, suggest they check CoinGecko, CoinMarketCap, or DEX Screener.
+
 BEYOND meme coins, you also have deep knowledge of the broader crypto ecosystem:
 
 === BITCOIN (BTC) ===
@@ -667,6 +669,62 @@ IMPORTANT RULES:
 9. When explaining to apparent beginners, break down jargon. When talking to experienced traders, match their level.
 10. Always prioritize user safety — warn about scams, rug pulls, and overleveraging.`;
 
+  // Check if user is asking about a price — fetch live data
+  let priceContext = "";
+  const pricePattern = /(?:price|worth|cost|value|how much|trading at|what is|what's|whats)\s+(?:of\s+|is\s+|for\s+)?(\$?[a-zA-Z][a-zA-Z0-9\s]{0,20}?)(?:\s+(?:right now|today|currently|now|rn|price|worth|trading|at))?\s*\??$/i;
+  const directPricePattern = /^(?:(\$?[a-zA-Z][a-zA-Z0-9]{0,10})\s+price|price\s+(?:of\s+)?(\$?[a-zA-Z][a-zA-Z0-9\s]{0,20}))\s*\??$/i;
+  const simplePriceWords = /\b(?:price|worth|cost|how much|trading at)\b/i;
+
+  if (simplePriceWords.test(message)) {
+    try {
+      // Extract coin name from message
+      const lowerMsg = message.toLowerCase();
+      const coinNames = [
+        "bitcoin", "btc", "ethereum", "eth", "solana", "sol", "xrp", "ripple",
+        "dogecoin", "doge", "shiba", "shib", "pepe", "bonk", "wif", "dogwifhat",
+        "floki", "popcat", "bnb", "cardano", "ada", "polkadot", "dot", "avalanche",
+        "avax", "polygon", "matic", "chainlink", "link", "uniswap", "uni",
+        "aptos", "apt", "sui", "sei", "arbitrum", "arb", "optimism", "op",
+        "jupiter", "jup", "raydium", "ray", "render", "fet", "wen", "bome",
+        "trump", "melania", "mog", "brett", "toshi", "mother", "fartcoin", "ai16z",
+        "litecoin", "ltc", "tron", "trx", "near", "icp", "ton", "kaspa", "kas"
+      ];
+
+      let foundCoin = null;
+      for (const coin of coinNames) {
+        if (lowerMsg.includes(coin)) {
+          foundCoin = coin;
+          break;
+        }
+      }
+
+      if (foundCoin) {
+        const priceRes = await fetch(
+          `https://${req.headers.host}/api/prices`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Origin": req.headers.origin || "https://degendesk.xyz" },
+            body: JSON.stringify({ coin: foundCoin }),
+          }
+        );
+
+        if (priceRes.ok) {
+          const priceData = await priceRes.json();
+          const changeStr = priceData.change_24h
+            ? ` (${priceData.change_24h > 0 ? "+" : ""}${priceData.change_24h.toFixed(2)}% in 24h)`
+            : "";
+          const mcStr = priceData.market_cap
+            ? ` | Market cap: $${(priceData.market_cap / 1e9).toFixed(2)}B`
+            : "";
+          priceContext = `\n\n[LIVE PRICE DATA - USE THIS IN YOUR RESPONSE]\n${priceData.coin}: $${priceData.price.toLocaleString()}${changeStr}${mcStr}\nThis data is live and current. Present it confidently.`;
+        }
+      }
+    } catch (err) {
+      console.error("Price lookup failed:", err.message);
+      // Continue without price data
+    }
+  }
+
   // Build messages array
   const messages = [];
 
@@ -693,7 +751,7 @@ IMPORTANT RULES:
       },
       body: JSON.stringify({
         model: model,
-        messages: [{ role: "system", content: systemPrompt }, ...messages],
+        messages: [{ role: "system", content: systemPrompt + priceContext }, ...messages],
         max_tokens: tier === "pro" ? 3000 : 2000,
         temperature: 0.7,
       }),
