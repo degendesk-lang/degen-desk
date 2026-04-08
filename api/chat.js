@@ -1,7 +1,26 @@
+const admin = require("firebase-admin");
+
+// Initialize Firebase Admin (only once)
+if (!admin.apps.length) {
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+
+  if (projectId && clientEmail && privateKey) {
+    admin.initializeApp({
+      credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+    });
+  }
+}
+
 // Simple in-memory rate limiter (per IP, resets on cold start)
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX = 15; // max 15 requests per minute per IP
+
+// Daily message counter for free tier (per IP, resets on cold start)
+const dailyMessageMap = new Map();
+const FREE_DAILY_LIMIT = 15;
 
 function isRateLimited(ip) {
   const now = Date.now();
@@ -29,7 +48,7 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS — only allow requests from your domain
   const allowedOrigins = ["https://degendesk.xyz", "https://www.degendesk.xyz", "http://localhost:3000"];
   const origin = req.headers.origin;
@@ -58,7 +77,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "API key not configured" });
   }
 
-  const { message, history } = req.body;
+  const { message, history, uid } = req.body;
 
   if (!message) {
     return res.status(400).json({ error: "No message provided" });
@@ -68,6 +87,36 @@ export default async function handler(req, res) {
   if (message.length > 2000) {
     return res.status(400).json({ error: "Message too long. Please keep it under 2000 characters." });
   }
+
+  // Determine user tier
+  let tier = "free";
+  if (uid && admin.apps.length > 0) {
+    try {
+      const userDoc = await admin.firestore().collection("users").doc(uid).get();
+      if (userDoc.exists && userDoc.data().tier === "pro" && userDoc.data().subscriptionStatus === "active") {
+        tier = "pro";
+      }
+    } catch (err) {
+      console.error("Tier check failed, defaulting to free:", err.message);
+    }
+  }
+
+  // Enforce daily limit for free tier
+  if (tier === "free") {
+    const today = new Date().toISOString().split("T")[0];
+    const key = `${clientIP}_${today}`;
+    const count = dailyMessageMap.get(key) || 0;
+    if (count >= FREE_DAILY_LIMIT) {
+      return res.status(429).json({
+        error: "You've reached your daily free limit of 15 messages. Upgrade to Pro for unlimited access!",
+        upgrade: true,
+      });
+    }
+    dailyMessageMap.set(key, count + 1);
+  }
+
+  // Select model based on tier
+  const model = tier === "pro" ? "gpt-4o" : "gpt-4o-mini";
 
   const systemPrompt = `You are "Degen Desk" — an expert-level meme coin intelligence agent AND broadly knowledgeable crypto expert. You have the deep knowledge of an experienced Solana meme coin trader who has been actively trading since 2023 through multiple bull and bear cycles. You also cover Ethereum, BNB Chain, Base, and cross-chain strategies, but Solana is your primary expertise.
 
@@ -643,9 +692,9 @@ IMPORTANT RULES:
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: model,
         messages: [{ role: "system", content: systemPrompt }, ...messages],
-        max_tokens: 2000,
+        max_tokens: tier === "pro" ? 3000 : 2000,
         temperature: 0.7,
       }),
     });
@@ -659,7 +708,7 @@ IMPORTANT RULES:
     const data = await response.json();
     const reply = data.choices?.[0]?.message?.content || "I couldn't generate a response. Please try again.";
 
-    return res.status(200).json({ reply });
+    return res.status(200).json({ reply, tier });
   } catch (err) {
     console.error("API call failed:", err);
     return res.status(500).json({ error: "Failed to reach AI service" });

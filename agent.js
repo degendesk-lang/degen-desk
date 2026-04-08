@@ -55,6 +55,9 @@
         userAvatar.src = user.photoURL || "";
         userName.textContent = user.displayName || "User";
         chatListEmpty.innerHTML = "<p>No conversations yet</p>";
+        // Load subscription tier
+        const tier = await DegenAuth.loadUserTier();
+        updateTierUI(tier);
         await refreshChatList();
       } else {
         googleSignInBtn.style.display = "flex";
@@ -303,14 +306,25 @@
 
   async function getAIResponse(query) {
     try {
+      const uid = window.DegenAuth?.currentUser?.uid || null;
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: query,
           history: chatHistory.slice(-6),
+          uid: uid,
         }),
       });
+
+      if (response.status === 429) {
+        const errData = await response.json();
+        if (errData.upgrade) {
+          return `<div class="warning-box"><strong>&#9888;&#65039; Daily limit reached</strong><p style="margin-top:8px;">You've used all 15 free messages today. Upgrade to <strong>Pro</strong> for unlimited messages and a smarter AI model.</p><a href="/pricing.html" style="display:inline-block;margin-top:10px;padding:10px 20px;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Upgrade to Pro</a></div>`;
+        }
+        return null;
+      }
+
       if (!response.ok) {
         console.error("API error:", response.status);
         return null;
@@ -320,6 +334,19 @@
     } catch (err) {
       console.error("Failed to reach AI:", err);
       return null;
+    }
+  }
+
+  // Tier UI
+  function updateTierUI(tier) {
+    const sub = document.querySelector(".sidebar-user-sub");
+    if (sub) {
+      if (tier === "pro") {
+        sub.textContent = "Pro";
+        sub.style.color = "#00ff88";
+      } else {
+        sub.innerHTML = 'Free plan &middot; <a href="/pricing.html" style="color:#00ff88;text-decoration:none;">Upgrade</a>';
+      }
     }
   }
 

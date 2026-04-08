@@ -1,0 +1,25 @@
+{
+  "name": "memecoin-agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "agent.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/degendesk-lang/degen-desk.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/degendesk-lang/degen-desk/issues"
+  },
+  "homepage": "https://github.com/degendesk-lang/degen-desk#readme",
+  "dependencies": {
+    "firebase-admin": "^13.7.0",
+    "stripe": "^22.0.0"
+  }
+}

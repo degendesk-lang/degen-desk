@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#06060b" />
+  <title>Degen Desk - Pricing</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #06060b;
+      --bg-secondary: #0a0a14;
+      --bg-tertiary: #10101e;
+      --bg-card: #0d0d1a;
+      --text-primary: #eaeaf2;
+      --text-secondary: #9d9db8;
+      --text-muted: #55556e;
+      --accent-green: #00ff88;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #9945ff;
+      --border-color: #1a1a2e;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Nav */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(10, 10, 20, 0.8);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .nav-brand span {
+      font-size: 18px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-back {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      border-color: var(--accent-green);
+      color: var(--text-primary);
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 60px 24px 20px;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Billing Toggle */
+    .billing-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 32px auto 40px;
+    }
+
+    .billing-toggle span {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .billing-toggle span.active {
+      color: var(--text-primary);
+    }
+
+    .toggle-switch {
+      width: 48px;
+      height: 26px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 13px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .toggle-switch.on {
+      background: rgba(0, 255, 136, 0.15);
+      border-color: rgba(0, 255, 136, 0.3);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: all 0.3s;
+    }
+
+    .toggle-switch.on::after {
+      left: 24px;
+      background: var(--accent-green);
+    }
+
+    .save-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-green);
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* Pricing Cards */
+    .pricing-container {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 0 24px 80px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      flex: 1;
+      max-width: 380px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .pricing-card:hover {
+      border-color: rgba(0, 255, 136, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .pricing-card.featured {
+      border-color: rgba(0, 255, 136, 0.3);
+      background: linear-gradient(180deg, rgba(0,255,136,0.03) 0%, var(--bg-card) 40%);
+      box-shadow: 0 0 40px rgba(0, 255, 136, 0.05);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 16px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .card-tier {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .card-price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .card-price .amount {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: var(--text-primary);
+    }
+
+    .card-price .period {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .card-billed {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      min-height: 18px;
+    }
+
+    .card-description {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .card-features {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+
+    .card-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      padding: 7px 0;
+    }
+
+    .card-features li .check {
+      color: var(--accent-green);
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .card-features li.disabled {
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .card-features li.disabled .check {
+      color: var(--text-muted);
+    }
+
+    .card-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      border: none;
+    }
+
+    .card-btn.primary {
+      background: linear-gradient(135deg, var(--accent-green), #00cc6a);
+      color: #000;
+      box-shadow: 0 4px 16px rgba(0, 255, 136, 0.2);
+    }
+
+    .card-btn.primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 24px rgba(0, 255, 136, 0.3);
+    }
+
+    .card-btn.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .card-btn.secondary:hover {
+      border-color: var(--accent-green);
+      color: var(--text-primary);
+    }
+
+    /* Success/Cancel messages */
+    .status-banner {
+      display: none;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 16px 24px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .status-banner.success {
+      display: block;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      color: var(--accent-green);
+    }
+
+    .status-banner.canceled {
+      display: block;
+      background: rgba(255, 71, 87, 0.08);
+      border: 1px solid rgba(255, 71, 87, 0.2);
+      color: #ff6b6b;
+    }
+
+    /* Footer */
+    .pricing-footer {
+      text-align: center;
+      padding: 0 24px 40px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 28px; }
+      .hero p { font-size: 14px; }
+      .pricing-container { flex-direction: column; align-items: center; }
+      .pricing-card { max-width: 100%; }
+      .nav { padding: 14px 16px; }
+      .card-price .amount { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="/" class="nav-brand">
+      <img src="/favicon.png" alt="Degen Desk" />
+      <span>Degen Desk</span>
+    </a>
+    <a href="/" class="nav-back">Back to chat</a>
+  </nav>
+
+  <div id="success-banner" class="status-banner"></div>
+
+  <div class="hero">
+    <h1>Upgrade your trading intel</h1>
+    <p>Get unlimited access to Degen Desk's AI-powered meme coin intelligence with our most powerful model.</p>
+  </div>
+
+  <div class="billing-toggle">
+    <span class="toggle-label active" data-plan="monthly">Monthly</span>
+    <div class="toggle-switch" id="billing-toggle"></div>
+    <span class="toggle-label" data-plan="yearly">Yearly</span>
+    <span class="save-badge">Save 33%</span>
+  </div>
+
+  <div class="pricing-container">
+    <!-- Free Card -->
+    <div class="pricing-card">
+      <div class="card-tier">Free</div>
+      <div class="card-price">
+        <span class="amount">$0</span>
+        <span class="period">/month</span>
+      </div>
+      <div class="card-billed">Free forever</div>
+      <p class="card-description">Get started with meme coin trading knowledge.</p>
+      <ul class="card-features">
+        <li><span class="check">&#10003;</span> 15 messages per day</li>
+        <li><span class="check">&#10003;</span> 5 saved conversations</li>
+        <li><span class="check">&#10003;</span> All topic guides</li>
+        <li><span class="check">&#10003;</span> Standard AI (GPT-4o-mini)</li>
+        <li class="disabled"><span class="check">&#10005;</span> Unlimited messages</li>
+        <li class="disabled"><span class="check">&#10005;</span> Upgraded AI model</li>
+      </ul>
+      <a href="/" class="card-btn secondary">Get started free</a>
+    </div>
+
+    <!-- Pro Card -->
+    <div class="pricing-card featured">
+      <div class="card-badge">Most Popular</div>
+      <div class="card-tier">Pro</div>
+      <div class="card-price">
+        <span class="amount" id="pro-price">$14.99</span>
+        <span class="period" id="pro-period">/month</span>
+      </div>
+      <div class="card-billed" id="pro-billed">&nbsp;</div>
+      <p class="card-description">Unlock the full power of Degen Desk for serious traders.</p>
+      <ul class="card-features">
+        <li><span class="check">&#10003;</span> Unlimited messages</li>
+        <li><span class="check">&#10003;</span> Unlimited conversations</li>
+        <li><span class="check">&#10003;</span> Upgraded AI (GPT-4o)</li>
+        <li><span class="check">&#10003;</span> Priority response speed</li>
+        <li><span class="check">&#10003;</span> All topic guides</li>
+        <li><span class="check">&#10003;</span> Early access to new features</li>
+      </ul>
+      <button class="card-btn primary" id="subscribe-btn">Upgrade to Pro</button>
+    </div>
+  </div>
+
+  <div class="pricing-footer">
+    <p>Cancel anytime. Secure payment powered by Stripe.</p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Firebase init (same config)
+    firebase.initializeApp({
+      apiKey: "AIzaSyAJ0MogernylRUNde0ni0obpSVjOgiOPms",
+      authDomain: "degen-desk-7cbe6.firebaseapp.com",
+      projectId: "degen-desk-7cbe6",
+      storageBucket: "degen-desk-7cbe6.firebasestorage.app",
+      messagingSenderId: "382072874801",
+      appId: "1:382072874801:web:7a5c9575aab35aa0263210",
+    });
+
+    const auth = firebase.auth();
+
+    // Pricing data
+    const plans = {
+      monthly: { price: "$14.99", period: "/month", billed: "&nbsp;", plan: "monthly" },
+      quarterly: { price: "$13.33", period: "/month", billed: "Billed $39.99 every 3 months", plan: "quarterly" },
+      yearly: { price: "$10.00", period: "/month", billed: "Billed $119.99/year", plan: "yearly" },
+    };
+
+    let currentPlan = "monthly";
+
+    // Billing toggle
+    const toggle = document.getElementById("billing-toggle");
+    const labels = document.querySelectorAll(".toggle-label");
+    const proPrice = document.getElementById("pro-price");
+    const proPeriod = document.getElementById("pro-period");
+    const proBilled = document.getElementById("pro-billed");
+
+    function cyclePlan() {
+      const order = ["monthly", "quarterly", "yearly"];
+      const idx = order.indexOf(currentPlan);
+      currentPlan = order[(idx + 1) % order.length];
+      updatePricing();
+    }
+
+    // Click labels to select plan directly
+    labels.forEach((label) => {
+      label.addEventListener("click", () => {
+        const plan = label.dataset.plan;
+        if (plan) {
+          currentPlan = plan;
+          updatePricing();
+        }
+      });
+    });
+
+    toggle.addEventListener("click", () => {
+      currentPlan = currentPlan === "monthly" ? "yearly" : "monthly";
+      updatePricing();
+    });
+
+    function updatePricing() {
+      const p = plans[currentPlan];
+      proPrice.textContent = p.price;
+      proPeriod.textContent = p.period;
+      proBilled.innerHTML = p.billed;
+
+      toggle.classList.toggle("on", currentPlan === "yearly");
+      labels.forEach((l) => {
+        l.classList.toggle("active", l.dataset.plan === currentPlan);
+      });
+    }
+
+    // Subscribe button
+    document.getElementById("subscribe-btn").addEventListener("click", async () => {
+      const user = auth.currentUser;
+
+      if (!user) {
+        // Sign in first
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+          await auth.signInWithPopup(provider);
+        } catch (err) {
+          console.error("Sign in failed:", err);
+          return;
+        }
+      }
+
+      const currentUser = auth.currentUser;
+      const btn = document.getElementById("subscribe-btn");
+      btn.textContent = "Redirecting to checkout...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/create-checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            plan: currentPlan,
+            uid: currentUser.uid,
+            email: currentUser.email,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          btn.textContent = "Upgrade to Pro";
+          btn.disabled = false;
+          alert("Something went wrong. Please try again.");
+        }
+      } catch (err) {
+        console.error("Checkout error:", err);
+        btn.textContent = "Upgrade to Pro";
+        btn.disabled = false;
+        alert("Failed to start checkout. Please try again.");
+      }
+    });
+
+    // Show success/cancel banners
+    const params = new URLSearchParams(window.location.search);
+    const banner = document.getElementById("success-banner");
+    if (params.get("success") === "true") {
+      banner.className = "status-banner success";
+      banner.textContent = "You're now a Pro member! Head back to chat to enjoy unlimited access.";
+    } else if (params.get("canceled") === "true") {
+      banner.className = "status-banner canceled";
+      banner.textContent = "Checkout was canceled. No charges were made.";
+    }
+  </script>
+</body>
+</html>

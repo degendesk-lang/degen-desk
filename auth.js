@@ -179,6 +179,31 @@ window.DegenAuth = (function () {
   }
 
   // =============================================
+  // SUBSCRIPTION / TIER
+  // =============================================
+
+  let userTier = "free";
+
+  async function loadUserTier() {
+    if (!currentUser) {
+      userTier = "free";
+      return "free";
+    }
+    try {
+      const doc = await db.collection("users").doc(currentUser.uid).get();
+      if (doc.exists && doc.data().tier === "pro" && doc.data().subscriptionStatus === "active") {
+        userTier = "pro";
+      } else {
+        userTier = "free";
+      }
+    } catch (err) {
+      console.error("Failed to load tier:", err);
+      userTier = "free";
+    }
+    return userTier;
+  }
+
+  // =============================================
   // PUBLIC API
   // =============================================
 
@@ -192,6 +217,9 @@ window.DegenAuth = (function () {
     set currentConversationId(val) {
       currentConversationId = val;
     },
+    get tier() {
+      return userTier;
+    },
     signIn,
     signOut,
     onAuthChange,
@@ -200,5 +228,6 @@ window.DegenAuth = (function () {
     loadConversation,
     saveMessage,
     deleteConversation,
+    loadUserTier,
   };
 })();
