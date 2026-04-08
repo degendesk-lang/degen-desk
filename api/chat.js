@@ -165,7 +165,7 @@ Non-Fungible Tokens: unique digital assets on-chain. Marketplaces: OpenSea (ETH,
 US SEC: classified many tokens as securities. Lawsuits against Coinbase, Binance, Ripple (XRP partial win). Howey Test determines if something is a security. SEC approved BTC spot ETFs (Jan 2024) and ETH spot ETFs (May 2024). EU MiCA: Markets in Crypto-Assets regulation — comprehensive framework, stablecoin rules, exchange licensing. Takes effect 2024-2025. Impacts which tokens/stablecoins available in EU. Stablecoin regulation: increasing globally. USDT delisted from some EU exchanges under MiCA. Global trend: most countries moving toward regulation, not banning. Tax reporting: US 1099 requirements expanding. IRS crypto question on tax forms. International: UAE/Dubai crypto-friendly, Singapore licensed framework, Hong Kong opening to retail crypto, El Salvador BTC legal tender. For meme coin traders: regulatory risk is real but mostly affects CEXs and stablecoins. DEX trading largely unaffected so far. But tax obligations still apply to all trades.
 
 === REAL-TIME AWARENESS ===
-You can discuss general crypto market conditions, explain why assets might be moving, discuss macro factors, and provide historical context. However, you CANNOT provide real-time prices — if asked for a specific live price, explain that you don't have access to live price feeds and recommend checking CoinGecko, CoinMarketCap, DEX Screener, or Birdeye for current prices.
+You have access to LIVE market data! When you see [LIVE TRENDING & MEME COIN DATA] or [LIVE PRICE DATA] in your context, use that data confidently. You can tell users about trending coins, top meme coins by market cap, price changes, volume, and pump.fun tokens. Present this data with your expert analysis — explain WHY certain coins are trending, what narratives are driving them, and what traders should watch out for. If no live data is provided for a specific query, recommend checking CoinGecko, CoinMarketCap, DEX Screener, or Birdeye.
 
 When someone asks about broader crypto topics (BTC price, ETH staking, DeFi protocols, etc.), answer confidently with your crypto expertise. You don't need to redirect them to meme coins — just be helpful. But if there's a natural way to connect it to meme coin trading context, feel free.
 
@@ -178,7 +178,7 @@ FORMAT YOUR RESPONSES IN HTML. Use <h3> for section headers, <p> for paragraphs,
 
 NEVER use markdown formatting (no **, no ##, no \`backticks\`). Only use HTML tags.
 
-IMPORTANT: If someone asks for a live/current price of any token or coin, clearly state that you don't have access to real-time price data and recommend they check CoinGecko, CoinMarketCap, or DEX Screener. Don't guess or make up prices.
+IMPORTANT: When you have live price or trending data injected into your context, use it confidently. If someone asks about a coin and NO live data is provided in your context for it, recommend they check CoinGecko, CoinMarketCap, or DEX Screener. Never make up prices — only use data from your [LIVE PRICE DATA] or [LIVE TRENDING & MEME COIN DATA] context.
 
 Here is your deep meme coin knowledge base:
 
@@ -725,6 +725,57 @@ IMPORTANT RULES:
     }
   }
 
+  // Check if user is asking about trending/popular/top meme coins
+  let trendingContext = "";
+  const trendingPattern = /\b(?:trending|popular|top|hottest|best|biggest|most traded|whats hot|what's hot|which meme|meme coins?|top meme|trending meme|popular meme|hot meme|gainers|movers|pumping|moon|running|ripping|sending|flying)\b/i;
+
+  if (trendingPattern.test(message)) {
+    try {
+      const trendingRes = await fetch(
+        `https://${req.headers.host}/api/trending`,
+        {
+          headers: { "Origin": req.headers.origin || "https://degendesk.xyz" },
+        }
+      );
+
+      if (trendingRes.ok) {
+        const trendingData = await trendingRes.json();
+        let trendingStr = "\n\n[LIVE TRENDING & MEME COIN DATA - USE THIS IN YOUR RESPONSE]\n";
+
+        if (trendingData.trending && trendingData.trending.length > 0) {
+          trendingStr += "\n🔥 TRENDING ON COINGECKO:\n";
+          trendingData.trending.forEach((coin, i) => {
+            trendingStr += `${i + 1}. ${coin.name} (${coin.symbol}) - Rank #${coin.market_cap_rank || "N/A"}, Score: ${coin.score}\n`;
+          });
+        }
+
+        if (trendingData.topMemeCoins && trendingData.topMemeCoins.length > 0) {
+          trendingStr += "\n🐸 TOP MEME COINS BY MARKET CAP:\n";
+          trendingData.topMemeCoins.forEach((coin, i) => {
+            const price = coin.price ? `$${coin.price.toLocaleString()}` : "N/A";
+            const change = coin.change_24h ? `${coin.change_24h > 0 ? "+" : ""}${coin.change_24h.toFixed(2)}%` : "N/A";
+            const mc = coin.market_cap ? `$${(coin.market_cap / 1e9).toFixed(2)}B` : "N/A";
+            const vol = coin.volume_24h ? `$${(coin.volume_24h / 1e6).toFixed(1)}M` : "N/A";
+            trendingStr += `${i + 1}. ${coin.name} (${coin.symbol}) - Price: ${price} | 24h: ${change} | MC: ${mc} | Vol: ${vol}\n`;
+          });
+        }
+
+        if (trendingData.pumpFunTokens && trendingData.pumpFunTokens.length > 0) {
+          trendingStr += "\n🚀 TOP PUMP.FUN TOKENS (Highest MC on Solana):\n";
+          trendingData.pumpFunTokens.forEach((token, i) => {
+            const mc = token.market_cap ? `$${(token.market_cap / 1e6).toFixed(2)}M` : "N/A";
+            trendingStr += `${i + 1}. ${token.name} (${token.symbol}) - MC: ${mc}${token.price ? ` | Price: $${token.price}` : ""}\n`;
+          });
+        }
+
+        trendingStr += `\nData updated: ${trendingData.updatedAt}\nThis data is live and current. Present it confidently with analysis and context. Format nicely with HTML.`;
+        trendingContext = trendingStr;
+      }
+    } catch (err) {
+      console.error("Trending lookup failed:", err.message);
+    }
+  }
+
   // Build messages array
   const messages = [];
 
@@ -751,7 +802,7 @@ IMPORTANT RULES:
       },
       body: JSON.stringify({
         model: model,
-        messages: [{ role: "system", content: systemPrompt + priceContext }, ...messages],
+        messages: [{ role: "system", content: systemPrompt + priceContext + trendingContext }, ...messages],
         max_tokens: tier === "pro" ? 3000 : 2000,
         temperature: 0.7,
       }),
