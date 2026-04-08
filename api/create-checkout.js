@@ -18,12 +18,15 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
     console.error("STRIPE_SECRET_KEY is not set in environment variables");
     return res.status(500).json({ error: "Server configuration error: missing Stripe key" });
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  console.log("Using Stripe key starting with:", key.substring(0, 12) + "...");
+
+  const stripe = new Stripe(key);
 
   const { plan, uid, email } = req.body;
 
@@ -32,6 +35,7 @@ module.exports = async function handler(req, res) {
   }
 
   const priceId = PRICE_IDS[plan];
+  console.log("Looking up plan:", plan, "priceId:", priceId);
   if (!priceId) {
     return res.status(400).json({ error: "Invalid plan. Use: monthly, quarterly, or yearly" });
   }
