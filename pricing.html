@@ -545,6 +545,7 @@
 
         const data = await res.json();
         if (data.url) {
+          alert("DEBUG: Key prefix = " + data.debug_key_prefix + "\nCheckout URL = " + data.url.substring(0, 60));
           window.location.href = data.url;
         } else {
           btn.textContent = "Upgrade to Pro";
