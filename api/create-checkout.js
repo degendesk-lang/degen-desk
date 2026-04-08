@@ -58,7 +58,7 @@ module.exports = async function handler(req, res) {
       metadata: { firebaseUid: uid },
     });
 
-    return res.status(200).json({ url: session.url, debug_key_prefix: key.substring(0, 20) });
+    return res.status(200).json({ url: session.url });
   } catch (err) {
     console.error("Stripe checkout error:", err.message, err.type);
     return res.status(500).json({ error: "Stripe error: " + err.message });
