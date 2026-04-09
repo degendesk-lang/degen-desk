@@ -1,48 +1,6 @@
 {
   "images": [
     {
-      "filename": "icon-20.png",
-      "idiom": "universal",
-      "platform": "ios",
-      "size": "20x20"
-    },
-    {
-      "filename": "icon-29.png",
-      "idiom": "universal",
-      "platform": "ios",
-      "size": "29x29"
-    },
-    {
-      "filename": "icon-38.png",
-      "idiom": "universal",
-      "platform": "ios",
-      "size": "38x38"
-    },
-    {
-      "filename": "icon-40.png",
-      "idiom": "universal",
-      "platform": "ios",
-      "size": "40x40"
-    },
-    {
-      "filename": "icon-60.png",
-      "idiom": "universal",
-      "platform": "ios",
-      "size": "60x60"
-    },
-    {
-      "filename": "icon-76.png",
-      "idiom": "universal",
-      "platform": "ios",
-      "size": "76x76"
-    },
-    {
-      "filename": "icon-84.png",
-      "idiom": "universal",
-      "platform": "ios",
-      "size": "83.5x83.5"
-    },
-    {
       "filename": "icon-1024.png",
       "idiom": "universal",
       "platform": "ios",
