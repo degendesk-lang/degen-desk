@@ -178,6 +178,83 @@ module.exports = async function handler(req, res) {
         break;
       }
 
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object;
+        const customerId = invoice.customer;
+        const amountPaid = invoice.amount_paid || 0; // in cents
+
+        // Skip $0 invoices (trials, etc)
+        if (amountPaid <= 0) break;
+
+        // Skip the first invoice — that's already handled by checkout.session.completed
+        // billing_reason: "subscription_create" = first payment, "subscription_cycle" = recurring
+        if (invoice.billing_reason === "subscription_create") {
+          console.log(`Skipping first invoice for ${customerId} (handled by checkout)`);
+          break;
+        }
+
+        // Find the paying user
+        const paidSnapshot = await db
+          .collection("users")
+          .where("stripeCustomerId", "==", customerId)
+          .limit(1)
+          .get();
+
+        if (!paidSnapshot.empty) {
+          const payingUser = paidSnapshot.docs[0];
+          const payingUserData = payingUser.data();
+          const referredByCode = payingUserData.referredByCode;
+
+          // If this user was referred, create a recurring commission
+          if (referredByCode) {
+            try {
+              const codeDoc = await db.collection("referralCodes").doc(referredByCode).get();
+              if (codeDoc.exists) {
+                const codeData = codeDoc.data();
+                const referrerId = codeData.userId;
+                const commissionRate = codeData.commissionRate || 0.15;
+                const commissionAmount = parseFloat(((amountPaid / 100) * commissionRate).toFixed(2));
+
+                // Determine plan from amount
+                let plan = "Pro";
+                if (amountPaid === 1499) plan = "Monthly";
+                else if (amountPaid === 3999) plan = "Quarterly";
+                else if (amountPaid === 11999) plan = "Yearly";
+
+                // Create a recurring referral commission record
+                await db.collection("referrals").add({
+                  referrerId: referrerId,
+                  referredUserId: payingUser.id,
+                  referredEmail: payingUserData.email || "",
+                  referralCode: referredByCode,
+                  commissionRate: commissionRate,
+                  commissionAmount: commissionAmount,
+                  paymentAmount: amountPaid / 100,
+                  plan: plan,
+                  type: "recurring",
+                  status: "active",
+                  stripeInvoiceId: invoice.id,
+                  createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                });
+
+                // Update referrer's total earnings
+                await db.collection("users").doc(referrerId).set(
+                  {
+                    totalReferralEarnings: admin.firestore.FieldValue.increment(commissionAmount),
+                  },
+                  { merge: true }
+                );
+
+                console.log(`Recurring referral commission: ${referredByCode} → $${commissionAmount} from ${customerId}`);
+              }
+            } catch (refErr) {
+              console.error("Recurring referral error (non-fatal):", refErr.message);
+            }
+          }
+        }
+        break;
+      }
+
       case "invoice.payment_failed": {
         const invoice = event.data.object;
         const customerId = invoice.customer;
