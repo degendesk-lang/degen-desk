@@ -5,7 +5,7 @@
 window.DegenAuth = (function () {
   const firebaseConfig = {
     apiKey: "AIzaSyAJ0MogernylRUNde0ni0obpSVjOgiOPms",
-    authDomain: "degen-desk-7cbe6.firebaseapp.com",
+    authDomain: "degendesk.xyz",
     projectId: "degen-desk-7cbe6",
     storageBucket: "degen-desk-7cbe6.firebasestorage.app",
     messagingSenderId: "382072874801",
@@ -49,12 +49,20 @@ window.DegenAuth = (function () {
   // AUTH
   // =============================================
 
+  // Detect if running inside Capacitor native app
+  const isNativeApp = typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+
   async function signIn() {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
-      await auth.signInWithPopup(provider);
+      // Native apps must use redirect — popups open SFSafariViewController and get stuck
+      if (isNativeApp) {
+        await auth.signInWithRedirect(provider);
+      } else {
+        await auth.signInWithPopup(provider);
+      }
     } catch (err) {
-      if (err.code === "auth/popup-blocked") {
+      if (err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user") {
         const provider = new firebase.auth.GoogleAuthProvider();
         await auth.signInWithRedirect(provider);
       } else {
@@ -62,6 +70,17 @@ window.DegenAuth = (function () {
       }
     }
   }
+
+  // Handle redirect result on page load (for native app and fallback)
+  auth.getRedirectResult().then((result) => {
+    if (result.user) {
+      console.log("Redirect sign-in successful:", result.user.email);
+    }
+  }).catch((err) => {
+    if (err.code !== "auth/no-auth-event") {
+      console.error("Redirect result error:", err);
+    }
+  });
 
   async function signOut() {
     try {
