@@ -12,9 +12,14 @@
   <link rel="apple-touch-icon" href="/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=17" />
+  <style>
+    /* Critical: dark background BEFORE external CSS loads — prevents white flash on iOS */
+    html, body { background: #06060b !important; color: #eaeaf2; }
+    #app { background: #06060b; }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=18" />
 </head>
-<body>
+<body style="background:#06060b;">
   <div id="app">
     <!-- Sidebar Overlay -->
     <div id="sidebar-overlay"></div>
@@ -324,6 +329,46 @@
     }
     updatePriceTicker();
     setInterval(updatePriceTicker, 30000);
+
+    // Smooth ticker scroll on mobile using requestAnimationFrame
+    (function initTickerScroll() {
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      if (!isMobile) return;
+
+      const inner = document.querySelector(".ticker-inner");
+      if (!inner) return;
+
+      let offset = 0;
+      const speed = 0.5; // pixels per frame — smooth & readable
+
+      function getHalfWidth() {
+        // Half the total width = width of original 4 coins + gaps
+        const coins = inner.querySelectorAll(".ticker-coin:not(.ticker-duplicate)");
+        let w = 0;
+        coins.forEach(c => w += c.offsetWidth);
+        w += (coins.length) * 28; // gap
+        return w;
+      }
+
+      let halfW = 0;
+
+      function tick() {
+        if (!halfW) halfW = getHalfWidth();
+        offset -= speed;
+        if (Math.abs(offset) >= halfW) offset = 0;
+        inner.style.transform = "translate3d(" + offset + "px, 0, 0)";
+        requestAnimationFrame(tick);
+      }
+
+      // Start after a short delay so layout is settled
+      setTimeout(() => {
+        halfW = getHalfWidth();
+        requestAnimationFrame(tick);
+      }, 1000);
+
+      // Recalculate on resize
+      window.addEventListener("resize", () => { halfW = 0; });
+    })();
   </script>
 </body>
 </html>

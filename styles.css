@@ -940,11 +940,12 @@ html, body {
   justify-content: center;
   gap: 20px;
   padding: 8px 16px;
-  background: rgba(6, 6, 11, 0.9);
+  background: rgba(6, 6, 11, 0.95);
   border-top: 1px solid var(--border-color);
   z-index: 2;
   overflow: hidden;
   white-space: nowrap;
+  position: relative;
 }
 
 .ticker-inner {
@@ -964,12 +965,6 @@ html, body {
 /* Hide duplicate ticker items on desktop */
 .ticker-duplicate {
   display: none;
-}
-
-/* Marquee scroll animation for mobile */
-@keyframes ticker-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
 }
 
 .ticker-icon {
@@ -1090,17 +1085,16 @@ html, body {
     gap: 0;
     padding: 6px 0;
     justify-content: flex-start;
-    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
   }
   .ticker-inner {
     display: flex;
-    gap: 24px;
-    animation: ticker-scroll 12s linear infinite;
-    padding: 0 12px;
+    gap: 28px;
+    padding: 0 14px;
+    will-change: transform;
+    /* JS will handle the smooth scrolling */
   }
   .ticker-duplicate { display: flex; }
-  .ticker-coin { gap: 4px; }
+  .ticker-coin { gap: 5px; }
   .ticker-symbol { font-size: 10px; }
   .ticker-price { font-size: 11px; }
   .ticker-change { font-size: 10px; }
