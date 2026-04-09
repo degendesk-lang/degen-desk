@@ -149,24 +149,25 @@ module.exports = async function handler(req, res) {
       const commissionRate = userData.commissionRate || 0.15;
 
       // Get all referrals for this user
-      const referralsSnap = await db
-        .collection("referrals")
-        .where("referrerId", "==", uid)
-        .orderBy("createdAt", "desc")
-        .limit(50)
-        .get();
-
       const referrals = [];
       let totalEarnedAllTime = 0;
       let totalEarnedThisMonth = 0;
       let totalReferrals = 0;
 
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      try {
+        const referralsSnap = await db
+          .collection("referrals")
+          .where("referrerId", "==", uid)
+          .orderBy("createdAt", "desc")
+          .limit(50)
+          .get();
 
-      referralsSnap.forEach((doc) => {
-        const data = doc.data();
-        totalReferrals++;
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        referralsSnap.forEach((doc) => {
+          const data = doc.data();
+          totalReferrals++;
 
         const commission = data.commissionAmount || 0;
         totalEarnedAllTime += commission;
@@ -196,7 +197,11 @@ module.exports = async function handler(req, res) {
           commissionRate: data.commissionRate || commissionRate,
           status: data.status || "active",
         });
-      });
+        });
+      } catch (refQueryErr) {
+        // Referrals query may fail if index doesn't exist yet — that's OK
+        console.error("Referrals query error (non-fatal):", refQueryErr.message);
+      }
 
       return res.status(200).json({
         referralCode,
