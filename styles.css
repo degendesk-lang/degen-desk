@@ -35,7 +35,10 @@
   --radius-xl: 24px;
   --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
   --glow-green: 0 0 20px rgba(0, 255, 136, 0.1);
   --glow-purple: 0 0 20px rgba(153, 69, 255, 0.1);
 }
@@ -48,6 +51,8 @@ html, body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
 .mobile-only { display: none; }
@@ -1086,12 +1091,17 @@ html, body {
   #sidebar-close { display: flex; }
 
   #chat-header {
-    padding: 12px 16px;
+    padding: calc(12px + var(--safe-top)) 16px 12px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
 
   #sidebar-toggle { display: flex; }
+
+  /* iOS safe area for sidebar */
+  .sidebar-top {
+    padding-top: calc(16px + var(--safe-top));
+  }
 
   .header-info {
     flex-direction: column;
@@ -1151,10 +1161,29 @@ html, body {
    ================================================ */
 @media (max-width: 480px) {
   #sidebar { width: 100%; max-width: 100%; }
-  #chat-header { padding: 10px 12px; }
+  #chat-header { padding: calc(10px + var(--safe-top)) 12px 10px; }
   #messages { padding: 12px 10px; gap: 14px; }
   .message-avatar { width: 28px; height: 28px; }
   .message-bubble { padding: 12px 14px; font-size: 13px; }
   .mobile-topic-pill { padding: 8px 12px; font-size: 12px; }
   #input-area { padding: 8px 10px calc(8px + var(--safe-bottom)); }
+}
+
+/* ================================================
+   iOS STANDALONE / CAPACITOR APP
+   ================================================ */
+@supports (padding-top: env(safe-area-inset-top)) {
+  /* Ensure the app respects iOS safe areas (notch, Dynamic Island, home indicator) */
+  #app {
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+  }
+}
+
+/* iOS standalone mode (added to home screen or Capacitor app) */
+@media screen and (display-mode: standalone) {
+  html, body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
 }

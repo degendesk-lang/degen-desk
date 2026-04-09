@@ -7,7 +7,7 @@
     "cleartext": false
   },
   "ios": {
-    "scheme": "Degen Desk",
+    "scheme": "DegenDesk",
     "contentInset": "automatic",
     "allowsLinkPreview": false,
     "scrollEnabled": true,
@@ -15,11 +15,11 @@
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 2000,
-      "launchAutoHide": false,
+      "launchShowDuration": 2500,
+      "launchAutoHide": true,
       "backgroundColor": "#06060b",
       "showSpinner": false,
-      "launchFadeOutDuration": 300
+      "launchFadeOutDuration": 500
     },
     "StatusBar": {
       "style": "DARK",
