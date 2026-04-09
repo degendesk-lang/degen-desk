@@ -165,7 +165,7 @@ Non-Fungible Tokens: unique digital assets on-chain. Marketplaces: OpenSea (ETH,
 US SEC: classified many tokens as securities. Lawsuits against Coinbase, Binance, Ripple (XRP partial win). Howey Test determines if something is a security. SEC approved BTC spot ETFs (Jan 2024) and ETH spot ETFs (May 2024). EU MiCA: Markets in Crypto-Assets regulation — comprehensive framework, stablecoin rules, exchange licensing. Takes effect 2024-2025. Impacts which tokens/stablecoins available in EU. Stablecoin regulation: increasing globally. USDT delisted from some EU exchanges under MiCA. Global trend: most countries moving toward regulation, not banning. Tax reporting: US 1099 requirements expanding. IRS crypto question on tax forms. International: UAE/Dubai crypto-friendly, Singapore licensed framework, Hong Kong opening to retail crypto, El Salvador BTC legal tender. For meme coin traders: regulatory risk is real but mostly affects CEXs and stablecoins. DEX trading largely unaffected so far. But tax obligations still apply to all trades.
 
 === REAL-TIME AWARENESS ===
-You have access to LIVE market data! When you see [LIVE TRENDING & MEME COIN DATA] or [LIVE PRICE DATA] in your context, use that data confidently. You can tell users about trending coins, top meme coins by market cap, price changes, volume, and pump.fun tokens. Present this data with your expert analysis — explain WHY certain coins are trending, what narratives are driving them, and what traders should watch out for. If no live data is provided for a specific query, recommend checking CoinGecko, CoinMarketCap, DEX Screener, or Birdeye.
+You have access to LIVE market data! When you see [LIVE TRENDING & MEME COIN DATA], [LIVE PRICE DATA], or [LIVE KOLSCAN DATA] in your context, use that data confidently. You can tell users about trending coins, top meme coins by market cap, price changes, volume, pump.fun tokens, AND top Solana meme coin traders/KOLs from KOLSCAN. When presenting KOLSCAN trader data, always include their rank, name, wallet address (full address so users can copy it), PnL, and a link to their kolscan.io profile. Format trader data in a clean HTML table or list. Mention users can track these wallets for copy trading using tools like GMGN, Axiom, or Cielo. If no live data is provided for a specific query, recommend checking CoinGecko, CoinMarketCap, DEX Screener, KOLSCAN, or Birdeye.
 
 When someone asks about broader crypto topics (BTC price, ETH staking, DeFi protocols, etc.), answer confidently with your crypto expertise. You don't need to redirect them to meme coins — just be helpful. But if there's a natural way to connect it to meme coin trading context, feel free.
 
@@ -776,6 +776,57 @@ IMPORTANT RULES:
     }
   }
 
+  // Check if user is asking about top traders, KOLs, or smart money
+  let kolContext = "";
+  const kolPattern = /\b(?:top trader|best trader|top kol|kol|kolscan|smart money|who is trading|who.?s trading|biggest trader|most profitable|leaderboard|top wallet|best wallet|trader of the|trader this|top solana trader|memecoin trader|meme coin trader|leading trader|winning trader|highest pnl|highest profit|who.?s making money|who.?s winning|degen trader)\b/i;
+  const timeframePattern = /\b(?:daily|today|this week|weekly|this month|monthly|all.?time)\b/i;
+
+  if (kolPattern.test(message)) {
+    try {
+      // Detect requested timeframe
+      let timeframe = "weekly"; // default
+      const tfMatch = message.match(timeframePattern);
+      if (tfMatch) {
+        const tf = tfMatch[0].toLowerCase();
+        if (tf === "daily" || tf === "today") timeframe = "daily";
+        else if (tf === "monthly" || tf === "this month") timeframe = "monthly";
+      }
+
+      const kolRes = await fetch(
+        `https://${req.headers.host}/api/kolscan?timeframe=${timeframe}`,
+        {
+          headers: { "Origin": req.headers.origin || "https://degendesk.xyz" },
+        }
+      );
+
+      if (kolRes.ok) {
+        const kolData = await kolRes.json();
+        if (kolData.traders && kolData.traders.length > 0) {
+          let kolStr = `\n\n[LIVE KOLSCAN DATA - TOP SOLANA MEME COIN TRADERS (${timeframe.toUpperCase()})]\n`;
+          kolStr += `Source: kolscan.io | Updated: ${kolData.updatedAt}\n\n`;
+
+          kolData.traders.forEach((trader) => {
+            const pnl = trader.pnl_sol ? `${trader.pnl_sol} SOL` : "";
+            const pnlUsd = trader.pnl_usd ? ` ($${trader.pnl_usd})` : "";
+            const wr = trader.win_rate ? ` | Win rate: ${trader.win_rate}` : "";
+            const wl = trader.wins && trader.losses ? ` | W/L: ${trader.wins}/${trader.losses}` : "";
+            const tw = trader.twitter ? ` | Twitter: ${trader.twitter}` : "";
+            kolStr += `#${trader.rank} ${trader.name}\n`;
+            kolStr += `   Wallet: ${trader.wallet}\n`;
+            if (pnl) kolStr += `   PnL: ${pnl}${pnlUsd}${wr}${wl}\n`;
+            if (tw) kolStr += `   ${tw}\n`;
+            kolStr += `   Profile: https://kolscan.io/account/${trader.wallet}\n\n`;
+          });
+
+          kolStr += `\nPresent this data confidently. Include wallet addresses so users can copy trade. Mention they can view full profiles on kolscan.io. Format nicely with HTML tables or lists. Always note the timeframe (${timeframe}).`;
+          kolContext = kolStr;
+        }
+      }
+    } catch (err) {
+      console.error("KOLSCAN lookup failed:", err.message);
+    }
+  }
+
   // Build messages array
   const messages = [];
 
@@ -802,7 +853,7 @@ IMPORTANT RULES:
       },
       body: JSON.stringify({
         model: model,
-        messages: [{ role: "system", content: systemPrompt + priceContext + trendingContext }, ...messages],
+        messages: [{ role: "system", content: systemPrompt + priceContext + trendingContext + kolContext }, ...messages],
         max_tokens: tier === "pro" ? 3000 : 2000,
         temperature: 0.7,
       }),
