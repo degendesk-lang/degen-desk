@@ -183,14 +183,8 @@
           <div class="message-content">
             <div class="message-bubble">
               <h2>Welcome to Degen Desk</h2>
-              <p>I'm an expert-level meme coin intelligence agent built with the knowledge of experienced <strong>Solana meme coin traders</strong>. I also cover Ethereum, BNB Chain, Base, and the broader crypto ecosystem.</p>
-              <div class="welcome-grid">
-                <div class="welcome-card"><div class="welcome-card-icon">&#128187;</div><div class="welcome-card-text"><strong>Trading Platforms</strong><span>Axiom, Photon, BullX, GMGN, TG bots</span></div></div>
-                <div class="welcome-card"><div class="welcome-card-icon">&#9889;</div><div class="welcome-card-text"><strong>Execution &amp; MEV</strong><span>Jito bundles, slippage, sandwich protection</span></div></div>
-                <div class="welcome-card"><div class="welcome-card-icon">&#128373;</div><div class="welcome-card-text"><strong>On-Chain Intel</strong><span>Smart money, bundle detection, wallets</span></div></div>
-                <div class="welcome-card"><div class="welcome-card-icon">&#128721;</div><div class="welcome-card-text"><strong>Scam Detection</strong><span>Rug pulls, honeypots, cabal identification</span></div></div>
-              </div>
-              <p style="margin-top:4px;">Ask me anything, or select a topic from the sidebar.</p>
+              <p>I'm an expert-level meme coin &amp; cryptocurrency intelligence agent built with the knowledge of experienced <strong>Solana meme coin traders</strong>. I also cover Ethereum, BNB Chain, Base, and the broader crypto ecosystem.</p>
+              <p>Ask me anything — trading platforms, MEV &amp; execution, smart money wallets, scam detection, chart reading, and more.</p>
             </div>
           </div>
         </div>
@@ -279,7 +273,7 @@
   }
 
   const sidebarQueries = new Set();
-  document.querySelectorAll(".topic-btn, .mobile-topic-pill, .welcome-card[data-query]").forEach((btn) => {
+  document.querySelectorAll(".topic-btn, .mobile-topic-pill").forEach((btn) => {
     const q = btn.getAttribute("data-query");
     if (q) sidebarQueries.add(q.trim());
   });
@@ -570,14 +564,6 @@
     });
   });
 
-  // Welcome card buttons
-  document.querySelectorAll(".welcome-card[data-query]").forEach((card) => {
-    card.addEventListener("click", () => {
-      const query = card.getAttribute("data-query");
-      userInput.value = query;
-      sendMessage(query);
-    });
-  });
 
   // Focus input on load (desktop only)
   if (window.innerWidth > 768) {
