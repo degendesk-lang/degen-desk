@@ -1,0 +1,33 @@
+{
+  "appId": "xyz.degendesk.app",
+  "appName": "Degen Desk",
+  "webDir": "www",
+  "server": {
+    "url": "https://degendesk.xyz",
+    "cleartext": false
+  },
+  "ios": {
+    "scheme": "Degen Desk",
+    "contentInset": "automatic",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true,
+    "backgroundColor": "#06060b"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": false,
+      "backgroundColor": "#06060b",
+      "showSpinner": false,
+      "launchFadeOutDuration": 300
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#06060b"
+    },
+    "Keyboard": {
+      "resize": "body",
+      "resizeOnFullScreen": true
+    }
+  }
+}
