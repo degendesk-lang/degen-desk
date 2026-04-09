@@ -540,6 +540,7 @@
             plan: currentPlan,
             uid: currentUser.uid,
             email: currentUser.email,
+            referralCode: auth.getReferralCode ? auth.getReferralCode() : null,
           }),
         });
 

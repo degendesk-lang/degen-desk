@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#06060b" />
+  <title>Degen Desk - Referrals</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #06060b;
+      --bg-secondary: #0a0a14;
+      --bg-tertiary: #10101e;
+      --bg-card: #0d0d1a;
+      --text-primary: #eaeaf2;
+      --text-secondary: #9d9db8;
+      --text-muted: #55556e;
+      --accent-green: #00ff88;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #9945ff;
+      --border-color: #1a1a2e;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Nav */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(10, 10, 20, 0.8);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-brand img { width: 32px; height: 32px; border-radius: 8px; }
+
+    .nav-brand span {
+      font-size: 18px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-back {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-back:hover {
+      border-color: var(--accent-green);
+      color: var(--text-primary);
+    }
+
+    /* Main container */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .page-subtitle span {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* Sign in prompt */
+    .sign-in-prompt {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .sign-in-prompt p {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .sign-in-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sign-in-btn:hover {
+      border-color: rgba(0,255,136,0.3);
+      background: rgba(0,255,136,0.05);
+    }
+
+    /* Referral code setup card */
+    .setup-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .setup-card h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .setup-card .desc {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .code-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .code-input-row input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .code-input-row input:focus {
+      border-color: var(--accent-green);
+    }
+
+    .code-input-row input::placeholder {
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .save-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent-green), #00cc6a);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0,255,136,0.2);
+    }
+
+    .save-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .setup-msg {
+      font-size: 12px;
+      margin-top: 4px;
+      min-height: 18px;
+    }
+
+    .setup-msg.error { color: #ff6b6b; }
+    .setup-msg.success { color: var(--accent-green); }
+
+    /* Share link */
+    .share-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .share-row .link-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .copy-btn {
+      padding: 6px 14px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 6px;
+      color: var(--accent-cyan);
+      font-family: var(--font-main);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      background: rgba(0,212,255,0.2);
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent-green);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    /* Commission badge */
+    .commission-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(0,255,136,0.08);
+      border: 1px solid rgba(0,255,136,0.2);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-green);
+      margin-bottom: 24px;
+    }
+
+    /* Referrals table */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .table-header h2 {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .table-header .count {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .ref-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ref-table th {
+      text-align: left;
+      padding: 12px 24px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .ref-table td {
+      padding: 14px 24px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(26,26,46,0.5);
+      color: var(--text-secondary);
+    }
+
+    .ref-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .ref-table .email-cell {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .ref-table .amount-cell {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    .ref-table .plan-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(153,69,255,0.1);
+      border: 1px solid rgba(153,69,255,0.2);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-purple);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .empty-state p:first-child {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    /* How it works */
+    .how-it-works {
+      margin-top: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 28px;
+    }
+
+    .how-it-works h2 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0,255,136,0.1);
+      border: 1px solid rgba(0,255,136,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-green);
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+
+    .step-text strong {
+      color: var(--text-primary);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--accent-green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .nav { padding: 14px 16px; }
+      .container { padding: 24px 16px 60px; }
+      .page-title { font-size: 22px; }
+      .stats-row { grid-template-columns: 1fr; }
+      .code-input-row { flex-direction: column; }
+      .ref-table th, .ref-table td { padding: 10px 14px; font-size: 12px; }
+      .stat-value { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="/" class="nav-brand">
+      <img src="/favicon.png" alt="Degen Desk" />
+      <span>Degen Desk</span>
+    </a>
+    <a href="/" class="nav-back">Back to Chat</a>
+  </nav>
+
+  <div class="container">
+    <h1 class="page-title">Referral Program</h1>
+    <p class="page-subtitle">Earn <span>15% commission</span> on every subscription from your referrals</p>
+
+    <!-- Not signed in -->
+    <div id="sign-in-section" class="sign-in-prompt" style="display:none;">
+      <p>Sign in to create your referral code and start earning.</p>
+      <button class="sign-in-btn" id="ref-sign-in">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+
+    <!-- Main referral content (signed in) -->
+    <div id="referral-content" style="display:none;">
+
+      <!-- Loading state -->
+      <div id="loading-state" class="loading">
+        <div class="spinner"></div>
+        <p>Loading your referral data...</p>
+      </div>
+
+      <!-- Loaded content -->
+      <div id="loaded-content" style="display:none;">
+
+        <!-- Commission badge -->
+        <div style="text-align:center; margin-bottom: 20px;">
+          <div class="commission-badge" id="commission-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span id="commission-rate-display">15% Commission Rate</span>
+          </div>
+        </div>
+
+        <!-- Setup card -->
+        <div class="setup-card">
+          <h2>Your Referral Code</h2>
+          <p class="desc">Create a unique code that people will use when signing up through your link.</p>
+          <div class="code-input-row">
+            <input type="text" id="code-input" placeholder="Enter your referral code" maxlength="20" />
+            <button class="save-btn" id="save-code-btn">Save Code</button>
+          </div>
+          <div class="setup-msg" id="setup-msg"></div>
+
+          <!-- Share link (shown after code is saved) -->
+          <div class="share-row" id="share-row" style="display:none;">
+            <span class="link-text" id="share-link-text"></span>
+            <button class="copy-btn" id="copy-link-btn">Copy Link</button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-referrals">0</div>
+            <div class="stat-label">Total Referrals</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-month">$0.00</div>
+            <div class="stat-label">Earned This Month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-alltime">$0.00</div>
+            <div class="stat-label">All-Time Earnings</div>
+          </div>
+        </div>
+
+        <!-- Referrals table -->
+        <div class="table-card">
+          <div class="table-header">
+            <h2>Your Referrals</h2>
+            <span class="count" id="referral-count">0 referrals</span>
+          </div>
+          <div id="referrals-table-body">
+            <div class="empty-state" id="empty-state">
+              <p>&#129309;</p>
+              <p>No referrals yet. Share your link to start earning!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="how-it-works">
+          <h2>How It Works</h2>
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Create your code</strong> — Pick a unique referral code above.</div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Share your link</strong> — Send your referral link to friends, followers, or community. When they visit, your code is saved automatically.</div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Earn commission</strong> — When they subscribe to Pro, you earn a commission on their payment. Tracked here in real time.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="/auth.js?v=14"></script>
+
+  <script>
+    const auth = window.DegenAuth;
+
+    const signInSection = document.getElementById("sign-in-section");
+    const referralContent = document.getElementById("referral-content");
+    const loadingState = document.getElementById("loading-state");
+    const loadedContent = document.getElementById("loaded-content");
+    const codeInput = document.getElementById("code-input");
+    const saveBtn = document.getElementById("save-code-btn");
+    const setupMsg = document.getElementById("setup-msg");
+    const shareRow = document.getElementById("share-row");
+    const shareLinkText = document.getElementById("share-link-text");
+    const copyBtn = document.getElementById("copy-link-btn");
+
+    // Sign in button
+    document.getElementById("ref-sign-in").addEventListener("click", () => auth.signIn());
+
+    // Auth state
+    auth.onAuthChange(async (user) => {
+      if (user) {
+        signInSection.style.display = "none";
+        referralContent.style.display = "block";
+        loadingState.style.display = "block";
+        loadedContent.style.display = "none";
+        await loadReferralData();
+      } else {
+        signInSection.style.display = "block";
+        referralContent.style.display = "none";
+      }
+    });
+
+    async function loadReferralData() {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const res = await fetch(`/api/referral?uid=${user.uid}`);
+        const data = await res.json();
+
+        // Commission rate display
+        const rate = data.commissionRate || 0.15;
+        document.getElementById("commission-rate-display").textContent =
+          `${Math.round(rate * 100)}% Commission Rate`;
+
+        // Referral code input
+        if (data.referralCode) {
+          codeInput.value = data.referralCode;
+          showShareLink(data.shareLink);
+        }
+
+        // Stats
+        document.getElementById("stat-referrals").textContent = data.stats?.totalReferrals || 0;
+        document.getElementById("stat-month").textContent =
+          "$" + (data.stats?.totalEarnedThisMonth || 0).toFixed(2);
+        document.getElementById("stat-alltime").textContent =
+          "$" + (data.stats?.totalEarnedAllTime || 0).toFixed(2);
+
+        // Referrals table
+        const referrals = data.referrals || [];
+        document.getElementById("referral-count").textContent =
+          `${referrals.length} referral${referrals.length !== 1 ? "s" : ""}`;
+
+        if (referrals.length > 0) {
+          document.getElementById("empty-state").style.display = "none";
+
+          let tableHTML = `<table class="ref-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Date Joined</th>
+                <th>Plan</th>
+                <th>Commission</th>
+              </tr>
+            </thead>
+            <tbody>`;
+
+          for (const ref of referrals) {
+            const date = new Date(ref.dateJoined);
+            const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+            tableHTML += `
+              <tr>
+                <td class="email-cell">${escapeHtml(ref.censoredEmail)}</td>
+                <td>${dateStr}</td>
+                <td><span class="plan-badge">${escapeHtml(ref.plan)}</span></td>
+                <td class="amount-cell">$${ref.commissionAmount.toFixed(2)}</td>
+              </tr>`;
+          }
+
+          tableHTML += `</tbody></table>`;
+          document.getElementById("referrals-table-body").innerHTML = tableHTML;
+        }
+
+        loadingState.style.display = "none";
+        loadedContent.style.display = "block";
+      } catch (err) {
+        console.error("Failed to load referral data:", err);
+        loadingState.innerHTML = '<p style="color:#ff6b6b;">Failed to load referral data. Please refresh.</p>';
+      }
+    }
+
+    // Save referral code
+    saveBtn.addEventListener("click", async () => {
+      const code = codeInput.value.trim();
+      if (!code) {
+        showMsg("Please enter a referral code.", "error");
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        showMsg("Please sign in first.", "error");
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+
+      try {
+        const res = await fetch("/api/referral", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid: user.uid, code }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          showMsg("Referral code saved!", "success");
+          codeInput.value = data.code;
+          showShareLink(`https://degendesk.xyz/?ref=${data.code}`);
+        } else {
+          showMsg(data.error || "Failed to save code.", "error");
+        }
+      } catch (err) {
+        console.error("Save code error:", err);
+        showMsg("Something went wrong. Try again.", "error");
+      }
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save Code";
+    });
+
+    // Copy link
+    copyBtn.addEventListener("click", () => {
+      const link = shareLinkText.textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => { copyBtn.textContent = "Copy Link"; }, 2000);
+      });
+    });
+
+    function showShareLink(link) {
+      if (link) {
+        shareLinkText.textContent = link;
+        shareRow.style.display = "flex";
+      }
+    }
+
+    function showMsg(text, type) {
+      setupMsg.textContent = text;
+      setupMsg.className = "setup-msg " + type;
+      setTimeout(() => { setupMsg.textContent = ""; setupMsg.className = "setup-msg"; }, 4000);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

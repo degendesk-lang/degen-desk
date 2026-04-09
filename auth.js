@@ -22,6 +22,30 @@ window.DegenAuth = (function () {
   let authChangeCallbacks = [];
 
   // =============================================
+  // REFERRAL CODE CAPTURE
+  // =============================================
+  // Capture ?ref=CODE from URL and store in localStorage
+  (function captureReferral() {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      localStorage.setItem("degen_referral_code", ref.toUpperCase());
+      // Clean the URL without reload
+      const url = new URL(window.location);
+      url.searchParams.delete("ref");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+  })();
+
+  function getReferralCode() {
+    return localStorage.getItem("degen_referral_code") || null;
+  }
+
+  function clearReferralCode() {
+    localStorage.removeItem("degen_referral_code");
+  }
+
+  // =============================================
   // AUTH
   // =============================================
 
@@ -229,5 +253,7 @@ window.DegenAuth = (function () {
     saveMessage,
     deleteConversation,
     loadUserTier,
+    getReferralCode,
+    clearReferralCode,
   };
 })();

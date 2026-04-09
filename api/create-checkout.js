@@ -25,7 +25,7 @@ module.exports = async function handler(req, res) {
   }
 
   const stripe = new Stripe(key);
-  const { plan, uid, email } = req.body;
+  const { plan, uid, email, referralCode } = req.body;
 
   if (!plan || !uid || !email) {
     return res.status(400).json({ error: "Missing plan, uid, or email" });
@@ -55,7 +55,10 @@ module.exports = async function handler(req, res) {
       }],
       success_url: `${req.headers.origin || "https://degendesk.xyz"}/pricing.html?success=true`,
       cancel_url: `${req.headers.origin || "https://degendesk.xyz"}/pricing.html?canceled=true`,
-      metadata: { firebaseUid: uid },
+      metadata: {
+        firebaseUid: uid,
+        ...(referralCode ? { referralCode: referralCode.toUpperCase() } : {}),
+      },
     });
 
     return res.status(200).json({ url: session.url });

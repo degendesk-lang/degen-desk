@@ -350,6 +350,52 @@ html, body {
   border-top: 1px solid var(--border-color);
 }
 
+.sidebar-referral-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  background: rgba(153, 69, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-referral-link:hover {
+  border-color: rgba(153, 69, 255, 0.3);
+  color: var(--text-primary);
+  background: rgba(153, 69, 255, 0.06);
+}
+
+.sidebar-referral-link svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.sidebar-referral-link:hover svg {
+  opacity: 1;
+}
+
+.referral-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(0, 255, 136, 0.9);
+  background: rgba(0, 255, 136, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 .sidebar-x-link {
   display: flex;
   align-items: center;
