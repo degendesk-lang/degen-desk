@@ -467,13 +467,13 @@ html, body {
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 12px 14px;
+  padding: 9px 12px;
   background: linear-gradient(135deg, rgba(0, 255, 136, 0.12), rgba(0, 204, 106, 0.06));
   border: 1px solid rgba(0, 255, 136, 0.3);
   border-radius: var(--radius-md);
   color: #00ff88;
   font-family: var(--font-main);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
