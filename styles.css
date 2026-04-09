@@ -184,6 +184,15 @@ html, body {
   opacity: 0.7;
 }
 
+/* Sidebar scrollable body — everything between header and footer */
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+}
+
 /* Sidebar Sections */
 .sidebar-section {
   padding: 0 8px;
@@ -265,8 +274,6 @@ html, body {
 
 /* Chat List */
 .chats-section {
-  flex: 1;
-  overflow-y: auto;
   padding-top: 8px;
   border-top: 1px solid var(--border-color);
   margin-top: 8px;
@@ -351,10 +358,11 @@ html, body {
   background: rgba(255, 71, 87, 0.1);
 }
 
-/* Sidebar Footer / Auth */
+/* Sidebar Footer / Auth — always pinned at bottom */
 .sidebar-footer {
   padding: 12px;
   border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .sidebar-referral-link {
