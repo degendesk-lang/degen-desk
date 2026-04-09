@@ -421,14 +421,20 @@ html, body {
 
 .sidebar-user-profile {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-profile-row {
+  display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 4px;
+  padding: 4px 0;
 }
 
 .sidebar-avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 2px solid rgba(0, 255, 136, 0.25);
   object-fit: cover;
@@ -454,6 +460,53 @@ html, body {
   display: block;
   font-size: 11px;
   color: var(--text-muted);
+}
+
+.sidebar-upgrade-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.12), rgba(0, 204, 106, 0.06));
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: var(--radius-md);
+  color: #00ff88;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sidebar-upgrade-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 204, 106, 0.12));
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+  transform: translateY(-1px);
+}
+
+.sidebar-upgrade-btn svg {
+  flex-shrink: 0;
+  stroke: #00ff88;
+}
+
+.upgrade-badge {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #000;
+  background: linear-gradient(135deg, #00ff88, #00cc6a);
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.sidebar-upgrade-btn.hidden {
+  display: none;
 }
 
 .sidebar-sign-out {

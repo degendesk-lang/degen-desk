@@ -340,12 +340,16 @@
   // Tier UI
   function updateTierUI(tier) {
     const sub = document.querySelector(".sidebar-user-sub");
+    const upgradeBtn = document.getElementById("sidebar-upgrade-btn");
     if (sub) {
       if (tier === "pro") {
-        sub.textContent = "Pro";
+        sub.textContent = "Pro plan";
         sub.style.color = "#00ff88";
+        if (upgradeBtn) upgradeBtn.classList.add("hidden");
       } else {
-        sub.innerHTML = 'Free plan &middot; <a href="/pricing.html" style="color:#00ff88;text-decoration:none;">Upgrade</a>';
+        sub.textContent = "Free plan";
+        sub.style.color = "";
+        if (upgradeBtn) upgradeBtn.classList.remove("hidden");
       }
     }
   }
