@@ -49,39 +49,16 @@ window.DegenAuth = (function () {
   // AUTH
   // =============================================
 
-  // Detect Capacitor native app
-  const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-
   async function signIn() {
-    const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      if (isNative) {
-        // Native app: redirect is the only approach that works in WKWebView
-        // Popup opens SFSafariViewController which can't communicate back
-        await auth.signInWithRedirect(provider);
-      } else {
-        // Web: popup works normally in browsers
-        await auth.signInWithPopup(provider);
-      }
+      const provider = new firebase.auth.GoogleAuthProvider();
+      // signInWithPopup opens SFSafariViewController on iOS (Google allows this)
+      // signInWithRedirect happens inside WKWebView (Google blocks this)
+      await auth.signInWithPopup(provider);
     } catch (err) {
-      if (err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user") {
-        await auth.signInWithRedirect(provider);
-      } else {
-        console.error("Sign in error:", err);
-      }
+      console.error("Sign in error:", err.code, err.message);
     }
   }
-
-  // Handle redirect result on page load (needed for native app sign-in)
-  auth.getRedirectResult().then((result) => {
-    if (result && result.user) {
-      console.log("Sign-in redirect complete:", result.user.email);
-    }
-  }).catch((err) => {
-    if (err.code && err.code !== "auth/no-auth-event") {
-      console.error("Redirect result error:", err);
-    }
-  });
 
   async function signOut() {
     try {

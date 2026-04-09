@@ -4,13 +4,7 @@
   "webDir": "www",
   "server": {
     "url": "https://degendesk.xyz",
-    "cleartext": false,
-    "allowNavigation": [
-      "degendesk.xyz",
-      "*.firebaseapp.com",
-      "*.googleapis.com",
-      "accounts.google.com"
-    ]
+    "cleartext": false
   },
   "ios": {
     "scheme": "DegenDesk",
