@@ -836,6 +836,10 @@ html, body {
   border: 1px solid var(--border-color);
   border-radius: 10px;
   transition: all 0.25s ease;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-main);
+  color: inherit;
 }
 
 .welcome-card:hover {
@@ -843,6 +847,11 @@ html, body {
   background: linear-gradient(135deg, rgba(0, 255, 136, 0.04), rgba(20, 20, 40, 0.8));
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-card:active {
+  transform: scale(0.97);
+  border-color: rgba(0, 255, 136, 0.35);
 }
 
 .welcome-card-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }

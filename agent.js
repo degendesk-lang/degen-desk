@@ -279,7 +279,7 @@
   }
 
   const sidebarQueries = new Set();
-  document.querySelectorAll(".topic-btn, .mobile-topic-pill").forEach((btn) => {
+  document.querySelectorAll(".topic-btn, .mobile-topic-pill, .welcome-card[data-query]").forEach((btn) => {
     const q = btn.getAttribute("data-query");
     if (q) sidebarQueries.add(q.trim());
   });
@@ -565,6 +565,15 @@
   mobileTopicPills.forEach((pill) => {
     pill.addEventListener("click", () => {
       const query = pill.getAttribute("data-query");
+      userInput.value = query;
+      sendMessage(query);
+    });
+  });
+
+  // Welcome card buttons
+  document.querySelectorAll(".welcome-card[data-query]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const query = card.getAttribute("data-query");
       userInput.value = query;
       sendMessage(query);
     });
