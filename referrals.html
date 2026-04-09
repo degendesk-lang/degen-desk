@@ -403,6 +403,228 @@
       margin-bottom: 10px;
     }
 
+    /* Payout card */
+    .payout-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .payout-card h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .payout-card .desc {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .balance-display {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent-green);
+    }
+
+    .balance-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .payout-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .payout-form label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .method-select {
+      padding: 11px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239d9db8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    .method-select:focus { border-color: var(--accent-green); }
+
+    .payout-detail-input {
+      padding: 11px 14px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .payout-detail-input:focus { border-color: var(--accent-green); }
+
+    .payout-detail-input::placeholder { color: var(--text-muted); }
+
+    .payout-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent-green), #00cc6a);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 4px;
+    }
+
+    .payout-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0,255,136,0.2);
+    }
+
+    .payout-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .payout-msg {
+      font-size: 12px;
+      min-height: 18px;
+    }
+
+    .payout-msg.error { color: #ff6b6b; }
+    .payout-msg.success { color: var(--accent-green); }
+
+    .payout-minimum {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .payout-pending-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: rgba(255, 193, 7, 0.06);
+      border: 1px solid rgba(255, 193, 7, 0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      color: #ffc107;
+    }
+
+    .payout-pending-banner strong {
+      color: #ffd54f;
+    }
+
+    /* Payout history */
+    .payout-history {
+      margin-top: 18px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 18px;
+    }
+
+    .payout-history h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .payout-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(26,26,46,0.5);
+      font-size: 13px;
+    }
+
+    .payout-item:last-child { border-bottom: none; }
+
+    .payout-item-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .payout-item-method {
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: capitalize;
+    }
+
+    .payout-item-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .payout-item-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .payout-item-amount {
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+
+    .payout-status {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .payout-status.pending {
+      color: #ffc107;
+      background: rgba(255,193,7,0.1);
+    }
+
+    .payout-status.completed {
+      color: var(--accent-green);
+      background: rgba(0,255,136,0.1);
+    }
+
+    .payout-status.rejected {
+      color: #ff6b6b;
+      background: rgba(255,107,107,0.1);
+    }
+
     /* How it works */
     .how-it-works {
       margin-top: 32px;
@@ -567,6 +789,50 @@
           <div class="stat-card">
             <div class="stat-value" id="stat-alltime">$0.00</div>
             <div class="stat-label">All-Time Earnings</div>
+          </div>
+        </div>
+
+        <!-- Payout section -->
+        <div class="payout-card" id="payout-card">
+          <h2>Withdraw Earnings</h2>
+          <p class="desc">Request a payout of your available referral earnings.</p>
+
+          <div class="balance-display">
+            <span class="balance-amount" id="payout-balance">$0.00</span>
+            <span class="balance-label">Available Balance</span>
+          </div>
+
+          <!-- Pending payout banner (shown when a request is pending) -->
+          <div class="payout-pending-banner" id="payout-pending-banner" style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Payout of <strong id="pending-amount">$0.00</strong> is being processed. You'll be paid shortly.</span>
+          </div>
+
+          <!-- Payout form (shown when no pending request) -->
+          <div class="payout-form" id="payout-form">
+            <div>
+              <label>Payment Method</label>
+              <select class="method-select" id="payout-method">
+                <option value="paypal">PayPal</option>
+                <option value="solana">Solana Wallet (SOL/USDC)</option>
+                <option value="ethereum">Ethereum Wallet (ETH/USDC)</option>
+                <option value="venmo">Venmo</option>
+                <option value="cashapp">Cash App</option>
+              </select>
+            </div>
+            <div>
+              <label id="detail-label">PayPal Email</label>
+              <input type="text" class="payout-detail-input" id="payout-details" placeholder="your@email.com" />
+            </div>
+            <p class="payout-minimum">Minimum payout: $10.00</p>
+            <button class="payout-btn" id="request-payout-btn">Request Payout</button>
+            <div class="payout-msg" id="payout-msg"></div>
+          </div>
+
+          <!-- Payout history -->
+          <div class="payout-history" id="payout-history" style="display:none;">
+            <h3>Payout History</h3>
+            <div id="payout-history-list"></div>
           </div>
         </div>
 
@@ -782,6 +1048,164 @@
       div.textContent = str;
       return div.innerHTML;
     }
+
+    // =============================================
+    // PAYOUT SYSTEM
+    // =============================================
+
+    const payoutMethod = document.getElementById("payout-method");
+    const payoutDetails = document.getElementById("payout-details");
+    const detailLabel = document.getElementById("detail-label");
+    const requestPayoutBtn = document.getElementById("request-payout-btn");
+    const payoutMsg = document.getElementById("payout-msg");
+    const payoutForm = document.getElementById("payout-form");
+    const pendingBanner = document.getElementById("payout-pending-banner");
+
+    // Update placeholder based on selected payment method
+    const methodLabels = {
+      paypal: { label: "PayPal Email", placeholder: "your@email.com" },
+      solana: { label: "Solana Wallet Address", placeholder: "Enter your SOL wallet address" },
+      ethereum: { label: "Ethereum Wallet Address", placeholder: "0x..." },
+      venmo: { label: "Venmo Username", placeholder: "@your-venmo" },
+      cashapp: { label: "Cash App Tag", placeholder: "$yourcashtag" },
+    };
+
+    payoutMethod.addEventListener("change", () => {
+      const m = methodLabels[payoutMethod.value];
+      if (m) {
+        detailLabel.textContent = m.label;
+        payoutDetails.placeholder = m.placeholder;
+      }
+    });
+
+    // Load payout data
+    async function loadPayoutData() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const res = await fetch(`/api/payout?uid=${user.uid}`);
+        const data = await res.json();
+
+        // Show available balance
+        document.getElementById("payout-balance").textContent =
+          "$" + (data.availableBalance || 0).toFixed(2);
+
+        // Pre-fill saved payment method
+        if (data.preferredPaymentMethod) {
+          payoutMethod.value = data.preferredPaymentMethod;
+          payoutMethod.dispatchEvent(new Event("change"));
+        }
+        if (data.preferredPaymentDetails) {
+          payoutDetails.value = data.preferredPaymentDetails;
+        }
+
+        // Check for pending payout
+        const pendingPayout = data.payouts?.find((p) => p.status === "pending");
+        if (pendingPayout) {
+          payoutForm.style.display = "none";
+          pendingBanner.style.display = "flex";
+          document.getElementById("pending-amount").textContent =
+            "$" + pendingPayout.amount.toFixed(2);
+        } else {
+          payoutForm.style.display = "flex";
+          pendingBanner.style.display = "none";
+        }
+
+        // Disable button if balance too low
+        if (data.availableBalance < (data.minimumPayout || 10)) {
+          requestPayoutBtn.disabled = true;
+          requestPayoutBtn.textContent = "Balance below $10 minimum";
+        }
+
+        // Show payout history
+        if (data.payouts && data.payouts.length > 0) {
+          const historyDiv = document.getElementById("payout-history");
+          const listDiv = document.getElementById("payout-history-list");
+          historyDiv.style.display = "block";
+
+          let html = "";
+          for (const p of data.payouts) {
+            const date = p.createdAt
+              ? new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+              : "N/A";
+            html += `
+              <div class="payout-item">
+                <div class="payout-item-left">
+                  <span class="payout-item-method">${escapeHtml(p.paymentMethod)}</span>
+                  <span class="payout-item-date">${date}</span>
+                </div>
+                <div class="payout-item-right">
+                  <span class="payout-item-amount">$${p.amount.toFixed(2)}</span>
+                  <span class="payout-status ${p.status}">${p.status}</span>
+                </div>
+              </div>`;
+          }
+          listDiv.innerHTML = html;
+        }
+      } catch (err) {
+        console.error("Failed to load payout data:", err);
+      }
+    }
+
+    // Request payout
+    requestPayoutBtn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const method = payoutMethod.value;
+      const details = payoutDetails.value.trim();
+
+      if (!details) {
+        showPayoutMsg("Please enter your payment details.", "error");
+        return;
+      }
+
+      requestPayoutBtn.disabled = true;
+      requestPayoutBtn.textContent = "Requesting...";
+
+      try {
+        const res = await fetch("/api/payout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: user.uid,
+            paymentMethod: method,
+            paymentDetails: details,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          showPayoutMsg(`Payout of $${data.amount.toFixed(2)} requested! We'll process it shortly.`, "success");
+          // Reload payout data to show pending banner
+          await loadPayoutData();
+        } else {
+          showPayoutMsg(data.error || "Failed to request payout.", "error");
+          requestPayoutBtn.disabled = false;
+          requestPayoutBtn.textContent = "Request Payout";
+        }
+      } catch (err) {
+        console.error("Payout request error:", err);
+        showPayoutMsg("Something went wrong. Try again.", "error");
+        requestPayoutBtn.disabled = false;
+        requestPayoutBtn.textContent = "Request Payout";
+      }
+    });
+
+    function showPayoutMsg(text, type) {
+      payoutMsg.textContent = text;
+      payoutMsg.className = "payout-msg " + type;
+      setTimeout(() => { payoutMsg.textContent = ""; payoutMsg.className = "payout-msg"; }, 5000);
+    }
+
+    // Load payout data after referral data loads
+    const origLoadReferralData = loadReferralData;
+    loadReferralData = async function () {
+      await origLoadReferralData();
+      await loadPayoutData();
+    };
   </script>
 </body>
 </html>
