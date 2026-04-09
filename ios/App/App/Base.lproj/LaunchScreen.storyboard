@@ -32,7 +32,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <!-- Tagline Label -->
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Meme Coin Intelligence" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFitWidth="NO" translatesAutoresizingMaskIntoConstraints="NO" id="taglineLabel">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Meme Coin &amp; Cryptocurrency Intelligence" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFitWidth="NO" translatesAutoresizingMaskIntoConstraints="NO" id="taglineLabel">
                                 <rect key="frame" x="87.5" y="423.5" width="200" height="20"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                 <color key="textColor" red="0.61568627450980395" green="0.61568627450980395" blue="0.72156862745098038" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
