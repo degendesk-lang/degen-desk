@@ -55,14 +55,13 @@ module.exports = async function handler(req, res) {
         return res.status(409).json({ error: "That referral code is already taken. Try another one." });
       }
 
-      // Check if user already has a referral code — delete old one first
+      // Check if user already has a referral code — once set, it's permanent
       const userDoc = await db.collection("users").doc(uid).get();
       const userData = userDoc.exists ? userDoc.data() : {};
       const oldCode = userData.referralCode;
 
-      if (oldCode && oldCode !== cleanCode) {
-        // Delete old code document
-        await db.collection("referralCodes").doc(oldCode).delete();
+      if (oldCode) {
+        return res.status(409).json({ error: "Your referral code is already set and cannot be changed." });
       }
 
       // Create/update the referral code document

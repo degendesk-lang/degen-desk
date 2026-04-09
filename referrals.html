@@ -923,9 +923,12 @@
         document.getElementById("commission-rate-display").textContent =
           `${Math.round(rate * 100)}% Commission Rate`;
 
-        // Referral code input
+        // Referral code input — lock it once set
         if (data.referralCode) {
           codeInput.value = data.referralCode;
+          codeInput.disabled = true;
+          codeInput.style.opacity = "0.6";
+          saveBtn.style.display = "none";
           showShareLink(data.shareLink);
         }
 
