@@ -49,14 +49,104 @@ window.DegenAuth = (function () {
   // AUTH
   // =============================================
 
+  // Detect Capacitor native platform
+  function isNativePlatform() {
+    return (
+      typeof window.Capacitor !== "undefined" &&
+      window.Capacitor &&
+      typeof window.Capacitor.isNativePlatform === "function" &&
+      window.Capacitor.isNativePlatform()
+    );
+  }
+
   async function signIn() {
     try {
+      if (isNativePlatform()) {
+        // iOS/Android: open auth-callback page in SFSafariViewController.
+        // That page does signInWithRedirect (which Google allows in SFSafariViewController
+        // because it uses Safari's user agent, unlike the embedded WKWebView).
+        // After sign-in, the callback page sends the token back via degendesk:// URL scheme.
+        const Browser = window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
+        if (Browser) {
+          await Browser.open({
+            url: "https://degendesk.xyz/auth-callback.html",
+            presentationStyle: "popover",
+          });
+        } else {
+          console.error("Capacitor Browser plugin not available");
+        }
+        return;
+      }
+
+      // Web: standard popup flow
       const provider = new firebase.auth.GoogleAuthProvider();
-      // signInWithPopup opens SFSafariViewController on iOS (Google allows this)
-      // signInWithRedirect happens inside WKWebView (Google blocks this)
       await auth.signInWithPopup(provider);
     } catch (err) {
       console.error("Sign in error:", err.code, err.message);
+    }
+  }
+
+  // Handle deep-link callback from auth-callback.html (Capacitor native only)
+  async function handleAuthDeepLink(urlStr) {
+    try {
+      const url = new URL(urlStr);
+      // Accept both degendesk://auth?... and degendesk:///auth?...
+      const isAuthLink =
+        url.protocol === "degendesk:" &&
+        (url.hostname === "auth" || url.pathname === "/auth" || url.pathname === "//auth");
+      if (!isAuthLink) return false;
+
+      // Close the in-app browser if it's still open
+      try {
+        const Browser = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
+        if (Browser) await Browser.close();
+      } catch (_) {}
+
+      const idToken = url.searchParams.get("idToken");
+      const method = url.searchParams.get("method");
+      if (!idToken) return false;
+
+      if (method === "google") {
+        // We have the raw Google ID token — sign in directly with credential
+        const credential = firebase.auth.GoogleAuthProvider.credential(idToken);
+        await auth.signInWithCredential(credential);
+      } else if (method === "firebase") {
+        // We have a Firebase ID token — exchange it for a custom token via our API
+        const res = await fetch("https://degendesk.xyz/api/custom-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+        });
+        if (!res.ok) throw new Error("Token exchange failed");
+        const { customToken } = await res.json();
+        await auth.signInWithCustomToken(customToken);
+      }
+      return true;
+    } catch (err) {
+      console.error("Deep link sign-in error:", err);
+      return false;
+    }
+  }
+
+  // Register the deep-link listener on native platforms
+  if (isNativePlatform()) {
+    const tryRegister = () => {
+      const AppPlugin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+      if (AppPlugin && typeof AppPlugin.addListener === "function") {
+        AppPlugin.addListener("appUrlOpen", (data) => {
+          if (data && data.url) handleAuthDeepLink(data.url);
+        });
+        return true;
+      }
+      return false;
+    };
+    // The Capacitor bridge may not be ready immediately — retry briefly
+    if (!tryRegister()) {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (tryRegister() || attempts > 20) clearInterval(interval);
+      }, 150);
     }
   }
 

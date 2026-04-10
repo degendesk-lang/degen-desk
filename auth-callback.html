@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Signing in - Degen Desk</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #060610;
+      color: #f0f0f8;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      text-align: center;
+      padding: 24px;
+      max-width: 320px;
+    }
+    .logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      margin: 0 auto 20px;
+      display: block;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: #f0f0f8;
+    }
+    p {
+      font-size: 14px;
+      color: #8a8a9e;
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 255, 255, 0.08);
+      border-top-color: #00ff88;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 8px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 16px;
+      display: none;
+    }
+    .btn {
+      background: #00ff88;
+      color: #060610;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+      display: none;
+      font-family: inherit;
+    }
+    .btn:hover { opacity: 0.9; }
+    .success {
+      color: #00ff88;
+      font-size: 14px;
+      margin-top: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/favicon.png" alt="Degen Desk" class="logo" />
+    <h1 id="title">Signing you in</h1>
+    <p id="subtitle">Please wait while we connect your Google account...</p>
+    <div class="spinner" id="spinner"></div>
+    <p class="error" id="error-msg"></p>
+    <p class="success" id="success-msg">Returning to app...</p>
+    <button class="btn" id="retry-btn" onclick="doSignIn()">Try again</button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyAJ0MogernylRUNde0ni0obpSVjOgiOPms",
+      authDomain: "degen-desk-7cbe6.firebaseapp.com",
+      projectId: "degen-desk-7cbe6",
+      storageBucket: "degen-desk-7cbe6.firebasestorage.app",
+      messagingSenderId: "382072874801",
+      appId: "1:382072874801:web:7a5c9575aab35aa0263210",
+    });
+
+    const auth = firebase.auth();
+    const spinner = document.getElementById("spinner");
+    const errorMsg = document.getElementById("error-msg");
+    const successMsg = document.getElementById("success-msg");
+    const retryBtn = document.getElementById("retry-btn");
+    const title = document.getElementById("title");
+    const subtitle = document.getElementById("subtitle");
+
+    function showError(msg) {
+      spinner.style.display = "none";
+      title.textContent = "Sign in failed";
+      subtitle.textContent = "";
+      errorMsg.style.display = "block";
+      errorMsg.textContent = msg;
+      retryBtn.style.display = "inline-block";
+    }
+
+    function showSuccess() {
+      spinner.style.display = "none";
+      title.textContent = "Signed in!";
+      subtitle.textContent = "";
+      successMsg.style.display = "block";
+    }
+
+    function sendTokenToApp(idToken, method) {
+      showSuccess();
+      // Build custom URL scheme to hand off the credential to the app
+      const url = "degendesk://auth?idToken=" + encodeURIComponent(idToken) + "&method=" + method;
+
+      // Show a manual button as a fallback in case SFSafariViewController
+      // blocks the automatic URL-scheme redirect.
+      retryBtn.textContent = "Return to Degen Desk";
+      retryBtn.onclick = () => { window.location.href = url; };
+      retryBtn.style.display = "inline-block";
+
+      // Attempt automatic redirect after a brief delay
+      setTimeout(() => {
+        window.location.href = url;
+      }, 500);
+    }
+
+    function doSignIn() {
+      spinner.style.display = "block";
+      errorMsg.style.display = "none";
+      successMsg.style.display = "none";
+      retryBtn.style.display = "none";
+      title.textContent = "Signing you in";
+      subtitle.textContent = "Please wait while we connect your Google account...";
+
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope("email");
+      provider.addScope("profile");
+      auth.signInWithRedirect(provider).catch((err) => {
+        console.error("signInWithRedirect error:", err);
+        showError(err.message || "Could not start sign in");
+      });
+    }
+
+    // On page load, check if we're returning from a Google redirect
+    auth.getRedirectResult().then(async (result) => {
+      if (result && result.user) {
+        // Successfully signed in via redirect
+        try {
+          // Prefer Google's raw ID token (lets the app use signInWithCredential directly)
+          if (result.credential && result.credential.idToken) {
+            sendTokenToApp(result.credential.idToken, "google");
+            return;
+          }
+          // Fallback: use Firebase ID token (app will exchange via /api/custom-token)
+          const firebaseIdToken = await result.user.getIdToken();
+          sendTokenToApp(firebaseIdToken, "firebase");
+        } catch (err) {
+          console.error("Token extraction error:", err);
+          showError("Could not retrieve sign-in token");
+        }
+      } else {
+        // No redirect result pending — start a fresh sign-in
+        doSignIn();
+      }
+    }).catch((err) => {
+      console.error("getRedirectResult error:", err);
+      showError(err.message || "Sign in failed");
+    });
+  </script>
+</body>
+</html>

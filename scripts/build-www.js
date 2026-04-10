@@ -21,6 +21,7 @@ const filesToCopy = [
   "index.html",
   "pricing.html",
   "referrals.html",
+  "auth-callback.html",
   "styles.css",
   "auth.js",
   "agent.js",

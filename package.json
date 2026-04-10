@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/degendesk-lang/degen-desk#readme",
   "dependencies": {
+    "@capacitor/app": "^8.1.0",
     "@capacitor/browser": "^8.0.3",
     "@capacitor/cli": "^8.3.0",
     "@capacitor/core": "^8.3.0",
