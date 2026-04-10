@@ -86,22 +86,23 @@
     <div class="spinner" id="spinner"></div>
     <p class="error" id="error-msg"></p>
     <p class="success" id="success-msg">Returning to app...</p>
-    <button class="btn" id="retry-btn" onclick="doSignIn()">Try again</button>
+    <button class="btn" id="retry-btn">Try again</button>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script>
-    firebase.initializeApp({
-      apiKey: "AIzaSyAJ0MogernylRUNde0ni0obpSVjOgiOPms",
-      authDomain: "degen-desk-7cbe6.firebaseapp.com",
-      projectId: "degen-desk-7cbe6",
-      storageBucket: "degen-desk-7cbe6.firebasestorage.app",
-      messagingSenderId: "382072874801",
-      appId: "1:382072874801:web:7a5c9575aab35aa0263210",
-    });
+    // =============================================
+    // Google OAuth 2.0 Implicit Flow (OIDC)
+    // =============================================
+    // We bypass Firebase's signInWithRedirect because SFSafariViewController
+    // breaks its multi-hop sessionStorage handshake (degendesk.xyz ->
+    // firebaseapp.com -> Google -> back). Instead, we talk to Google directly
+    // with response_type=id_token and hand the raw id_token back to the app
+    // via a degendesk:// URL scheme. The app then calls signInWithCredential.
 
-    const auth = firebase.auth();
+    const CLIENT_ID = "382072874801-gja50lcmh0nklj2qle9btqf4emqs4ab4.apps.googleusercontent.com";
+    const REDIRECT_URI = "https://degendesk.xyz/auth-callback.html";
+    const AUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
+
     const spinner = document.getElementById("spinner");
     const errorMsg = document.getElementById("error-msg");
     const successMsg = document.getElementById("success-msg");
@@ -109,12 +110,20 @@
     const title = document.getElementById("title");
     const subtitle = document.getElementById("subtitle");
 
+    function randomString(len) {
+      const bytes = new Uint8Array(len);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
     function showError(msg) {
       spinner.style.display = "none";
       title.textContent = "Sign in failed";
       subtitle.textContent = "";
       errorMsg.style.display = "block";
       errorMsg.textContent = msg;
+      retryBtn.textContent = "Try again";
+      retryBtn.onclick = startGoogleSignIn;
       retryBtn.style.display = "inline-block";
     }
 
@@ -125,24 +134,20 @@
       successMsg.style.display = "block";
     }
 
-    function sendTokenToApp(idToken, method) {
+    function sendTokenToApp(idToken) {
       showSuccess();
-      // Build custom URL scheme to hand off the credential to the app
-      const url = "degendesk://auth?idToken=" + encodeURIComponent(idToken) + "&method=" + method;
+      const url = "degendesk://auth?idToken=" + encodeURIComponent(idToken) + "&method=google";
 
-      // Show a manual button as a fallback in case SFSafariViewController
-      // blocks the automatic URL-scheme redirect.
+      // Manual fallback button in case SFSafariViewController blocks the
+      // automatic URL-scheme redirect.
       retryBtn.textContent = "Return to Degen Desk";
       retryBtn.onclick = () => { window.location.href = url; };
       retryBtn.style.display = "inline-block";
 
-      // Attempt automatic redirect after a brief delay
-      setTimeout(() => {
-        window.location.href = url;
-      }, 500);
+      setTimeout(() => { window.location.href = url; }, 500);
     }
 
-    function doSignIn() {
+    function startGoogleSignIn() {
       spinner.style.display = "block";
       errorMsg.style.display = "none";
       successMsg.style.display = "none";
@@ -150,40 +155,81 @@
       title.textContent = "Signing you in";
       subtitle.textContent = "Please wait while we connect your Google account...";
 
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.addScope("email");
-      provider.addScope("profile");
-      auth.signInWithRedirect(provider).catch((err) => {
-        console.error("signInWithRedirect error:", err);
-        showError(err.message || "Could not start sign in");
+      const state = randomString(16);
+      const nonce = randomString(16);
+      try {
+        sessionStorage.setItem("oauth_state", state);
+      } catch (_) {}
+
+      const params = new URLSearchParams({
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI,
+        response_type: "id_token",
+        scope: "openid email profile",
+        nonce: nonce,
+        state: state,
+        prompt: "select_account",
       });
+
+      window.location.href = AUTH_ENDPOINT + "?" + params.toString();
     }
 
-    // On page load, check if we're returning from a Google redirect
-    auth.getRedirectResult().then(async (result) => {
-      if (result && result.user) {
-        // Successfully signed in via redirect
-        try {
-          // Prefer Google's raw ID token (lets the app use signInWithCredential directly)
-          if (result.credential && result.credential.idToken) {
-            sendTokenToApp(result.credential.idToken, "google");
-            return;
-          }
-          // Fallback: use Firebase ID token (app will exchange via /api/custom-token)
-          const firebaseIdToken = await result.user.getIdToken();
-          sendTokenToApp(firebaseIdToken, "firebase");
-        } catch (err) {
-          console.error("Token extraction error:", err);
-          showError("Could not retrieve sign-in token");
+    function handleCallback() {
+      // Google returns id_token in the URL fragment on success
+      const hash = window.location.hash.startsWith("#")
+        ? window.location.hash.substring(1)
+        : "";
+      const search = window.location.search.startsWith("?")
+        ? window.location.search.substring(1)
+        : "";
+
+      // Errors come back in the query string
+      if (search) {
+        const sp = new URLSearchParams(search);
+        const err = sp.get("error");
+        if (err) {
+          showError("Google: " + (sp.get("error_description") || err));
+          return;
         }
-      } else {
-        // No redirect result pending — start a fresh sign-in
-        doSignIn();
       }
-    }).catch((err) => {
-      console.error("getRedirectResult error:", err);
-      showError(err.message || "Sign in failed");
-    });
+
+      if (!hash) {
+        // First visit — kick off the OAuth flow
+        startGoogleSignIn();
+        return;
+      }
+
+      const frag = new URLSearchParams(hash);
+      const idToken = frag.get("id_token");
+      const returnedState = frag.get("state");
+      const fragErr = frag.get("error");
+
+      if (fragErr) {
+        showError("Google: " + (frag.get("error_description") || fragErr));
+        return;
+      }
+
+      if (!idToken) {
+        startGoogleSignIn();
+        return;
+      }
+
+      // Optional CSRF check — don't hard-fail if sessionStorage got cleared,
+      // because Firebase will still verify the token's signature with Google
+      // when the app calls signInWithCredential.
+      try {
+        const expected = sessionStorage.getItem("oauth_state");
+        if (expected && returnedState && expected !== returnedState) {
+          showError("Security check failed. Please try again.");
+          return;
+        }
+      } catch (_) {}
+
+      sendTokenToApp(idToken);
+    }
+
+    retryBtn.onclick = startGoogleSignIn;
+    handleCallback();
   </script>
 </body>
 </html>
