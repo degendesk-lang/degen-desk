@@ -63,13 +63,15 @@ window.DegenAuth = (function () {
     try {
       if (isNativePlatform()) {
         // iOS/Android: open auth-callback page in SFSafariViewController.
-        // That page does signInWithRedirect (which Google allows in SFSafariViewController
-        // because it uses Safari's user agent, unlike the embedded WKWebView).
-        // After sign-in, the callback page sends the token back via degendesk:// URL scheme.
+        // The callback page talks to Google OAuth directly (implicit flow)
+        // and hands the id_token back to the app via a degendesk:// URL scheme.
+        // Cache-busting query param forces SFSafariViewController to fetch
+        // the latest HTML every time (it caches aggressively).
         const Browser = window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
         if (Browser) {
+          const cb = "https://degendesk.xyz/auth-callback.html?t=" + Date.now();
           await Browser.open({
-            url: "https://degendesk.xyz/auth-callback.html",
+            url: cb,
             presentationStyle: "popover",
           });
         } else {
