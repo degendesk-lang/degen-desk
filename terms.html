@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#06060b" />
   <title>Terms of Service - Degen Desk</title>
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -30,6 +30,46 @@
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       line-height: 1.6;
+      position: relative;
+    }
+
+    /* Ambient atmosphere */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1000px 600px at 0% 0%, rgba(0, 255, 136, 0.05), transparent 60%),
+        radial-gradient(900px 600px at 100% 10%, rgba(0, 212, 255, 0.05), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .nav { z-index: 20; }
+    .container { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.22);
+      color: var(--accent-green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
     }
 
     .nav {
@@ -85,12 +125,15 @@
     }
 
     h1 {
-      font-size: 32px;
-      font-weight: 800;
-      margin-bottom: 6px;
-      background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 45%, var(--accent-cyan) 95%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .updated {
@@ -142,7 +185,7 @@
     @media (max-width: 640px) {
       .nav { padding: 14px 20px; }
       .container { padding: 32px 20px 80px; }
-      h1 { font-size: 26px; }
+      h1 { font-size: 30px; }
       h2 { font-size: 18px; }
     }
   </style>
@@ -150,13 +193,14 @@
 <body>
   <nav class="nav">
     <a href="/" class="nav-brand">
-      <img src="/favicon.png" alt="Degen Desk" />
+      <img src="favicon.png" alt="Degen Desk" />
       <span>Degen Desk</span>
     </a>
     <a href="/" class="nav-back">&larr; Back to app</a>
   </nav>
 
   <main class="container">
+    <div class="eyebrow"><span class="dot"></span>Legal</div>
     <h1>Terms of Service</h1>
     <p class="updated">Last updated: April 9, 2026</p>
 

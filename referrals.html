@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#06060b" />
   <title>Degen Desk - Referrals</title>
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -32,7 +32,24 @@
       color: var(--text-primary);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      position: relative;
     }
+
+    /* Ambient atmosphere — matches pricing.html */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1100px 700px at 12% -10%, rgba(0, 255, 136, 0.08), transparent 60%),
+        radial-gradient(900px 600px at 110% 10%, rgba(0, 212, 255, 0.07), transparent 60%),
+        radial-gradient(700px 500px at 50% 120%, rgba(153, 69, 255, 0.05), transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container { position: relative; z-index: 1; }
+    .nav { z-index: 20; }
 
     /* Nav */
     .nav {
@@ -88,18 +105,56 @@
       padding: 40px 24px 80px;
     }
 
-    .page-title {
-      font-size: 28px;
-      font-weight: 800;
+    /* Hero — matches pricing.html */
+    .hero {
       text-align: center;
-      margin-bottom: 6px;
+      padding: 16px 0 40px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.22);
+      color: var(--accent-green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+    }
+
+    .page-title {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 12px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-green) 45%, var(--accent-cyan) 95%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .page-subtitle {
       text-align: center;
       color: var(--text-secondary);
-      font-size: 14px;
-      margin-bottom: 32px;
+      font-size: 15px;
+      max-width: 520px;
+      margin: 0 auto 32px;
+      line-height: 1.55;
     }
 
     .page-subtitle span {
@@ -429,21 +484,43 @@
     }
 
     .stat-card {
-      background: var(--bg-card);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 60%),
+        var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 22px 18px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(260px 120px at 50% -20%, rgba(0, 255, 136, 0.09), transparent 65%);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(0, 255, 136, 0.25);
+      transform: translateY(-1px);
     }
 
     .stat-value {
-      font-size: 24px;
+      position: relative;
+      font-size: 26px;
       font-weight: 800;
       color: var(--accent-green);
       margin-bottom: 4px;
+      letter-spacing: -0.01em;
     }
 
     .stat-label {
+      position: relative;
       font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -854,7 +931,9 @@
     @media (max-width: 600px) {
       .nav { padding: 14px 16px; }
       .container { padding: 24px 16px 60px; }
-      .page-title { font-size: 22px; }
+      .hero { padding: 8px 0 28px; }
+      .page-title { font-size: 30px; }
+      .page-subtitle { font-size: 14px; }
       .stats-row { grid-template-columns: 1fr; }
       .code-input-row { flex-direction: column; }
       .ref-table th, .ref-table td { padding: 10px 14px; font-size: 12px; }
@@ -866,15 +945,18 @@
   <!-- Nav -->
   <nav class="nav">
     <a href="/" class="nav-brand">
-      <img src="/favicon.png" alt="Degen Desk" />
+      <img src="favicon.png" alt="Degen Desk" />
       <span>Degen Desk</span>
     </a>
     <a href="/" class="nav-back">Back to Chat</a>
   </nav>
 
   <div class="container">
-    <h1 class="page-title">Referral Program</h1>
-    <p class="page-subtitle">Earn <span>15% commission</span> on every subscription from your referrals</p>
+    <div class="hero">
+      <div class="eyebrow"><span class="dot"></span>Referral Program</div>
+      <h1 class="page-title">Earn while you share</h1>
+      <p class="page-subtitle">Get <span>15% commission</span> on every subscription from your referrals &mdash; for as long as they stay subscribed.</p>
+    </div>
 
     <!-- Not signed in -->
     <div id="sign-in-section" class="sign-in-prompt" style="display:none;">
