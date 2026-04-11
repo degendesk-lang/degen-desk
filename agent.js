@@ -488,6 +488,7 @@
     if (!query || isProcessing) return;
 
     isProcessing = true;
+    if (typeof updateSendBtnState === "function") updateSendBtnState();
     hideMobileTopics();
     hideWelcome();
 
@@ -531,6 +532,7 @@
           await DegenAuth.saveMessage("assistant", localResponse);
         }
         isProcessing = false;
+        if (typeof updateSendBtnState === "function") updateSendBtnState();
       }, 300 + Math.random() * 400);
       return;
     }
@@ -561,6 +563,7 @@
     }
 
     isProcessing = false;
+    if (typeof updateSendBtnState === "function") updateSendBtnState();
   }
 
   // =============================================
@@ -576,10 +579,19 @@
     }
   });
 
+  function updateSendBtnState() {
+    const hasText = userInput.value.trim().length > 0;
+    sendBtn.disabled = !hasText || isProcessing;
+  }
+
   userInput.addEventListener("input", () => {
     userInput.style.height = "auto";
     userInput.style.height = Math.min(userInput.scrollHeight, 120) + "px";
+    updateSendBtnState();
   });
+
+  // Initial state — nothing typed yet
+  updateSendBtnState();
 
   sidebarToggle.addEventListener("click", (e) => {
     e.stopPropagation();
