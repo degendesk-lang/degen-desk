@@ -54,7 +54,15 @@
         userProfile.style.display = "flex";
         userAvatar.src = user.photoURL || "";
         userName.textContent = user.displayName || "User";
-        chatListEmpty.innerHTML = "<p>No conversations yet</p>";
+        chatListEmpty.innerHTML = `
+          <div class="empty-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <p class="empty-title">No chats yet</p>
+          <p class="empty-hint">Start a new conversation to see it here.</p>
+        `;
         // Load subscription tier
         const tier = await DegenAuth.loadUserTier();
         updateTierUI(tier);
@@ -64,7 +72,15 @@
         userProfile.style.display = "none";
         userAvatar.src = "";
         userName.textContent = "";
-        chatListEmpty.innerHTML = "<p>Sign in to save your chats</p>";
+        chatListEmpty.innerHTML = `
+          <div class="empty-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <p class="empty-title">Sign in to save your chats</p>
+          <p class="empty-hint">Your conversations will sync across devices.</p>
+        `;
         chatListEmpty.style.display = "block";
         // Clear any rendered conversation items
         const items = chatList.querySelectorAll(".chat-list-item");
@@ -181,10 +197,43 @@
             </svg>
           </div>
           <div class="message-content">
-            <div class="message-bubble">
-              <h2>Welcome to Degen Desk</h2>
-              <p>I'm an expert-level meme coin &amp; cryptocurrency intelligence agent built with the knowledge of experienced <strong>Solana meme coin traders</strong>. I also cover Ethereum, BNB Chain, Base, and the broader crypto ecosystem.</p>
-              <p>Ask me anything — trading platforms, MEV &amp; execution, smart money wallets, scam detection, chart reading, and more.</p>
+            <div class="message-bubble welcome-bubble">
+              <div class="welcome-hero">
+                <h2>Welcome to Degen Desk</h2>
+                <p class="welcome-tagline">Expert-level intelligence for Solana meme coins and beyond.</p>
+              </div>
+              <p class="welcome-intro">Ask me anything about trading platforms, MEV, scam detection, chart reading, or on-chain research. I cover <strong>Solana</strong>, Ethereum, BNB Chain, and Base.</p>
+              <div class="welcome-suggestions-label">Try asking</div>
+              <div class="welcome-grid">
+                <button class="welcome-card" data-query="What are meme coins and how do they work?">
+                  <span class="welcome-card-icon">&#128640;</span>
+                  <span class="welcome-card-text">
+                    <strong>Meme coin basics</strong>
+                    <span>What they are and how they work</span>
+                  </span>
+                </button>
+                <button class="welcome-card" data-query="How do I detect rug pulls, scams, and bundled launches?">
+                  <span class="welcome-card-icon">&#128721;</span>
+                  <span class="welcome-card-text">
+                    <strong>Spot a rug pull</strong>
+                    <span>Red flags before you ape in</span>
+                  </span>
+                </button>
+                <button class="welcome-card" data-query="How do I read meme coin charts and identify setups?">
+                  <span class="welcome-card-icon">&#128200;</span>
+                  <span class="welcome-card-text">
+                    <strong>Read a chart</strong>
+                    <span>Setups, levels, and signals</span>
+                  </span>
+                </button>
+                <button class="welcome-card" data-query="What are the best entry and exit strategies for meme coins?">
+                  <span class="welcome-card-icon">&#128176;</span>
+                  <span class="welcome-card-text">
+                    <strong>Entry &amp; exit</strong>
+                    <span>When to buy, when to take profit</span>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -562,6 +611,16 @@
       userInput.value = query;
       sendMessage(query);
     });
+  });
+
+  // Welcome-screen suggestion cards — delegated so re-rendered welcomes still work
+  messagesContainer.addEventListener("click", (e) => {
+    const card = e.target.closest(".welcome-card[data-query]");
+    if (!card) return;
+    const query = card.getAttribute("data-query");
+    if (!query) return;
+    userInput.value = query;
+    sendMessage(query);
   });
 
 
