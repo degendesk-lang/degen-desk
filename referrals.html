@@ -229,6 +229,157 @@
     .setup-msg.error { color: #ff6b6b; }
     .setup-msg.success { color: var(--accent-green); }
 
+    /* ===== "Got a referral code?" apply card ===== */
+    .apply-card {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.04), rgba(0, 212, 255, 0.04));
+      border: 1px solid rgba(0, 255, 136, 0.18);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .apply-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+      opacity: 0.6;
+    }
+
+    .apply-card h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .apply-card h2 svg {
+      color: var(--accent-green);
+      flex-shrink: 0;
+    }
+
+    .apply-card .desc {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .apply-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .apply-row input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .apply-row input:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.08);
+    }
+
+    .apply-row input::placeholder {
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .apply-row input:disabled {
+      opacity: 0.5;
+    }
+
+    .apply-btn {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
+      border: none;
+      border-radius: 10px;
+      color: #001218;
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .apply-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.25);
+    }
+
+    .apply-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .apply-msg {
+      font-size: 12px;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+
+    .apply-msg.error { color: #ff6b6b; }
+    .apply-msg.success { color: var(--accent-green); }
+
+    /* Applied state — show which code is in effect */
+    .applied-state {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(0, 255, 136, 0.06);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .applied-state .applied-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 255, 136, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-green);
+      flex-shrink: 0;
+    }
+
+    .applied-state .applied-text {
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    .applied-state .applied-code {
+      color: var(--accent-green);
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+    }
+
     /* Share link */
     .share-row {
       display: flex;
@@ -759,6 +910,38 @@
           </div>
         </div>
 
+        <!-- Apply a referral code (for people who were referred but didn't click a link) -->
+        <div class="apply-card" id="apply-card">
+          <h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Got a referral code?
+          </h2>
+          <p class="desc">A friend send you to Degen Desk? Enter their code here so they get credit when you upgrade to Pro. No link clicking needed.</p>
+
+          <!-- Input state (default) -->
+          <div id="apply-input-wrap">
+            <div class="apply-row">
+              <input type="text" id="apply-input" placeholder="e.g. DEGEN123" maxlength="20" autocomplete="off" autocapitalize="characters" />
+              <button class="apply-btn" id="apply-btn">Apply Code</button>
+            </div>
+            <div class="apply-msg" id="apply-msg"></div>
+          </div>
+
+          <!-- Applied state (shown if user already has a code) -->
+          <div id="apply-applied-wrap" class="applied-state" style="display:none;">
+            <div class="applied-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="applied-text">
+              You were referred by <span class="applied-code" id="applied-code-display"></span>. They'll earn a commission when you upgrade.
+            </div>
+          </div>
+        </div>
+
         <!-- Setup card -->
         <div class="setup-card">
           <h2>Your Referral Code</h2>
@@ -893,6 +1076,15 @@
     const shareLinkText = document.getElementById("share-link-text");
     const copyBtn = document.getElementById("copy-link-btn");
 
+    // Apply-a-code (manual referral entry) elements
+    const applyCard = document.getElementById("apply-card");
+    const applyInputWrap = document.getElementById("apply-input-wrap");
+    const applyAppliedWrap = document.getElementById("apply-applied-wrap");
+    const applyInput = document.getElementById("apply-input");
+    const applyBtn = document.getElementById("apply-btn");
+    const applyMsg = document.getElementById("apply-msg");
+    const appliedCodeDisplay = document.getElementById("applied-code-display");
+
     // Sign in button
     document.getElementById("ref-sign-in").addEventListener("click", () => auth.signIn());
 
@@ -931,6 +1123,9 @@
           saveBtn.style.display = "none";
           showShareLink(data.shareLink);
         }
+
+        // Apply-a-code card state
+        updateApplyCardState(data);
 
         // Stats
         document.getElementById("stat-referrals").textContent = data.stats?.totalReferrals || 0;
@@ -1051,6 +1246,117 @@
       div.textContent = str;
       return div.innerHTML;
     }
+
+    // =============================================
+    // APPLY A REFERRAL CODE (manual entry)
+    // =============================================
+
+    // Decide which state the apply card should be in based on user data.
+    function updateApplyCardState(data) {
+      if (!applyCard) return;
+
+      // If user is already Pro, it's too late to apply a code → hide entirely.
+      if (data.tier === "pro") {
+        applyCard.style.display = "none";
+        return;
+      }
+
+      // If user already has a code applied, show the "applied" state.
+      if (data.referredByCode) {
+        applyInputWrap.style.display = "none";
+        applyAppliedWrap.style.display = "flex";
+        appliedCodeDisplay.textContent = data.referredByCode;
+        applyCard.style.display = "block";
+        return;
+      }
+
+      // Default: show the input. Still visible even if they have their own code
+      // created — the backend blocks self-referral so it's safe to attempt.
+      applyInputWrap.style.display = "block";
+      applyAppliedWrap.style.display = "none";
+      applyCard.style.display = "block";
+    }
+
+    // Show a transient message in the apply card
+    function showApplyMsg(text, type) {
+      applyMsg.textContent = text;
+      applyMsg.className = "apply-msg " + type;
+      if (type === "success") {
+        setTimeout(() => {
+          applyMsg.textContent = "";
+          applyMsg.className = "apply-msg";
+        }, 4000);
+      }
+    }
+
+    // Force uppercase as the user types
+    applyInput.addEventListener("input", (e) => {
+      const pos = e.target.selectionStart;
+      e.target.value = e.target.value.toUpperCase();
+      e.target.setSelectionRange(pos, pos);
+    });
+
+    // Submit on Enter
+    applyInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        applyBtn.click();
+      }
+    });
+
+    // Apply button click
+    applyBtn.addEventListener("click", async () => {
+      const code = applyInput.value.trim().toUpperCase();
+
+      if (!code) {
+        showApplyMsg("Enter a code first.", "error");
+        return;
+      }
+
+      if (!/^[A-Z0-9_-]{3,20}$/.test(code)) {
+        showApplyMsg("Codes are 3-20 characters, letters, numbers, or dashes.", "error");
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        showApplyMsg("Please sign in first.", "error");
+        return;
+      }
+
+      applyBtn.disabled = true;
+      applyInput.disabled = true;
+      applyBtn.textContent = "Applying...";
+      showApplyMsg("", "");
+
+      try {
+        const res = await fetch("/api/referral?action=apply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid: user.uid, code, action: "apply" }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          // Swap to the applied state immediately.
+          applyInputWrap.style.display = "none";
+          applyAppliedWrap.style.display = "flex";
+          appliedCodeDisplay.textContent = data.code;
+        } else {
+          showApplyMsg(data.error || "Couldn't apply that code.", "error");
+          applyBtn.disabled = false;
+          applyInput.disabled = false;
+          applyBtn.textContent = "Apply Code";
+        }
+      } catch (err) {
+        console.error("Apply code error:", err);
+        showApplyMsg("Something went wrong. Try again.", "error");
+        applyBtn.disabled = false;
+        applyInput.disabled = false;
+        applyBtn.textContent = "Apply Code";
+      }
+    });
 
     // =============================================
     // PAYOUT SYSTEM

@@ -394,7 +394,11 @@
     <span class="toggle-label active" data-plan="monthly">Monthly</span>
     <div class="toggle-switch" id="billing-toggle"></div>
     <span class="toggle-label" data-plan="yearly">Yearly</span>
-    <span class="save-badge">Save 33%</span>
+    <span class="save-badge" id="save-badge">Save 17%</span>
+  </div>
+
+  <div id="trial-banner" style="display:none; max-width: 500px; margin: 0 auto 24px; padding: 12px 20px; background: rgba(0, 255, 136, 0.08); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 10px; text-align: center; font-size: 13px; color: var(--accent-green); font-weight: 600;">
+    &#9889; Start with a <strong>3-day free trial</strong> on the yearly plan
   </div>
 
   <div class="pricing-container">
@@ -441,12 +445,18 @@
   </div>
 
   <div class="pricing-footer">
-    <p>Cancel anytime. Secure payment powered by Stripe.</p>
+    <p id="pricing-footer-text">Cancel anytime. Secure payment powered by Stripe.</p>
+    <p class="legal-links" style="margin-top:10px; font-size:12px; color:#6b6b86;">
+      <a href="/terms.html" style="color:#9d9db8; text-decoration:none;">Terms of Service</a>
+      &nbsp;&middot;&nbsp;
+      <a href="/privacy.html" style="color:#9d9db8; text-decoration:none;">Privacy Policy</a>
+    </p>
   </div>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="iap.js?v=1"></script>
 
   <script>
     // Firebase init (same config)
@@ -461,13 +471,40 @@
 
     const auth = firebase.auth();
 
-    // Pricing data
-    const plans = {
+    // Detect Capacitor native iOS — show Apple IAP pricing + flow
+    const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
+    // On iOS, initialize RevenueCat and bind it to the Firebase uid as soon
+    // as auth state is known. This must happen BEFORE the user taps purchase
+    // so that App Store receipts are associated with the correct user.
+    if (isNative && window.DegenDeskIAP) {
+      auth.onAuthStateChanged(async (user) => {
+        try {
+          if (user && user.uid) {
+            await window.DegenDeskIAP.init({ firebaseUid: user.uid });
+            await window.DegenDeskIAP.identify(user.uid);
+          } else {
+            await window.DegenDeskIAP.init({});
+          }
+        } catch (err) {
+          console.warn("[IAP] pricing init error:", err);
+        }
+      });
+    }
+
+    // Platform-aware pricing
+    //  - Web (Stripe):   $14.99/mo or $149.99/yr (~17% off)
+    //  - iOS  (Apple):   $18.99/mo or $189.99/yr (~17% off, includes 3-day free trial on yearly)
+    const WEB_PLANS = {
       monthly: { price: "$14.99", period: "/month", billed: "&nbsp;", plan: "monthly" },
-      quarterly: { price: "$13.33", period: "/month", billed: "Billed $39.99 every 3 months", plan: "quarterly" },
-      yearly: { price: "$10.00", period: "/month", billed: "Billed $119.99/year", plan: "yearly" },
+      yearly:  { price: "$12.50", period: "/month", billed: "Billed $149.99/year", plan: "yearly" },
+    };
+    const IOS_PLANS = {
+      monthly: { price: "$18.99", period: "/month", billed: "&nbsp;", plan: "monthly" },
+      yearly:  { price: "$15.83", period: "/month", billed: "Billed $189.99/year &bull; 3-day free trial", plan: "yearly" },
     };
 
+    const plans = isNative ? IOS_PLANS : WEB_PLANS;
     let currentPlan = "monthly";
 
     // Billing toggle
@@ -476,13 +513,6 @@
     const proPrice = document.getElementById("pro-price");
     const proPeriod = document.getElementById("pro-period");
     const proBilled = document.getElementById("pro-billed");
-
-    function cyclePlan() {
-      const order = ["monthly", "quarterly", "yearly"];
-      const idx = order.indexOf(currentPlan);
-      currentPlan = order[(idx + 1) % order.length];
-      updatePricing();
-    }
 
     // Click labels to select plan directly
     labels.forEach((label) => {
@@ -510,14 +540,34 @@
       labels.forEach((l) => {
         l.classList.toggle("active", l.dataset.plan === currentPlan);
       });
+
+      // Show 3-day free trial banner only on iOS yearly plan
+      const trialBanner = document.getElementById("trial-banner");
+      if (trialBanner) {
+        trialBanner.style.display = (isNative && currentPlan === "yearly") ? "block" : "none";
+      }
+
+      // Update button label for iOS yearly (free trial) vs other states
+      const subBtn = document.getElementById("subscribe-btn");
+      if (subBtn) {
+        if (isNative && currentPlan === "yearly") {
+          subBtn.textContent = "Start 3-day free trial";
+        } else {
+          subBtn.textContent = "Upgrade to Pro";
+        }
+      }
     }
 
-    // Subscribe button
+    // Subscribe button — dual-path (Stripe on web, RevenueCat/Apple IAP on iOS)
     document.getElementById("subscribe-btn").addEventListener("click", async () => {
-      const user = auth.currentUser;
+      const btn = document.getElementById("subscribe-btn");
 
-      if (!user) {
-        // Sign in first
+      // Require sign-in on both platforms first
+      if (!auth.currentUser) {
+        if (isNative) {
+          alert("Please sign in with Google first from the main screen, then try upgrading.");
+          return;
+        }
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
           await auth.signInWithPopup(provider);
@@ -528,7 +578,37 @@
       }
 
       const currentUser = auth.currentUser;
-      const btn = document.getElementById("subscribe-btn");
+
+      if (isNative) {
+        // ===== Apple IAP via RevenueCat =====
+        const originalLabel = btn.textContent;
+        btn.textContent = "Connecting to App Store...";
+        btn.disabled = true;
+        try {
+          if (!window.DegenDeskIAP || typeof window.DegenDeskIAP.purchase !== "function") {
+            throw new Error("In-app purchases are not available on this device.");
+          }
+          await window.DegenDeskIAP.purchase(currentPlan);
+          // On success, RevenueCat webhook will flip Pro flag in Firestore.
+          // Reflect instantly in UI:
+          const banner = document.getElementById("success-banner");
+          banner.className = "status-banner success";
+          banner.textContent = "You're now a Pro member! Head back to chat to enjoy unlimited access.";
+        } catch (err) {
+          console.error("IAP error:", err);
+          if (err && err.userCancelled) {
+            // silent cancel
+          } else {
+            alert(err && err.message ? err.message : "Purchase failed. Please try again.");
+          }
+        } finally {
+          btn.textContent = originalLabel;
+          btn.disabled = false;
+        }
+        return;
+      }
+
+      // ===== Stripe (web) =====
       btn.textContent = "Redirecting to checkout...";
       btn.disabled = true;
 
@@ -560,6 +640,49 @@
         alert("Failed to start checkout. Please try again.");
       }
     });
+
+    // Restore purchases button (required by Apple) — only visible on iOS
+    if (isNative) {
+      const restore = document.createElement("button");
+      restore.className = "card-btn secondary";
+      restore.style.marginTop = "12px";
+      restore.textContent = "Restore purchases";
+      restore.addEventListener("click", async () => {
+        restore.disabled = true;
+        restore.textContent = "Restoring...";
+        try {
+          if (!window.DegenDeskIAP || typeof window.DegenDeskIAP.restore !== "function") {
+            throw new Error("Restore not available.");
+          }
+          const active = await window.DegenDeskIAP.restore();
+          if (active) {
+            const banner = document.getElementById("success-banner");
+            banner.className = "status-banner success";
+            banner.textContent = "Pro subscription restored! Enjoy unlimited access.";
+          } else {
+            alert("No active subscriptions found on this Apple ID.");
+          }
+        } catch (err) {
+          alert(err && err.message ? err.message : "Could not restore purchases.");
+        } finally {
+          restore.disabled = false;
+          restore.textContent = "Restore purchases";
+        }
+      });
+      const proCard = document.querySelector(".pricing-card.featured");
+      if (proCard) proCard.appendChild(restore);
+    }
+
+    // Swap footer text for iOS
+    if (isNative) {
+      const footerText = document.getElementById("pricing-footer-text");
+      if (footerText) {
+        footerText.textContent = "Cancel anytime in your Apple ID subscriptions settings.";
+      }
+    }
+
+    // Initial render
+    updatePricing();
 
     // Show success/cancel banners
     const params = new URLSearchParams(window.location.search);

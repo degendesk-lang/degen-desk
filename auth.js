@@ -165,9 +165,37 @@ window.DegenAuth = (function () {
     authChangeCallbacks.push(callback);
   }
 
-  auth.onAuthStateChanged((user) => {
+  // Initialize RevenueCat once on native platforms so offerings are warm by
+  // the time the user visits pricing.html.
+  if (isNativePlatform()) {
+    try {
+      if (window.DegenDeskIAP && typeof window.DegenDeskIAP.init === "function") {
+        window.DegenDeskIAP.init({}).catch((err) => {
+          console.warn("[IAP] init error:", err);
+        });
+      }
+    } catch (_) {}
+  }
+
+  auth.onAuthStateChanged(async (user) => {
     currentUser = user;
     authChangeCallbacks.forEach((cb) => cb(user));
+
+    // Sync RevenueCat with the signed-in Firebase user (native only).
+    // This associates purchases with the correct Firebase uid so entitlements
+    // follow the user across devices.
+    try {
+      const IAP = window.DegenDeskIAP;
+      if (IAP && typeof IAP.isNative === "function" && IAP.isNative()) {
+        if (user && user.uid) {
+          await IAP.identify(user.uid);
+        } else {
+          await IAP.logOut();
+        }
+      }
+    } catch (err) {
+      console.warn("[IAP] auth sync error:", err);
+    }
   });
 
   // =============================================
@@ -313,6 +341,23 @@ window.DegenAuth = (function () {
       console.error("Failed to load tier:", err);
       userTier = "free";
     }
+
+    // On iOS, also check the local RevenueCat entitlement. This covers the
+    // short gap between a successful purchase and the RC webhook writing to
+    // Firestore, and lets the app work offline after an initial sync.
+    try {
+      const IAP = window.DegenDeskIAP;
+      if (userTier !== "pro" && IAP && typeof IAP.isNative === "function" && IAP.isNative()) {
+        // Refresh the cached entitlement from StoreKit via RevenueCat
+        if (typeof IAP.getEntitlement === "function") {
+          await IAP.getEntitlement();
+        }
+        if (typeof IAP.isPro === "function" && IAP.isPro()) {
+          userTier = "pro";
+        }
+      }
+    } catch (_) {}
+
     return userTier;
   }
 

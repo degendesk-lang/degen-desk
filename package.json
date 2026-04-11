@@ -30,6 +30,7 @@
     "@capacitor/keyboard": "^8.0.2",
     "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",
+    "@revenuecat/purchases-capacitor": "^12.3.2",
     "firebase-admin": "^13.7.0",
     "stripe": "^22.0.0"
   }

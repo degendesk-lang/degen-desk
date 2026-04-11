@@ -90,6 +90,79 @@ module.exports = async function handler(req, res) {
     }
 
     // =========================================
+    // POST (action=apply) — Apply someone ELSE's referral code to yourself.
+    // This is the manual-entry path used on the referrals page for people who
+    // installed the app directly (without clicking a ?ref= link) and want to
+    // give credit to the friend who sent them.
+    //
+    // Rules:
+    //   - You must be signed in (uid required)
+    //   - The code must exist
+    //   - The code cannot be your own (no self-referral)
+    //   - You cannot apply a code if you already have one saved
+    //   - You cannot apply a code if you are already a Pro subscriber (too late)
+    // =========================================
+    if (req.method === "POST" && (req.body?.action === "apply" || req.query?.action === "apply")) {
+      const { uid, code } = req.body || {};
+
+      if (!uid || !code) {
+        return res.status(400).json({ error: "uid and code are required" });
+      }
+
+      const cleanCode = String(code).trim().toUpperCase();
+      if (!/^[A-Z0-9_-]{3,20}$/.test(cleanCode)) {
+        return res.status(400).json({ error: "That doesn't look like a valid referral code." });
+      }
+
+      // Look up the code
+      const codeSnap = await db.collection("referralCodes").doc(cleanCode).get();
+      if (!codeSnap.exists) {
+        return res.status(404).json({ error: "That referral code doesn't exist. Double-check the spelling." });
+      }
+      const codeData = codeSnap.data();
+
+      // Look up the user applying the code
+      const userRef = db.collection("users").doc(uid);
+      const userSnap = await userRef.get();
+      const userData = userSnap.exists ? userSnap.data() : {};
+
+      // Rule: can't refer yourself
+      if (codeData.userId === uid) {
+        return res.status(400).json({ error: "You can't use your own referral code." });
+      }
+
+      // Rule: can't change a code once it's set
+      if (userData.referredByCode) {
+        return res.status(409).json({
+          error: "You already have a referral code applied to your account.",
+        });
+      }
+
+      // Rule: can't apply retroactively if already Pro
+      if (userData.tier === "pro" && userData.subscriptionStatus === "active") {
+        return res.status(409).json({
+          error: "You're already on Pro. Referral codes can only be applied before upgrading.",
+        });
+      }
+
+      // Save it on the user's doc. The checkout flows (Stripe + RevenueCat)
+      // will pick it up from here when the user actually upgrades.
+      await userRef.set(
+        {
+          referredByCode: cleanCode,
+          referredByCodeAppliedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      return res.status(200).json({
+        success: true,
+        code: cleanCode,
+        message: "Referral code applied! Your friend will earn commission when you upgrade to Pro.",
+      });
+    }
+
+    // =========================================
     // PUT — Admin: set custom commission rate for a user (KOL deals)
     // =========================================
     if (req.method === "PUT") {
@@ -206,6 +279,8 @@ module.exports = async function handler(req, res) {
         referralCode,
         commissionRate,
         shareLink: referralCode ? `https://degendesk.xyz/?ref=${referralCode}` : null,
+        referredByCode: userData.referredByCode || null,
+        tier: userData.tier || "free",
         stats: {
           totalReferrals,
           totalEarnedAllTime: parseFloat(totalEarnedAllTime.toFixed(2)),
