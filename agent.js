@@ -81,7 +81,7 @@
           <p class="empty-title">Sign in to save your chats</p>
           <p class="empty-hint">Your conversations will sync across devices.</p>
         `;
-        chatListEmpty.style.display = "block";
+        chatListEmpty.style.display = "";
         // Clear any rendered conversation items
         const items = chatList.querySelectorAll(".chat-list-item");
         items.forEach((el) => el.remove());
@@ -108,7 +108,7 @@
     items.forEach((el) => el.remove());
 
     if (conversations.length === 0) {
-      chatListEmpty.style.display = "block";
+      chatListEmpty.style.display = "";
       return;
     }
 
