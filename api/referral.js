@@ -32,68 +32,14 @@ module.exports = async function handler(req, res) {
 
   try {
     // =========================================
-    // POST — Create a new referral code
-    // =========================================
-    if (req.method === "POST") {
-      const { uid, code } = req.body || {};
-
-      if (!uid || !code) {
-        return res.status(400).json({ error: "uid and code are required" });
-      }
-
-      // Validate code format: 3-20 chars, alphanumeric + hyphens/underscores
-      const cleanCode = code.trim().toUpperCase();
-      if (!/^[A-Z0-9_-]{3,20}$/.test(cleanCode)) {
-        return res.status(400).json({
-          error: "Referral code must be 3-20 characters, letters, numbers, hyphens, or underscores only.",
-        });
-      }
-
-      // Check if code already exists (taken by someone else)
-      const existingSnap = await db.collection("referralCodes").doc(cleanCode).get();
-      if (existingSnap.exists && existingSnap.data().userId !== uid) {
-        return res.status(409).json({ error: "That referral code is already taken. Try another one." });
-      }
-
-      // Check if user already has a referral code — once set, it's permanent
-      const userDoc = await db.collection("users").doc(uid).get();
-      const userData = userDoc.exists ? userDoc.data() : {};
-      const oldCode = userData.referralCode;
-
-      if (oldCode) {
-        return res.status(409).json({ error: "Your referral code is already set and cannot be changed." });
-      }
-
-      // Create/update the referral code document
-      await db.collection("referralCodes").doc(cleanCode).set({
-        userId: uid,
-        code: cleanCode,
-        commissionRate: userData.customCommissionRate || 0.15, // default 15%, KOLs get custom
-        createdAt: existingSnap.exists ? existingSnap.data().createdAt : admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      // Update user doc with their referral code
-      await db.collection("users").doc(uid).set(
-        {
-          referralCode: cleanCode,
-          commissionRate: userData.customCommissionRate || 0.15,
-        },
-        { merge: true }
-      );
-
-      return res.status(200).json({
-        success: true,
-        code: cleanCode,
-        commissionRate: userData.customCommissionRate || 0.15,
-      });
-    }
-
-    // =========================================
     // POST (action=apply) — Apply someone ELSE's referral code to yourself.
     // This is the manual-entry path used on the referrals page for people who
     // installed the app directly (without clicking a ?ref= link) and want to
     // give credit to the friend who sent them.
+    //
+    // IMPORTANT: this check MUST come before the generic POST branch below
+    // (which creates a new referral code). Otherwise apply requests fall into
+    // the create path and fail with "already taken" when the code exists.
     //
     // Rules:
     //   - You must be signed in (uid required)
@@ -159,6 +105,64 @@ module.exports = async function handler(req, res) {
         success: true,
         code: cleanCode,
         message: "Referral code applied! Your friend will earn commission when you upgrade to Pro.",
+      });
+    }
+
+    // =========================================
+    // POST — Create a new referral code (your own)
+    // =========================================
+    if (req.method === "POST") {
+      const { uid, code } = req.body || {};
+
+      if (!uid || !code) {
+        return res.status(400).json({ error: "uid and code are required" });
+      }
+
+      // Validate code format: 3-20 chars, alphanumeric + hyphens/underscores
+      const cleanCode = code.trim().toUpperCase();
+      if (!/^[A-Z0-9_-]{3,20}$/.test(cleanCode)) {
+        return res.status(400).json({
+          error: "Referral code must be 3-20 characters, letters, numbers, hyphens, or underscores only.",
+        });
+      }
+
+      // Check if code already exists (taken by someone else)
+      const existingSnap = await db.collection("referralCodes").doc(cleanCode).get();
+      if (existingSnap.exists && existingSnap.data().userId !== uid) {
+        return res.status(409).json({ error: "That referral code is already taken. Try another one." });
+      }
+
+      // Check if user already has a referral code — once set, it's permanent
+      const userDoc = await db.collection("users").doc(uid).get();
+      const userData = userDoc.exists ? userDoc.data() : {};
+      const oldCode = userData.referralCode;
+
+      if (oldCode) {
+        return res.status(409).json({ error: "Your referral code is already set and cannot be changed." });
+      }
+
+      // Create/update the referral code document
+      await db.collection("referralCodes").doc(cleanCode).set({
+        userId: uid,
+        code: cleanCode,
+        commissionRate: userData.customCommissionRate || 0.15, // default 15%, KOLs get custom
+        createdAt: existingSnap.exists ? existingSnap.data().createdAt : admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Update user doc with their referral code
+      await db.collection("users").doc(uid).set(
+        {
+          referralCode: cleanCode,
+          commissionRate: userData.customCommissionRate || 0.15,
+        },
+        { merge: true }
+      );
+
+      return res.status(200).json({
+        success: true,
+        code: cleanCode,
+        commissionRate: userData.customCommissionRate || 0.15,
       });
     }
 
