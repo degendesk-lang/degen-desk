@@ -46,6 +46,49 @@ window.DegenAuth = (function () {
   }
 
   // =============================================
+  // DEMO LOGIN (Apple App Review)
+  // =============================================
+  // Detects ?review=CODE in the URL. If present, calls /api/demo-login to get
+  // a Firebase custom token and signs in automatically. This lets Apple
+  // reviewers test the app without a personal Google account.
+  async function attemptDemoLogin() {
+    const params = new URLSearchParams(window.location.search);
+    const reviewCode = params.get("review");
+    if (!reviewCode) return false;
+
+    // Clean the URL immediately so the code isn't visible in the address bar
+    const url = new URL(window.location);
+    url.searchParams.delete("review");
+    window.history.replaceState({}, "", url.pathname + url.search);
+
+    try {
+      const res = await fetch("/api/demo-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: reviewCode }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error("[DemoLogin] Failed:", data.error || res.status);
+        return false;
+      }
+
+      const { customToken } = await res.json();
+      await auth.signInWithCustomToken(customToken);
+      console.log("[DemoLogin] Signed in as demo reviewer");
+      return true;
+    } catch (err) {
+      console.error("[DemoLogin] Error:", err);
+      return false;
+    }
+  }
+
+  // Fire demo login check after Firebase initializes. It runs once on page load;
+  // if there's no ?review= param it returns immediately (no-op).
+  attemptDemoLogin();
+
+  // =============================================
   // AUTH
   // =============================================
 
