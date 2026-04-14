@@ -128,6 +128,16 @@ window.DegenAuth = (function () {
       await auth.signInWithPopup(provider);
     } catch (err) {
       console.error("Sign in error:", err.code, err.message);
+      // Don't toast for user-initiated cancellation
+      if (
+        err.code !== "auth/popup-closed-by-user" &&
+        err.code !== "auth/cancelled-popup-request" &&
+        window.DegenToast
+      ) {
+        DegenToast.error("We couldn't sign you in. Please try again.", {
+          title: "Sign in failed",
+        });
+      }
     }
   }
 

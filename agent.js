@@ -2,6 +2,90 @@
  * Degen Desk - Chat engine with AI backend, local KB fallback, multi-conversation support
  */
 
+// =============================================
+// Toast notifications (window.DegenToast)
+// Lightweight, self-contained transient notification system.
+// Usage: DegenToast.show("Message", "error" | "success" | "info", { title, duration })
+// =============================================
+window.DegenToast = (function () {
+  const ICONS = {
+    error: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    success: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    info: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  };
+
+  function getContainer() {
+    let el = document.getElementById("toast-container");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "toast-container";
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  function show(message, type, opts) {
+    if (!message) return;
+    type = type || "info";
+    opts = opts || {};
+    const duration = opts.duration != null ? opts.duration : (type === "error" ? 5000 : 3500);
+
+    const container = getContainer();
+    const toast = document.createElement("div");
+    toast.className = "toast toast-" + type;
+
+    const icon = document.createElement("div");
+    icon.className = "toast-icon";
+    icon.innerHTML = ICONS[type] || ICONS.info;
+
+    const body = document.createElement("div");
+    body.className = "toast-body";
+    if (opts.title) {
+      const strong = document.createElement("strong");
+      strong.textContent = opts.title;
+      body.appendChild(strong);
+    }
+    const msg = document.createElement("span");
+    msg.textContent = message;
+    body.appendChild(msg);
+
+    const close = document.createElement("button");
+    close.className = "toast-close";
+    close.setAttribute("aria-label", "Dismiss");
+    close.innerHTML = "&times;";
+
+    toast.appendChild(icon);
+    toast.appendChild(body);
+    toast.appendChild(close);
+    container.appendChild(toast);
+
+    let timer;
+    function dismiss() {
+      if (toast.classList.contains("toast-leaving")) return;
+      clearTimeout(timer);
+      toast.classList.add("toast-leaving");
+      toast.addEventListener(
+        "animationend",
+        () => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        },
+        { once: true }
+      );
+    }
+    close.addEventListener("click", dismiss);
+    timer = setTimeout(dismiss, duration);
+
+    return { dismiss };
+  }
+
+  return {
+    show,
+    error: (msg, opts) => show(msg, "error", opts),
+    success: (msg, opts) => show(msg, "success", opts),
+    info: (msg, opts) => show(msg, "info", opts),
+  };
+})();
+
 (function () {
   const messagesContainer = document.getElementById("messages");
   const userInput = document.getElementById("user-input");
@@ -370,12 +454,22 @@
 
       if (!response.ok) {
         console.error("API error:", response.status);
+        if (window.DegenToast) {
+          DegenToast.error("We couldn't reach the AI. Using local knowledge instead.", {
+            title: "Connection issue",
+          });
+        }
         return null;
       }
       const data = await response.json();
       return data.reply || null;
     } catch (err) {
       console.error("Failed to reach AI:", err);
+      if (window.DegenToast) {
+        DegenToast.error("Network error. Check your connection and try again.", {
+          title: "Offline",
+        });
+      }
       return null;
     }
   }
