@@ -306,6 +306,39 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ partners });
       }
 
+      // ------------- listRates -------------
+      // Admin helper: return every user who has a customCommissionRate set,
+      // so the admin console can show a monitoring table of who has what %.
+      // A missing field means "default 15%" and is excluded from this list.
+      if (action === "listRates") {
+        const snap = await db
+          .collection("users")
+          .where("customCommissionRate", ">=", 0)
+          .get();
+        const users = snap.docs.map((doc) => {
+          const d = doc.data();
+          return {
+            uid: doc.id,
+            email: d.email || null,
+            referralCode: d.referralCode || null,
+            commissionRate:
+              typeof d.commissionRate === "number" ? d.commissionRate : 0.15,
+            customCommissionRate:
+              typeof d.customCommissionRate === "number"
+                ? d.customCommissionRate
+                : null,
+            isPartner: !!d.isPartner,
+          };
+        });
+        // Sort highest rate first, then alphabetical by email as a tiebreaker.
+        users.sort((a, b) => {
+          const rateDiff = (b.customCommissionRate || 0) - (a.customCommissionRate || 0);
+          if (rateDiff !== 0) return rateDiff;
+          return (a.email || "").localeCompare(b.email || "");
+        });
+        return res.status(200).json({ users });
+      }
+
       // ------------- lookup -------------
       // Admin helper: find a user by email or referral code so the link flow
       // doesn't require the admin to already know Firebase UIDs.

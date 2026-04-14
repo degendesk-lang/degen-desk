@@ -404,6 +404,21 @@
         <div class="msg" id="rate-msg"></div>
       </div>
 
+      <!-- ====== Custom rates monitor ====== -->
+      <div class="card">
+        <h2>
+          Users with custom rates
+          <span class="pill" id="rates-count">0</span>
+          <button class="btn btn-secondary" id="rates-refresh-btn" style="margin-left:auto; padding:6px 12px; font-size:11px;">Refresh</button>
+        </h2>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:14px;">
+          Every user who has been set to a non-default rate. Click any row to load them into the editor above.
+        </p>
+        <div id="rates-table-wrap">
+          <div class="empty">Loading&hellip;</div>
+        </div>
+      </div>
+
       <!-- ====== Link creator ====== -->
       <div class="card">
         <h2>Link creator to partner</h2>
@@ -463,6 +478,10 @@
     const rateResetBtn = document.getElementById("rate-reset-btn");
     const rateMsg = document.getElementById("rate-msg");
 
+    const ratesCount = document.getElementById("rates-count");
+    const ratesRefreshBtn = document.getElementById("rates-refresh-btn");
+    const ratesTableWrap = document.getElementById("rates-table-wrap");
+
     const linkPartner = document.getElementById("link-partner");
     const linkCreator = document.getElementById("link-creator");
     const linkBtn = document.getElementById("link-btn");
@@ -483,6 +502,7 @@
       authGate.style.display = "none";
       adminConsole.style.display = "block";
       loadPartners();
+      loadCustomRates();
     }
 
     unlockBtn.addEventListener("click", async () => {
@@ -524,6 +544,7 @@
       authGate.style.display = "none";
       adminConsole.style.display = "block";
       loadPartners();
+      loadCustomRates();
     }
 
     // -------- Helpers --------
@@ -676,6 +697,7 @@
         rateNew.value = "";
         rateResetBtn.disabled = data.commissionRate === 0.15;
         setMsg(rateMsg, `Saved. New rate: ${formatRatePct(data.commissionRate)}`, "success");
+        loadCustomRates();
       } catch (err) {
         setMsg(rateMsg, err.message, "error");
       }
@@ -691,10 +713,80 @@
         rateNew.value = "";
         rateResetBtn.disabled = true;
         setMsg(rateMsg, "Reset to default 15%.", "success");
+        loadCustomRates();
       } catch (err) {
         setMsg(rateMsg, err.message, "error");
       }
     });
+
+    // -------- Custom rates monitor --------
+    function escapeHtml(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    async function loadCustomRates() {
+      ratesTableWrap.innerHTML = '<div class="empty">Loading…</div>';
+      try {
+        const data = await apiCall({ action: "listRates" });
+        const users = data.users || [];
+        ratesCount.textContent = users.length;
+        if (users.length === 0) {
+          ratesTableWrap.innerHTML = '<div class="empty">No users on custom rates yet. Set one above.</div>';
+          return;
+        }
+        const rows = users.map((u) => {
+          const pct = formatRatePct(u.customCommissionRate);
+          const email = escapeHtml(u.email || "—");
+          const code = escapeHtml(u.referralCode || "—");
+          const uidShort = u.uid.slice(0, 10) + "…";
+          const badge = u.isPartner
+            ? '<span class="tier-badge elite" style="margin-left:6px;">Partner</span>'
+            : "";
+          return `
+            <tr class="rate-row" data-uid="${escapeHtml(u.uid)}" data-email="${email}" data-code="${code}" style="cursor:pointer;">
+              <td>${email}${badge}</td>
+              <td>${code}</td>
+              <td class="amount">${pct}</td>
+              <td class="uid">${escapeHtml(uidShort)}</td>
+            </tr>
+          `;
+        }).join("");
+        ratesTableWrap.innerHTML = `
+          <table class="partner-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Referral Code</th>
+                <th>Rate</th>
+                <th>UID</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+        // Row click → auto-fill the editor card above and scroll to it.
+        ratesTableWrap.querySelectorAll(".rate-row").forEach((row) => {
+          row.addEventListener("click", () => {
+            const email = row.getAttribute("data-email");
+            const code = row.getAttribute("data-code");
+            rateEmail.value = email && email !== "—" ? email : "";
+            rateCode.value = code && code !== "—" ? code : "";
+            rateLookupBtn.click();
+            document.getElementById("rate-msg").scrollIntoView({ block: "center", behavior: "smooth" });
+          });
+        });
+      } catch (err) {
+        ratesCount.textContent = "0";
+        ratesTableWrap.innerHTML = `<div class="empty">Failed to load: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    ratesRefreshBtn.addEventListener("click", loadCustomRates);
 
     // -------- Link / unlink --------
     async function resolveUid(value) {
