@@ -370,6 +370,40 @@
         <div class="msg" id="promote-msg"></div>
       </div>
 
+      <!-- ====== Custom referral rate ====== -->
+      <div class="card">
+        <h2>Custom referral rate <span class="pill">KOL</span></h2>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:14px;">
+          Set a custom commission rate for an individual creator (0&ndash;50%). Default is 15%. Look up the user first, then enter the new rate and save.
+        </p>
+        <div class="row">
+          <div>
+            <label>Email</label>
+            <input type="email" id="rate-email" placeholder="creator@example.com" autocomplete="off" />
+          </div>
+          <div>
+            <label>Or referral code</label>
+            <input type="text" id="rate-code" placeholder="KOL123" autocomplete="off" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Current rate</label>
+            <input type="text" id="rate-current" placeholder="&mdash;" disabled />
+          </div>
+          <div>
+            <label>New rate (%)</label>
+            <input type="text" id="rate-new" placeholder="e.g. 25" autocomplete="off" inputmode="decimal" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="rate-lookup-btn">Look up</button>
+          <button class="btn btn-primary" id="rate-save-btn" disabled>Save rate</button>
+          <button class="btn btn-secondary" id="rate-reset-btn" disabled>Reset to 15%</button>
+        </div>
+        <div class="msg" id="rate-msg"></div>
+      </div>
+
       <!-- ====== Link creator ====== -->
       <div class="card">
         <h2>Link creator to partner</h2>
@@ -420,6 +454,15 @@
     const demoteBtn = document.getElementById("demote-btn");
     const promoteMsg = document.getElementById("promote-msg");
 
+    const rateEmail = document.getElementById("rate-email");
+    const rateCode = document.getElementById("rate-code");
+    const rateCurrent = document.getElementById("rate-current");
+    const rateNew = document.getElementById("rate-new");
+    const rateLookupBtn = document.getElementById("rate-lookup-btn");
+    const rateSaveBtn = document.getElementById("rate-save-btn");
+    const rateResetBtn = document.getElementById("rate-reset-btn");
+    const rateMsg = document.getElementById("rate-msg");
+
     const linkPartner = document.getElementById("link-partner");
     const linkCreator = document.getElementById("link-creator");
     const linkBtn = document.getElementById("link-btn");
@@ -430,6 +473,7 @@
 
     let adminKey = null;
     let promoteTargetUid = null;
+    let rateTargetUid = null;
 
     // -------- Admin unlock (session-only, kept in localStorage for
     //          convenience but never shown in URLs). --------
@@ -559,6 +603,96 @@
         loadPartners();
       } catch (err) {
         setMsg(promoteMsg, err.message, "error");
+      }
+    });
+
+    // -------- Custom referral rate --------
+    function formatRatePct(rate) {
+      if (typeof rate !== "number" || isNaN(rate)) return "—";
+      return (rate * 100).toFixed(2).replace(/\.?0+$/, "") + "%";
+    }
+
+    async function putReferralRate(targetUid, commissionRate) {
+      const res = await fetch("/api/referral", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminKey, targetUid, commissionRate }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Request failed");
+      return data;
+    }
+
+    rateLookupBtn.addEventListener("click", async () => {
+      const body = {
+        action: "lookup",
+        ...(rateEmail.value ? { email: rateEmail.value.trim().toLowerCase() } : {}),
+        ...(rateCode.value ? { referralCode: rateCode.value.trim().toUpperCase() } : {}),
+      };
+      if (!body.email && !body.referralCode) {
+        setMsg(rateMsg, "Enter an email or referral code first.", "error");
+        return;
+      }
+      try {
+        const data = await apiCall(body);
+        rateTargetUid = data.uid;
+        rateCurrent.value = formatRatePct(data.commissionRate);
+        rateSaveBtn.disabled = false;
+        rateResetBtn.disabled = !(data.commissionRate && data.commissionRate !== 0.15);
+        const custom = typeof data.customCommissionRate === "number";
+        setMsg(
+          rateMsg,
+          `Found ${data.email || data.referralCode || data.uid} — current rate ${formatRatePct(data.commissionRate)}${custom ? " (custom)" : " (default)"}`,
+          "info"
+        );
+      } catch (err) {
+        rateTargetUid = null;
+        rateCurrent.value = "";
+        rateSaveBtn.disabled = true;
+        rateResetBtn.disabled = true;
+        setMsg(rateMsg, err.message, "error");
+      }
+    });
+
+    rateSaveBtn.addEventListener("click", async () => {
+      if (!rateTargetUid) return;
+      const raw = (rateNew.value || "").trim();
+      if (!raw) {
+        setMsg(rateMsg, "Enter a new rate as a percentage (e.g. 25).", "error");
+        return;
+      }
+      const pct = parseFloat(raw);
+      if (isNaN(pct) || pct < 0 || pct > 50) {
+        setMsg(rateMsg, "Rate must be a number between 0 and 50.", "error");
+        return;
+      }
+      // pct / 100, rounded to 4 decimal places (server accepts up to 0.50)
+      const decimalRate = Math.round(pct * 100) / 10000;
+      if (!confirm(`Set this user's commission rate to ${pct}%?`)) return;
+      try {
+        setMsg(rateMsg, "Saving…", "info");
+        const data = await putReferralRate(rateTargetUid, decimalRate);
+        rateCurrent.value = formatRatePct(data.commissionRate);
+        rateNew.value = "";
+        rateResetBtn.disabled = data.commissionRate === 0.15;
+        setMsg(rateMsg, `Saved. New rate: ${formatRatePct(data.commissionRate)}`, "success");
+      } catch (err) {
+        setMsg(rateMsg, err.message, "error");
+      }
+    });
+
+    rateResetBtn.addEventListener("click", async () => {
+      if (!rateTargetUid) return;
+      if (!confirm("Reset this user back to the default 15% rate?")) return;
+      try {
+        setMsg(rateMsg, "Resetting…", "info");
+        const data = await putReferralRate(rateTargetUid, 0.15);
+        rateCurrent.value = formatRatePct(data.commissionRate);
+        rateNew.value = "";
+        rateResetBtn.disabled = true;
+        setMsg(rateMsg, "Reset to default 15%.", "success");
+      } catch (err) {
+        setMsg(rateMsg, err.message, "error");
       }
     });
 

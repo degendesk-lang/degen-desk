@@ -350,6 +350,14 @@ module.exports = async function handler(req, res) {
           referralCode: userData.referralCode || null,
           isPartner: !!userData.isPartner,
           recruitedByUid: userData.recruitedByUid || null,
+          commissionRate:
+            typeof userData.commissionRate === "number"
+              ? userData.commissionRate
+              : 0.15,
+          customCommissionRate:
+            typeof userData.customCommissionRate === "number"
+              ? userData.customCommissionRate
+              : null,
         });
       }
 
