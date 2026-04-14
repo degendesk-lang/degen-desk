@@ -282,9 +282,9 @@ window.DegenToast = (function () {
             <div class="message-bubble welcome-bubble">
               <div class="welcome-hero">
                 <h2>Welcome to Degen Desk</h2>
-                <p class="welcome-tagline">Expert-level intelligence for Solana meme coins and beyond.</p>
+                <p class="welcome-tagline">Expert-level crypto and Solana meme coin intelligence.</p>
               </div>
-              <p class="welcome-intro">Ask me anything about trading platforms, MEV, scam detection, chart reading, or on-chain research. I cover <strong>Solana</strong>, Ethereum, BNB Chain, and Base.</p>
+              <p class="welcome-intro">Ask me anything about <strong>Bitcoin, Ethereum, DeFi</strong>, Solana meme coins, trading platforms, MEV, scam detection, wallet tracking on Solscan, chart reading, or on-chain research. I cover all major chains.</p>
               <div class="welcome-suggestions-label">Try asking</div>
               <div class="welcome-grid">
                 <button class="welcome-card" data-query="What are meme coins and how do they work?">
@@ -301,11 +301,11 @@ window.DegenToast = (function () {
                     <span>Red flags before you ape in</span>
                   </span>
                 </button>
-                <button class="welcome-card" data-query="How do I read meme coin charts and identify setups?">
-                  <span class="welcome-card-icon">&#128200;</span>
+                <button class="welcome-card" data-query="What are the current meme coin narratives and metas? How do I identify which narrative is running and spot the next rotation?">
+                  <span class="welcome-card-icon">&#127754;</span>
                   <span class="welcome-card-text">
-                    <strong>Read a chart</strong>
-                    <span>Setups, levels, and signals</span>
+                    <strong>Narratives &amp; Metas</strong>
+                    <span>Spot the rotation, ride the wave</span>
                   </span>
                 </button>
                 <button class="welcome-card" data-query="What are the best entry and exit strategies for meme coins?">

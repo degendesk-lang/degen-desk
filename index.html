@@ -6,8 +6,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#06060b" />
-  <meta name="description" content="Degen Desk - Expert-level meme coin intelligence. Solana-first trading knowledge for newcomers and experienced traders." />
-  <title>Degen Desk - Meme Coin Intelligence</title>
+  <meta name="description" content="Degen Desk - Expert-level crypto and meme coin intelligence. Bitcoin, Ethereum, Solana meme coins, DeFi, and on-chain research in one AI assistant for newcomers and experienced traders." />
+  <title>Degen Desk - Crypto &amp; Meme Coin Intelligence</title>
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="apple-touch-icon" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -53,6 +53,8 @@
           <span class="section-chevron">&#9660;</span>
         </button>
         <div class="sidebar-section-content" id="topics-content">
+          <button class="topic-btn" data-query="Give me an overview of Bitcoin, Ethereum, and the broader crypto ecosystem — how do they work, what is DeFi, staking, and L2s?">&#127758; Crypto Fundamentals</button>
+          <button class="topic-btn" data-query="Why do meme coins actually pump? Explain hype, narrative, and relevancy and why technical analysis alone doesn't work on meme coins.">&#128293; Narrative &amp; Hype</button>
           <button class="topic-btn" data-query="What are meme coins and how do they work?">&#128640; Meme Coin Basics</button>
           <button class="topic-btn" data-query="How do I buy meme coins on Solana step by step?">&#9728;&#65039; Buying on Solana</button>
           <button class="topic-btn" data-query="What wallets should I use for meme coin trading?">&#128091; Wallets Guide</button>
@@ -69,6 +71,7 @@
           <button class="topic-btn" data-query="What are the best entry and exit strategies for meme coins?">&#128176; Entry &amp; Exit</button>
           <button class="topic-btn" data-query="What are the best tools for researching meme coins?">&#128736; Research Tools</button>
           <button class="topic-btn" data-query="How do I analyze token holder distribution and detect insiders?">&#128373; On-Chain Analysis</button>
+          <button class="topic-btn" data-query="How do I use Solscan to track wallets and link connected wallets together? Walk me through the funding source trace technique.">&#128269; Solscan Wallet Tracking</button>
           <button class="topic-btn" data-query="How do narratives and metas work in meme coin trading?">&#127754; Narratives &amp; Metas</button>
           <button class="topic-btn" data-query="How do meme coins work on Ethereum, BNB Chain, and Base?">&#128279; Other Chains</button>
           <button class="topic-btn" data-query="What risk management strategies should I use for meme coins?">&#128176; Risk Management</button>
@@ -174,7 +177,7 @@
           </div>
           <div class="header-status">
             <span class="status-dot"></span>
-            <span class="status-text">Online &bull; Solana-first intelligence</span>
+            <span class="status-text">Online &bull; Crypto &amp; meme coin intelligence</span>
           </div>
         </div>
       </header>
@@ -191,9 +194,9 @@
             <div class="message-bubble welcome-bubble">
               <div class="welcome-hero">
                 <h2>Welcome to Degen Desk</h2>
-                <p class="welcome-tagline">Expert-level intelligence for Solana meme coins and beyond.</p>
+                <p class="welcome-tagline">Expert-level crypto and Solana meme coin intelligence.</p>
               </div>
-              <p class="welcome-intro">Ask me anything about trading platforms, MEV, scam detection, chart reading, or on-chain research. I cover <strong>Solana</strong>, Ethereum, BNB Chain, and Base.</p>
+              <p class="welcome-intro">Ask me anything about <strong>Bitcoin, Ethereum, DeFi</strong>, Solana meme coins, trading platforms, MEV, scam detection, wallet tracking on Solscan, chart reading, or on-chain research. I cover all major chains.</p>
               <div class="welcome-suggestions-label">Try asking</div>
               <div class="welcome-grid">
                 <button class="welcome-card" data-query="What are meme coins and how do they work?">
@@ -210,11 +213,11 @@
                     <span>Red flags before you ape in</span>
                   </span>
                 </button>
-                <button class="welcome-card" data-query="How do I read meme coin charts and identify setups?">
-                  <span class="welcome-card-icon">&#128200;</span>
+                <button class="welcome-card" data-query="What are the current meme coin narratives and metas? How do I identify which narrative is running and spot the next rotation?">
+                  <span class="welcome-card-icon">&#127754;</span>
                   <span class="welcome-card-text">
-                    <strong>Read a chart</strong>
-                    <span>Setups, levels, and signals</span>
+                    <strong>Narratives &amp; Metas</strong>
+                    <span>Spot the rotation, ride the wave</span>
                   </span>
                 </button>
                 <button class="welcome-card" data-query="What are the best entry and exit strategies for meme coins?">
@@ -299,7 +302,7 @@
 
       <div id="input-area">
         <div class="input-wrapper">
-          <textarea id="user-input" placeholder="Ask anything about meme coins..." rows="1"></textarea>
+          <textarea id="user-input" placeholder="Ask anything about crypto or meme coins..." rows="1"></textarea>
           <button id="send-btn" aria-label="Send message">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
@@ -318,8 +321,8 @@
 
   <script src="iap.js?v=1"></script>
   <script src="auth.js?v=20"></script>
-  <script src="knowledge-base.js?v=11"></script>
-  <script src="agent.js?v=20"></script>
+  <script src="knowledge-base.js?v=12"></script>
+  <script src="agent.js?v=21"></script>
   <script>
     // Price ticker
     async function updatePriceTicker() {

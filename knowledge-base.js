@@ -1659,6 +1659,310 @@ const KNOWLEDGE_BASE = [
         <strong>The Honest Meta-Strategy:</strong> The traders who win long-term aren't the ones with the fanciest strategies. They're the ones who: (1) have ironclad risk management, (2) stay in the game through drawdowns, (3) continuously learn from losses, and (4) adapt quickly when the market shifts. Fancy strategies on top of poor discipline still lose money.
       </div>
     `
+  },
+
+  // =============================================
+  // 28. NARRATIVE & HYPE — THE #1 RULE OF MEME COINS
+  // =============================================
+  {
+    id: "narrative-hype",
+    keywords: [
+      "why do meme coins actually pump",
+      "hype, narrative, and relevancy",
+      "hype, narrative",
+      "narrative, and relevancy",
+      "technical analysis alone doesn't work",
+      "technical analysis alone",
+      "why meme coins pump",
+      "hype and narrative",
+      "narrative and relevancy",
+      "relevancy",
+      "hype",
+      "meme coin hype",
+      "meme coin narrative",
+      "narrative trading",
+      "why technical analysis doesn't work",
+      "why ta doesn't work",
+    ],
+    aliases: ["hype", "relevancy", "narrative trading"],
+    response: `
+      <h3>The #1 Rule: Hype, Narrative &amp; Relevancy Drive Meme Coins (Not TA)</h3>
+      <p>This is the single most important concept in meme coin trading. Meme coins do <strong>not</strong> behave like traditional assets and they do <strong>not</strong> respect technical analysis the way stocks or even blue-chip crypto does. Meme coins pump and dump almost entirely based on three things:</p>
+      <ul>
+        <li><strong>Hype</strong> — how much collective attention the token is getting right now</li>
+        <li><strong>Narrative</strong> — what story the token is attached to (what meme, what event, what cultural moment)</li>
+        <li><strong>Relevancy</strong> — whether that meme or story is currently <em>hot</em> in culture, or already dead</li>
+      </ul>
+      <p>The chart is a <strong>lagging reflection</strong> of the narrative. The story comes first. The chart just prints what the story is doing.</p>
+
+      <h3>Relevancy Is Everything — The Dead Meme Problem</h3>
+      <p>A meme coin only runs if its underlying meme is currently relevant. Old, dead memes do not pump just because the chart looks good or because someone launched a fresh token for them.</p>
+      <p><strong>Worked example — the Nyan Cat problem:</strong> If somebody launches a Nyan Cat token today, it is not going to run normally. The meme had its cultural moment over a decade ago. There is no fuel left in the tank. No amount of shilling, bundled buying, or pretty chart structure can resurrect a meme that nobody is talking about anymore.</p>
+
+      <h3>When a Dormant Meme CAN Run Again</h3>
+      <ul>
+        <li>The <strong>original creator of the meme publicly claims the token as their own</strong> — takes pump.fun creator fees, endorses it on their socials, makes it "official." This grants the legitimacy the community is looking for.</li>
+        <li>A <strong>major cultural event or influencer organically brings the meme back</strong> — a viral repost, a movie reference, a celebrity wearing it, a new remix.</li>
+        <li>The meme is used ironically in a fresh context that makes it feel new again.</li>
+      </ul>
+
+      <h3>Fresh Viral Memes — The Opposite Case</h3>
+      <p>When something is genuinely new and spreading through culture, a token attached to it rides that wave in real time. Think about what happens when a brand-new meme format starts trending on TikTok and Twitter — within minutes someone launches a token for it. As the meme spreads further, you can literally watch the chart fill in with buys on Axiom, Photon, and DEX Screener. Each new wave of cultural awareness brings a new wave of buyers, and the chart climbs <em>because</em> the meme is climbing. <strong>The chart is the scoreboard of the meme's spread, not the cause of it.</strong></p>
+
+      <h3>Catalysts That Actually Pump Meme Coins (In Order of Power)</h3>
+      <ol>
+        <li><strong>Tier-1 influencer posts the meme.</strong> When an account with massive reach (Elon Musk is the famous example, but also major CT whales, celebrities, athletes, politicians) organically posts a meme, any coin tied to that meme runs instantly. Serious traders use Twitter/X trackers — TweetDeck columns, custom scripts, alerting services — that notify them the second a tracked high-signal account posts. Reaction time is measured in <em>seconds</em>.</li>
+        <li><strong>Meme creator endorses the token.</strong> The real author of the meme, character, or IP publicly claims it. Legitimacy = pump.</li>
+        <li><strong>Fresh viral meme + early clean token launch.</strong> Within minutes of a new meme going viral, dozens of tokens launch for it. The earliest clean one (no mint/freeze authority, dev not hoarding, legit-looking community) wins the entire narrative.</li>
+        <li><strong>Event-driven catalysts.</strong> Elections, celebrity news, crypto conferences, product launches, sports moments. Each creates predictable meme coin activity tied to the event.</li>
+        <li><strong>Tracked smart money buys on-chain.</strong> KOLSCAN, GMGN smart money, Cielo alerts — a visible buy from a watched wallet triggers coordinated attention.</li>
+        <li><strong>Narrative rotation.</strong> Capital hunting for the next meta after the current one cools off.</li>
+      </ol>
+
+      <h3>What Does NOT Reliably Pump a Meme Coin</h3>
+      <ul>
+        <li>A "good-looking" chart pattern on a dead-meme token — charts don't cause pumps, culture does</li>
+        <li>Textbook TA signals alone (RSI oversold, MACD cross, fib retracement, Bollinger bands)</li>
+        <li>"Strong tokenomics" — meme coins don't really have tokenomics in any meaningful sense</li>
+        <li>"Undervalued" market cap — meme coins are valued on attention, not fundamentals</li>
+        <li>Long-term HODL mindset — the meme will be dead before your time horizon</li>
+      </ul>
+
+      <div class="warning-box">
+        <strong>&#9888;&#65039; The Most Common Beginner Mistake:</strong> Treating meme coins like stocks and trying to apply technical analysis to them. RSI, MACD, Bollinger Bands, Elliott waves — near-zero predictive power on meme coins because price is driven by collective attention, not by rational actors reading charts. The only TA concepts that actually work are <strong>volume</strong> (which reflects real-time attention) and <strong>higher-lows / lower-highs</strong> (which reflect the direction of that attention). Everything else is noise.
+      </div>
+
+      <h3>The Narrative-First Daily Routine</h3>
+      <ol>
+        <li>Scroll Twitter/X, TikTok, Reddit, and Discord to feel what memes are trending in mainstream culture — not just crypto culture</li>
+        <li>Check Google Trends for breakout searches and Know Your Meme for emerging formats</li>
+        <li>Monitor tracked signal accounts and tracked wallets for anything meme-relevant</li>
+        <li>Scan pump.fun, Axiom Memescope, Moonshot, and Believe for freshly launched tokens matching trending memes</li>
+        <li>When you spot a meme that is (a) genuinely viral offchain, (b) has no dominant token yet, and (c) shows early-but-organic onchain activity — that's your scout entry signal</li>
+        <li>Enter early, size small, let the narrative decide if it runs. If the meme fizzles culturally, cut fast. If it keeps spreading, let it cook.</li>
+      </ol>
+
+      <div class="tip-box">
+        <strong>&#128161; The Trader's Mantra:</strong> Trade the meme, then use the chart to confirm. You are not looking for "setups" — you are looking for confirmation that the cultural attention you see offchain is showing up onchain as buys. The chart is the scoreboard. The meme is the game.
+      </div>
+    `
+  },
+
+  // =============================================
+  // 29. SOLSCAN WALLET TRACKING & LINKING (HANDS-ON)
+  // =============================================
+  {
+    id: "solscan-tracking",
+    keywords: [
+      "how do i use solscan to track wallets",
+      "solscan to track wallets",
+      "track wallets and link",
+      "link connected wallets",
+      "connected wallets",
+      "funding source trace technique",
+      "funding source trace",
+      "funding source",
+      "solscan wallet tracking",
+      "solscan tracking",
+      "solscan",
+      "wallet tracking solscan",
+      "track and link wallets",
+      "linking wallets",
+      "how to use solscan",
+    ],
+    aliases: ["solscan", "funding source trace"],
+    response: `
+      <h3>Solscan: Wallet Tracking &amp; Linking (Hands-On Guide)</h3>
+      <p>Solscan.io is the primary block explorer for Solana and one of the most powerful <strong>free</strong> tools for investigating tokens, wallets, and dev behavior. Every serious Solana trader should be able to read it fluently. The other tools (BubbleMaps, GMGN, RugCheck) are all visualizations on top of the same data Solscan shows you raw — if you can use Solscan, you can verify anything those tools claim.</p>
+
+      <h3>Accessing a Wallet on Solscan</h3>
+      <ul>
+        <li>URL format: <strong>solscan.io/account/&lt;wallet_address&gt;</strong></li>
+        <li>Paste any Solana wallet address at the end of that URL and you see its full public history</li>
+        <li>Quick access: click any holder on DEX Screener, pump.fun, Birdeye, or Axiom — they all link straight to that wallet's Solscan page</li>
+      </ul>
+
+      <h3>The Key Tabs on a Wallet Page</h3>
+      <ul>
+        <li><strong>Overview</strong> — SOL balance, portfolio value, first activity date (huge tell: a wallet created 5 minutes before a launch and buying at launch is almost certainly an insider alt)</li>
+        <li><strong>Portfolio</strong> — every SPL token currently held with USD values. Tells you what this person is invested in right now</li>
+        <li><strong>Transactions</strong> — chronological list of every transaction, filterable by type</li>
+        <li><strong>Transfers</strong> — just token transfers in/out. Critical for tracing where funds went after a sell</li>
+        <li><strong>DeFi Activities</strong> — every swap, LP add/remove, stake. This is the "what did they buy and when" tab</li>
+        <li><strong>Analytics / Stats</strong> — PnL by token, win rate, holding duration. Great for qualifying a wallet before copy trading</li>
+      </ul>
+
+      <h3>Linking Wallets — The Core Skill</h3>
+      <p>The goal: figure out if multiple "separate" holders are actually the same person or a coordinated group hiding behind multiple wallets. Here are the five techniques that actually work.</p>
+
+      <h3>Technique 1: Funding Source Trace (Most Important)</h3>
+      <ol>
+        <li>Open the suspicious wallet's <strong>Transfers</strong> tab</li>
+        <li>Scroll all the way down to the <strong>very first incoming SOL transfer</strong> — the "funding transaction." Click into it.</li>
+        <li>Note the <strong>sender address</strong>. That is the wallet's funding source.</li>
+        <li>Open the sender wallet in a new tab. Who funded THEM? Repeat the chain upward.</li>
+        <li>If you trace two "independent" holders back to the <strong>same funding wallet</strong> (or the same small cluster), they are linked. Same entity.</li>
+      </ol>
+      <div class="info-box">
+        <strong>&#128204; Note:</strong> Funding from a known exchange hot wallet (Coinbase, Binance, Kraken, Bybit) is neutral — millions of real people withdraw from those. Funding from an unknown fresh wallet, especially one that only funds meme-buying wallets, is highly suspicious.
+      </div>
+
+      <h3>Technique 2: Timing Correlation</h3>
+      <ul>
+        <li>Open two wallets side by side. Check if they bought the same token within <em>seconds</em> of each other.</li>
+        <li>Sub-minute overlap on a token no one else is trading = coordinated.</li>
+        <li>If they also sold within seconds of each other, it's essentially confirmed.</li>
+      </ul>
+
+      <h3>Technique 3: The Fan-Out Pattern (Dev Distribution)</h3>
+      <ol>
+        <li>Open the <strong>deployer wallet</strong> (find it on the token mint page → "Update Authority" or creation tx)</li>
+        <li>Look at outgoing SOL transfers right after the token was created</li>
+        <li>Does the dev send small amounts of SOL (0.1-1 SOL each) to 10, 20, or more fresh wallets in a tight time window?</li>
+        <li>Open each receiving wallet — did each one immediately buy the same token?</li>
+        <li>If yes, the dev is farming their own token through alt wallets ("bundled supply" / fan-out distribution). GMGN flags this automatically; Solscan lets you verify it raw.</li>
+      </ol>
+
+      <h3>Technique 4: Direct Transfer Graph</h3>
+      <p>If wallet A has ever sent any SOL or token directly to wallet B at any point in history, they are connected. Full stop. This is exactly what BubbleMaps.io visualizes as "clustered bubbles" — you can do the same analysis manually on Solscan for a specific wallet you care about.</p>
+
+      <h3>Technique 5: Contract Interaction Fingerprint</h3>
+      <p>Two wallets that always interact with the same obscure contracts in the same order, at roughly the same intervals, are almost certainly running the same bot script — probably the same person.</p>
+
+      <h3>The Token Page on Solscan</h3>
+      <ul>
+        <li>URL: <strong>solscan.io/token/&lt;mint_address&gt;</strong></li>
+        <li><strong>Metadata</strong> — mint authority must be <em>null</em> (revoked), freeze authority must be <em>null</em> (revoked), total supply visible</li>
+        <li><strong>Holders</strong> tab — top holders by percentage. Any single non-LP wallet holding above ~5% is a warning sign</li>
+        <li><strong>Transfers</strong> tab — the complete on-chain trade history</li>
+        <li>"Top 20 Holders" is where every insider investigation starts — click each one and run Technique 1 on it</li>
+      </ul>
+
+      <h3>Standard Investigation Workflow for a New Token</h3>
+      <ol>
+        <li>Open the token's Solscan page</li>
+        <li>Verify mint authority and freeze authority are both revoked (non-negotiable — if not, walk away)</li>
+        <li>Click the deployer wallet, look at its history — is it a serial rugger with multiple dead token launches behind it?</li>
+        <li>Open the Holders tab, click the top 10 non-LP wallets</li>
+        <li>Trace each one's funding source via Technique 1. Red flag if most trace back to the same small cluster.</li>
+        <li>Cross-check against GMGN bundle detection and BubbleMaps for a second opinion</li>
+      </ol>
+
+      <h3>Combining Solscan With Other Tools</h3>
+      <ul>
+        <li><strong>Solscan + BubbleMaps</strong> = raw data + visual cluster map</li>
+        <li><strong>Solscan + GMGN</strong> = raw data + automated smart-money and bundle alerts</li>
+        <li><strong>Solscan + RugCheck</strong> = raw data + pre-computed safety score</li>
+        <li><strong>Solscan + Arkham Intelligence</strong> = raw data + known-entity labels (exchanges, funds, known traders)</li>
+      </ul>
+
+      <div class="tip-box">
+        <strong>&#128161; Pro Tip:</strong> Technique 1 (funding source trace) is the technique that unlocks everything else. Master that one and you can investigate almost any token or wallet on Solana with confidence. For EVM chains, the same techniques apply on Etherscan, BscScan, BaseScan, and Arbiscan.
+      </div>
+    `
+  },
+
+  // =============================================
+  // 30. CRYPTO FUNDAMENTALS (BTC, ETH, DeFi, L2s)
+  // =============================================
+  {
+    id: "crypto-broad",
+    keywords: [
+      "overview of bitcoin",
+      "bitcoin, ethereum, and the broader crypto",
+      "broader crypto ecosystem",
+      "broader crypto",
+      "ethereum, and the broader",
+      "what is defi",
+      "defi, staking",
+      "staking, and l2s",
+      "crypto fundamentals",
+      "crypto ecosystem",
+      "bitcoin ethereum",
+      "l2s",
+      "layer 2",
+      "defi",
+      "staking",
+      "ethereum staking",
+      "bitcoin etf",
+      "bitcoin halving",
+    ],
+    aliases: ["btc", "eth", "defi", "staking", "l2"],
+    response: `
+      <h3>Crypto Fundamentals: Bitcoin, Ethereum, DeFi, Staking &amp; L2s</h3>
+      <p>Before we get into meme coins, here's the broader crypto landscape you should understand. Meme coins live <em>on top of</em> this infrastructure, so knowing how the pieces fit together makes everything else make more sense.</p>
+
+      <h3>Bitcoin (BTC) — Digital Gold</h3>
+      <ul>
+        <li>The original cryptocurrency, created by Satoshi Nakamoto in 2009</li>
+        <li><strong>Fixed supply of 21 million coins.</strong> ~19.7M already mined. New BTC created via mining (Proof of Work, SHA-256).</li>
+        <li><strong>Halvings</strong> cut block reward every ~4 years (last was April 2024, next around 2028). The 12-18 months after a halving historically see the biggest bull runs of the cycle.</li>
+        <li><strong>BTC spot ETFs approved January 2024</strong> (BlackRock IBIT, Fidelity FBTC, Grayscale GBTC, ARK ARKB, and others) — opened the door to massive institutional inflows and fundamentally changed the market structure</li>
+        <li><strong>Lightning Network</strong> is the Layer 2 for fast/cheap BTC payments</li>
+        <li><strong>BTC dominance</strong> (% of total crypto market cap) rises in bear markets and early bull, falls in late bull as capital rotates to alts and meme coins</li>
+      </ul>
+      <p><em>"Bitcoin is the tide that lifts or sinks all boats." When BTC dumps, everything dumps harder. Watch it.</em></p>
+
+      <h3>Ethereum (ETH) — Smart Contract Platform</h3>
+      <ul>
+        <li>The backbone of DeFi, NFTs, and most of Web3</li>
+        <li>Transitioned from Proof of Work to <strong>Proof of Stake</strong> via "The Merge" (September 2022)</li>
+        <li><strong>Staking:</strong> lock ETH to secure the network, earn ~3-5% APY. Options: Lido (stETH), Rocket Pool (rETH), Coinbase (cbETH), or solo staking (32 ETH minimum)</li>
+        <li><strong>EIP-1559:</strong> base fee is burned each transaction, making ETH deflationary during high usage</li>
+        <li><strong>ETH spot ETFs approved May 2024</strong></li>
+        <li>Gas fees measured in <em>gwei</em> (1 gwei = 0.000000001 ETH). Expensive on mainnet, cheap on L2s</li>
+      </ul>
+
+      <h3>Layer 2s (L2s) — Scaling Ethereum</h3>
+      <p>L2s are separate chains built on top of Ethereum that batch many transactions together and settle them to ETH mainnet, dramatically reducing gas costs while inheriting ETH security.</p>
+      <ul>
+        <li><strong>Arbitrum</strong> — largest ETH L2 by TVL, general purpose, optimistic rollup</li>
+        <li><strong>Base</strong> — Coinbase's L2, massive growth in 2024-2025, home to many meme coins (BRETT, DEGEN, TOSHI), easy fiat on-ramp via Coinbase</li>
+        <li><strong>Optimism</strong> — OP Stack, governance-focused, home to Coinbase's Base via a shared stack</li>
+        <li><strong>zkSync / Starknet / Scroll / Linea</strong> — zero-knowledge rollups, trustless validity proofs</li>
+        <li><strong>Blob transactions (EIP-4844)</strong> drastically reduced L2 costs in 2024 — L2 swaps now cost pennies</li>
+      </ul>
+
+      <h3>DeFi — Decentralized Finance</h3>
+      <p>Financial services (lending, borrowing, trading, derivatives, yield) running on smart contracts without banks or brokerages.</p>
+      <ul>
+        <li><strong>Lending / Borrowing:</strong> Aave, Compound, MakerDAO/Sky (DAI), Morpho, Kamino (Solana), MarginFi (Solana)</li>
+        <li><strong>DEXs:</strong> Uniswap (invented the AMM model), Jupiter (Solana aggregator, routes best price across all Solana DEXs), Curve (stablecoin swaps), Raydium (Solana AMM)</li>
+        <li><strong>Stablecoins:</strong> USDC (regulated, most trusted), USDT (largest by MC), DAI (decentralized, overcollateralized), PYUSD (PayPal), USDe (Ethena synthetic dollar)</li>
+        <li><strong>Yield farming:</strong> provide liquidity to earn trading fees + token rewards. Watch for <em>impermanent loss</em> on volatile pairs.</li>
+        <li><strong>Liquid Staking Tokens (LSTs):</strong> stETH, rETH, mSOL, jitoSOL — stake and keep liquidity at the same time</li>
+        <li><strong>Liquid Restaking (EigenLayer):</strong> restake ETH/LSTs to secure additional services, earn extra yield — tokens like eETH (ether.fi), pufETH, rsETH</li>
+        <li><strong>Real-World Assets (RWA):</strong> tokenized treasuries (Ondo, Maple), on-chain bonds, real estate — a growing sector</li>
+      </ul>
+
+      <h3>Major L1 Protocols Beyond ETH</h3>
+      <ul>
+        <li><strong>Solana (SOL)</strong> — ~400ms block times, ~$0.001-0.01 fees. Dominant for meme coins. Ecosystem: Jupiter, Raydium, Tensor, Marinade, Jito, Magic Eden, Drift</li>
+        <li><strong>BNB Chain</strong> — EVM-compatible, low fees, large Asian user base. PancakeSwap dominant DEX. Higher scam rate.</li>
+        <li><strong>Avalanche (AVAX)</strong> — subnet architecture for custom chains, strong gaming ecosystem</li>
+        <li><strong>Sui / Aptos</strong> — Move language, object-centric model</li>
+        <li><strong>TON</strong> — Telegram-integrated, massive user base through Telegram mini-apps (Hamster Kombat, Notcoin)</li>
+        <li><strong>Cosmos (ATOM)</strong> — "internet of blockchains," IBC protocol for cross-chain. App-specific chains like Osmosis, Injective, dYdX</li>
+      </ul>
+
+      <h3>Market Dynamics — The Crypto Cycle</h3>
+      <ul>
+        <li><strong>~4-year cycles</strong> loosely tied to BTC halvings: accumulation → early bull → euphoria → blow-off top → crash → bear market → accumulation</li>
+        <li><strong>BTC dominance cycle:</strong> rises in bear/early bull (flight to safety), falls in late bull (altseason, rotation into alts and meme coins)</li>
+        <li><strong>Altseason:</strong> when altcoins outperform BTC. Usually late cycle. Meme coins often peak near the very end.</li>
+        <li><strong>Fed interest rates:</strong> rate cuts = risk-on (good for crypto), rate hikes = risk-off (bad)</li>
+        <li><strong>DXY (Dollar Index):</strong> strong dollar = weak crypto, weak dollar = strong crypto</li>
+        <li><strong>Fear &amp; Greed Index:</strong> extreme fear = potential buying opportunity, extreme greed = potential top</li>
+      </ul>
+
+      <div class="info-box">
+        <strong>&#128204; How meme coins fit in:</strong> Meme coins live <em>on top of</em> this infrastructure. They're just SPL tokens on Solana or ERC-20 tokens on ETH/Base. The underlying chain determines speed, cost, and which tools you use. The broader crypto market sets the tone — when BTC rips, meme coins go vertical; when BTC dumps, meme coins puke the hardest.
+      </div>
+
+      <div class="tip-box">
+        <strong>&#128161; Pro Tip:</strong> Even if you're only trading meme coins, understanding the broader crypto cycle tells you <em>when</em> to be aggressive and when to sit in stables. The best meme coin gains happen in late-cycle altseason — being positioned correctly for the macro matters more than picking the "right" token.
+      </div>
+    `
   }
 ];
 
