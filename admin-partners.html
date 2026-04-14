@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#06060b" />
+  <title>Admin — Marketing Partners</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #06060b;
+      --bg-card: #0d0d1a;
+      --bg-input: #10101e;
+      --border: #1a1a2e;
+      --border-hover: #2a2a44;
+      --text: #eaeaf2;
+      --text-dim: #9d9db8;
+      --text-muted: #55556e;
+      --green: #00ff88;
+      --cyan: #00d4ff;
+      --red: #ff6b6b;
+      --yellow: #ffc107;
+      --purple: #9945ff;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding: 40px 24px 80px;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1000px 600px at 15% 0%, rgba(0, 255, 136, 0.06), transparent 60%),
+        radial-gradient(900px 600px at 100% 20%, rgba(153, 69, 255, 0.05), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand img { width: 36px; height: 36px; border-radius: 9px; }
+
+    .brand .name {
+      font-weight: 800;
+      font-size: 18px;
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand .tag {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #fff, var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card h2 .pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(0, 255, 136, 0.12);
+      color: var(--green);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .card h2 .pill.warn {
+      background: rgba(255, 193, 7, 0.12);
+      color: var(--yellow);
+      border-color: rgba(255, 193, 7, 0.3);
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], input[type="password"], input[type="email"] {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--green);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .row-single { display: block; margin-bottom: 12px; }
+
+    .btn {
+      padding: 11px 18px;
+      border-radius: 10px;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green), #00cc6a);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 255, 136, 0.25);
+    }
+
+    .btn-danger {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: var(--red);
+    }
+
+    .btn-danger:hover { background: rgba(255, 107, 107, 0.15); }
+
+    .btn-secondary {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover { border-color: var(--border-hover); }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .msg {
+      font-size: 12px;
+      min-height: 18px;
+      margin-top: 10px;
+    }
+
+    .msg.error { color: var(--red); }
+    .msg.success { color: var(--green); }
+    .msg.info { color: var(--cyan); }
+
+    .partner-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .partner-table th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .partner-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(26, 26, 46, 0.5);
+      color: var(--text-dim);
+    }
+
+    .partner-table td.uid {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: var(--cyan);
+    }
+
+    .partner-table td.amount { color: var(--green); font-weight: 700; }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tier-badge.standard {
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 212, 255, 0.25);
+    }
+
+    .tier-badge.elite {
+      background: rgba(153, 69, 255, 0.12);
+      color: var(--purple);
+      border: 1px solid rgba(153, 69, 255, 0.3);
+    }
+
+    .empty {
+      padding: 28px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .auth-screen {
+      max-width: 400px;
+      margin: 80px auto 0;
+      text-align: center;
+    }
+
+    .auth-screen h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .auth-screen p {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 24px 16px 60px; }
+      h1 { font-size: 24px; }
+      .row { grid-template-columns: 1fr; }
+      .partner-table { font-size: 12px; }
+      .partner-table th, .partner-table td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ========= Admin key entry ========= -->
+    <div id="auth-gate" class="auth-screen">
+      <div class="brand" style="justify-content:center; margin-bottom:20px;">
+        <img src="favicon.png" alt="Degen Desk" />
+        <div>
+          <div class="name">Degen Desk</div>
+          <div class="tag">Admin Console</div>
+        </div>
+      </div>
+      <h1>Marketing Partners</h1>
+      <p>Enter the admin secret key to manage marketing partners and creator links.</p>
+      <div class="card">
+        <label for="admin-key-input">Admin Secret Key</label>
+        <input type="password" id="admin-key-input" placeholder="Enter admin key" autocomplete="off" />
+        <div style="margin-top:12px;">
+          <button class="btn btn-primary" id="unlock-btn" style="width:100%;">Unlock Admin</button>
+        </div>
+        <div class="msg error" id="auth-msg"></div>
+      </div>
+    </div>
+
+    <!-- ========= Admin console ========= -->
+    <div id="admin-console" style="display:none;">
+      <div class="header">
+        <a class="brand" href="/">
+          <img src="favicon.png" alt="Degen Desk" />
+          <div>
+            <div class="name">Degen Desk</div>
+            <div class="tag">Admin Console</div>
+          </div>
+        </a>
+        <button class="btn btn-secondary" id="lock-btn">Lock</button>
+      </div>
+
+      <h1>Marketing Partners</h1>
+      <p class="subtitle">Promote users to partners, link creators to partners, and monitor tier & earnings.</p>
+
+      <!-- ====== Promote ====== -->
+      <div class="card">
+        <h2>Promote user to partner <span class="pill">+Partner</span></h2>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:14px;">
+          Look up a user by email or referral code, then promote them. They'll start at the Standard tier (10%).
+        </p>
+        <div class="row">
+          <div>
+            <label>Email</label>
+            <input type="email" id="promote-email" placeholder="partner@example.com" autocomplete="off" />
+          </div>
+          <div>
+            <label>Or referral code</label>
+            <input type="text" id="promote-code" placeholder="PARTNER123" autocomplete="off" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="promote-lookup-btn">Look up</button>
+          <button class="btn btn-primary" id="promote-btn" disabled>Promote to partner</button>
+          <button class="btn btn-danger" id="demote-btn" disabled>Demote</button>
+        </div>
+        <div class="msg" id="promote-msg"></div>
+      </div>
+
+      <!-- ====== Link creator ====== -->
+      <div class="card">
+        <h2>Link creator to partner</h2>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:14px;">
+          Assigns the creator to a partner. Future commissions from that creator's paying referrals will flow to the partner.
+        </p>
+        <div class="row">
+          <div>
+            <label>Partner (email or referral code)</label>
+            <input type="text" id="link-partner" placeholder="partner lookup" autocomplete="off" />
+          </div>
+          <div>
+            <label>Creator (email or referral code)</label>
+            <input type="text" id="link-creator" placeholder="creator lookup" autocomplete="off" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="link-btn">Link creator</button>
+          <button class="btn btn-danger" id="unlink-btn">Unlink creator</button>
+        </div>
+        <div class="msg" id="link-msg"></div>
+      </div>
+
+      <!-- ====== Partner list ====== -->
+      <div class="card">
+        <h2>All partners</h2>
+        <div id="partner-table-wrap">
+          <div class="empty">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "degen_admin_key";
+
+    const authGate = document.getElementById("auth-gate");
+    const adminConsole = document.getElementById("admin-console");
+    const adminKeyInput = document.getElementById("admin-key-input");
+    const unlockBtn = document.getElementById("unlock-btn");
+    const authMsg = document.getElementById("auth-msg");
+    const lockBtn = document.getElementById("lock-btn");
+
+    const promoteEmail = document.getElementById("promote-email");
+    const promoteCode = document.getElementById("promote-code");
+    const promoteLookupBtn = document.getElementById("promote-lookup-btn");
+    const promoteBtn = document.getElementById("promote-btn");
+    const demoteBtn = document.getElementById("demote-btn");
+    const promoteMsg = document.getElementById("promote-msg");
+
+    const linkPartner = document.getElementById("link-partner");
+    const linkCreator = document.getElementById("link-creator");
+    const linkBtn = document.getElementById("link-btn");
+    const unlinkBtn = document.getElementById("unlink-btn");
+    const linkMsg = document.getElementById("link-msg");
+
+    const partnerTableWrap = document.getElementById("partner-table-wrap");
+
+    let adminKey = null;
+    let promoteTargetUid = null;
+
+    // -------- Admin unlock (session-only, kept in localStorage for
+    //          convenience but never shown in URLs). --------
+    function unlock(key) {
+      adminKey = key;
+      localStorage.setItem(STORAGE_KEY, key);
+      authGate.style.display = "none";
+      adminConsole.style.display = "block";
+      loadPartners();
+    }
+
+    unlockBtn.addEventListener("click", async () => {
+      const k = adminKeyInput.value.trim();
+      if (!k) return;
+      // Try a harmless list call to validate the key
+      authMsg.textContent = "";
+      try {
+        const res = await fetch("/api/partner", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "list", adminKey: k }),
+        });
+        if (res.status === 403) {
+          authMsg.className = "msg error";
+          authMsg.textContent = "Invalid admin key.";
+          return;
+        }
+        if (!res.ok) throw new Error("Server error");
+        unlock(k);
+      } catch (err) {
+        authMsg.className = "msg error";
+        authMsg.textContent = "Unable to reach server.";
+      }
+    });
+
+    lockBtn.addEventListener("click", () => {
+      adminKey = null;
+      localStorage.removeItem(STORAGE_KEY);
+      authGate.style.display = "block";
+      adminConsole.style.display = "none";
+      adminKeyInput.value = "";
+    });
+
+    // Auto-unlock on reload if key is cached
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      adminKey = saved;
+      authGate.style.display = "none";
+      adminConsole.style.display = "block";
+      loadPartners();
+    }
+
+    // -------- Helpers --------
+    async function apiCall(body) {
+      const res = await fetch("/api/partner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...body, adminKey }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Request failed");
+      return data;
+    }
+
+    function setMsg(el, text, type) {
+      el.className = "msg " + (type || "info");
+      el.textContent = text;
+    }
+
+    // Accept either "someone@example.com" or "CODE123" in a single field.
+    // Returns { email?: string, referralCode?: string }.
+    function parseLookup(value) {
+      const v = (value || "").trim();
+      if (!v) return null;
+      if (v.includes("@")) return { email: v.toLowerCase() };
+      return { referralCode: v.toUpperCase() };
+    }
+
+    // -------- Promote / demote --------
+    promoteLookupBtn.addEventListener("click", async () => {
+      const body = {
+        action: "lookup",
+        ...(promoteEmail.value ? { email: promoteEmail.value.trim().toLowerCase() } : {}),
+        ...(promoteCode.value ? { referralCode: promoteCode.value.trim().toUpperCase() } : {}),
+      };
+      if (!body.email && !body.referralCode) {
+        setMsg(promoteMsg, "Enter an email or referral code first.", "error");
+        return;
+      }
+      try {
+        const data = await apiCall(body);
+        promoteTargetUid = data.uid;
+        promoteBtn.disabled = false;
+        demoteBtn.disabled = !data.isPartner;
+        setMsg(
+          promoteMsg,
+          `Found ${data.email || data.referralCode || data.uid} — ${data.isPartner ? "already a partner" : "not a partner yet"}`,
+          "info"
+        );
+      } catch (err) {
+        promoteTargetUid = null;
+        promoteBtn.disabled = true;
+        demoteBtn.disabled = true;
+        setMsg(promoteMsg, err.message, "error");
+      }
+    });
+
+    promoteBtn.addEventListener("click", async () => {
+      if (!promoteTargetUid) return;
+      try {
+        await apiCall({ action: "promote", targetUid: promoteTargetUid });
+        setMsg(promoteMsg, "Promoted to marketing partner.", "success");
+        demoteBtn.disabled = false;
+        loadPartners();
+      } catch (err) {
+        setMsg(promoteMsg, err.message, "error");
+      }
+    });
+
+    demoteBtn.addEventListener("click", async () => {
+      if (!promoteTargetUid) return;
+      if (!confirm("Demote this user? They will stop earning new partner commissions.")) return;
+      try {
+        await apiCall({ action: "demote", targetUid: promoteTargetUid });
+        setMsg(promoteMsg, "Demoted. Existing commissions and balances are preserved.", "success");
+        demoteBtn.disabled = true;
+        loadPartners();
+      } catch (err) {
+        setMsg(promoteMsg, err.message, "error");
+      }
+    });
+
+    // -------- Link / unlink --------
+    async function resolveUid(value) {
+      const parsed = parseLookup(value);
+      if (!parsed) throw new Error("Enter an email or referral code.");
+      const data = await apiCall({ action: "lookup", ...parsed });
+      return data.uid;
+    }
+
+    linkBtn.addEventListener("click", async () => {
+      try {
+        setMsg(linkMsg, "Looking up users…", "info");
+        const [partnerUid, creatorUid] = await Promise.all([
+          resolveUid(linkPartner.value),
+          resolveUid(linkCreator.value),
+        ]);
+        await apiCall({ action: "link", partnerUid, creatorUid });
+        setMsg(linkMsg, "Creator linked.", "success");
+        loadPartners();
+      } catch (err) {
+        setMsg(linkMsg, err.message, "error");
+      }
+    });
+
+    unlinkBtn.addEventListener("click", async () => {
+      try {
+        setMsg(linkMsg, "Looking up creator…", "info");
+        const creatorUid = await resolveUid(linkCreator.value);
+        await apiCall({ action: "unlink", creatorUid });
+        setMsg(linkMsg, "Creator unlinked.", "success");
+        loadPartners();
+      } catch (err) {
+        setMsg(linkMsg, err.message, "error");
+      }
+    });
+
+    // -------- Partner list --------
+    async function loadPartners() {
+      partnerTableWrap.innerHTML = '<div class="empty">Loading…</div>';
+      try {
+        const data = await apiCall({ action: "list" });
+        if (!data.partners || data.partners.length === 0) {
+          partnerTableWrap.innerHTML = '<div class="empty">No partners yet. Promote one above.</div>';
+          return;
+        }
+
+        const rows = data.partners.map((p) => {
+          const earnings = (p.totalPartnerEarnings || 0).toFixed(2);
+          const paid = (p.totalPartnerPaidOut || 0).toFixed(2);
+          const available = (parseFloat(earnings) - parseFloat(paid)).toFixed(2);
+          const tierClass = p.tier === "elite" ? "elite" : "standard";
+          const tierLabel = p.tier === "elite" ? "Elite 12%" : "Standard 10%";
+          const email = p.email || "—";
+          return `
+            <tr>
+              <td>${email}</td>
+              <td class="uid">${p.uid.slice(0, 10)}…</td>
+              <td><span class="tier-badge ${tierClass}">${tierLabel}</span></td>
+              <td>${p.activeCreatorCount}</td>
+              <td class="amount">$${earnings}</td>
+              <td class="amount">$${available}</td>
+            </tr>
+          `;
+        }).join("");
+
+        partnerTableWrap.innerHTML = `
+          <table class="partner-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>UID</th>
+                <th>Tier</th>
+                <th>Active</th>
+                <th>Total Earned</th>
+                <th>Available</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      } catch (err) {
+        partnerTableWrap.innerHTML = `<div class="empty">Failed to load: ${err.message}</div>`;
+      }
+    }
+  </script>
+</body>
+</html>

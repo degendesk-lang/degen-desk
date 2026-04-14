@@ -19,6 +19,7 @@
  */
 
 const admin = require("firebase-admin");
+const { processPartnerCommission } = require("../lib/partner");
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -195,6 +196,32 @@ module.exports = async function handler(req, res) {
               console.log(
                 `[RC] referral commission: ${referredByCode} → $${commissionAmount} (${referralType}) for user ${referrerId}`
               );
+
+              // Marketing Partner Program — create a parallel partner
+              // commission if this creator is linked to a marketing partner.
+              try {
+                const partnerResult = await processPartnerCommission({
+                  db,
+                  admin,
+                  creatorId: referrerId,
+                  referredUserId: uid,
+                  paymentAmount: priceUsd,
+                  plan,
+                  type: referralType,
+                  store: "APP_STORE",
+                  sourceIds: {
+                    appleProductId: productId,
+                    revenueCatEventType: type,
+                  },
+                });
+                if (partnerResult) {
+                  console.log(
+                    `[RC] partner commission: $${partnerResult.commissionAmount} → partner ${partnerResult.partnerId} (${partnerResult.tier}, ${partnerResult.activeCount} active)`
+                  );
+                }
+              } catch (partnerErr) {
+                console.error("[RC] partner commission error (non-fatal):", partnerErr.message);
+              }
             }
           }
         } catch (refErr) {

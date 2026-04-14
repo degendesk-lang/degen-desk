@@ -927,6 +927,263 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* =========================================
+       Marketing Partner Program section
+       (hidden by default; shown when user.isPartner === true)
+       ========================================= */
+    .partner-section {
+      margin-top: 48px;
+      position: relative;
+      padding-top: 36px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .partner-section-label {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 14px;
+      background: var(--bg-primary);
+      border: 1px solid rgba(153, 69, 255, 0.35);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--accent-purple);
+    }
+
+    .partner-hero {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    .partner-hero h2 {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #d9b4ff 55%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .partner-hero p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .partner-tier-card {
+      background:
+        linear-gradient(180deg, rgba(153, 69, 255, 0.06), transparent 70%),
+        var(--bg-card);
+      border: 1px solid rgba(153, 69, 255, 0.25);
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .partner-tier-info { display: flex; flex-direction: column; gap: 4px; }
+
+    .partner-tier-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .partner-tier-name {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .partner-tier-rate {
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .partner-tier-progress {
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .partner-tier-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .partner-tier-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .partner-tier-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .partner-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .partner-stat-card {
+      background:
+        linear-gradient(180deg, rgba(153, 69, 255, 0.04), transparent 60%),
+        var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px 18px;
+      text-align: center;
+    }
+
+    .partner-stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent-purple);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .partner-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .partner-creators-card,
+    .partner-commissions-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .partner-creator-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-bottom: 1px solid rgba(26, 26, 46, 0.5);
+      font-size: 13px;
+    }
+
+    .partner-creator-row:last-child { border-bottom: none; }
+
+    .partner-creator-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .partner-creator-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .partner-creator-dot.active {
+      background: var(--accent-green);
+      box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+    }
+
+    .partner-creator-info { display: flex; flex-direction: column; gap: 2px; }
+
+    .partner-creator-name {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .partner-creator-code {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .partner-creator-right {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    .partner-payout-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(153, 69, 255, 0.2);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .partner-payout-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .partner-payout-card .desc {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .partner-payout-card .balance-amount { color: var(--accent-purple); }
+
+    .partner-payout-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent-purple), #6b2ec7);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 4px;
+    }
+
+    .partner-payout-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(153, 69, 255, 0.25);
+    }
+
+    .partner-payout-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
     /* Responsive */
     @media (max-width: 600px) {
       .nav { padding: 14px 16px; }
@@ -938,6 +1195,11 @@
       .code-input-row { flex-direction: column; }
       .ref-table th, .ref-table td { padding: 10px 14px; font-size: 12px; }
       .stat-value { font-size: 20px; }
+      .partner-hero h2 { font-size: 22px; }
+      .partner-stats-row { grid-template-columns: 1fr; }
+      .partner-stat-value { font-size: 20px; }
+      .partner-tier-card { flex-direction: column; align-items: flex-start; }
+      .partner-tier-rate { font-size: 22px; }
     }
   </style>
 </head>
@@ -1111,6 +1373,102 @@
             <div class="empty-state" id="empty-state">
               <p>&#129309;</p>
               <p>No referrals yet. Share your link to start earning!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================
+             Marketing Partner Program section
+             Only rendered for users with isPartner === true
+             ====================================== -->
+        <div class="partner-section" id="partner-section" style="display:none;">
+          <span class="partner-section-label">Marketing Partner</span>
+
+          <div class="partner-hero">
+            <h2>Your Partner Dashboard</h2>
+            <p>You earn an additional commission on every paying subscription driven by creators you've recruited.</p>
+          </div>
+
+          <!-- Tier card -->
+          <div class="partner-tier-card">
+            <div class="partner-tier-info">
+              <span class="partner-tier-label">Current Tier</span>
+              <span class="partner-tier-name" id="partner-tier-name">Standard</span>
+            </div>
+            <div class="partner-tier-rate" id="partner-tier-rate">10%</div>
+            <div class="partner-tier-progress" id="partner-tier-progress-wrap">
+              <div class="partner-tier-progress-label">
+                <span id="partner-progress-current">0 / 15 active creators</span>
+                <span id="partner-progress-next">to Elite (12%)</span>
+              </div>
+              <div class="partner-tier-progress-bar">
+                <div class="partner-tier-progress-fill" id="partner-progress-fill" style="width:0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="partner-stats-row">
+            <div class="partner-stat-card">
+              <div class="partner-stat-value" id="partner-stat-active">0</div>
+              <div class="partner-stat-label">Active This Month</div>
+            </div>
+            <div class="partner-stat-card">
+              <div class="partner-stat-value" id="partner-stat-month">$0.00</div>
+              <div class="partner-stat-label">Earned This Month</div>
+            </div>
+            <div class="partner-stat-card">
+              <div class="partner-stat-value" id="partner-stat-alltime">$0.00</div>
+              <div class="partner-stat-label">All-Time Earnings</div>
+            </div>
+          </div>
+
+          <!-- Linked creators list -->
+          <div class="partner-creators-card">
+            <div class="table-header">
+              <h2>Your Creators</h2>
+              <span class="count" id="partner-creator-count">0 creators</span>
+            </div>
+            <div id="partner-creators-body">
+              <div class="empty-state">
+                <p>&#128227;</p>
+                <p>No creators linked yet. Contact an admin to get started.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Partner payout -->
+          <div class="partner-payout-card">
+            <h3>Partner Payout Wallet</h3>
+            <p class="desc">Your partner earnings are tracked separately from any creator referrals you've made.</p>
+            <div class="balance-display">
+              <span class="balance-amount" id="partner-payout-balance">$0.00</span>
+              <span class="balance-label">Available Balance</span>
+            </div>
+
+            <div class="payout-pending-banner" id="partner-pending-banner" style="display:none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Payout of <strong id="partner-pending-amount">$0.00</strong> is being processed. You'll be paid shortly.</span>
+            </div>
+
+            <div class="payout-form" id="partner-payout-form">
+              <div>
+                <label>Payment Method</label>
+                <select class="method-select" id="partner-payout-method">
+                  <option value="paypal">PayPal</option>
+                  <option value="solana">Solana Wallet (SOL/USDC)</option>
+                  <option value="ethereum">Ethereum Wallet (ETH/USDC)</option>
+                  <option value="venmo">Venmo</option>
+                  <option value="cashapp">Cash App</option>
+                </select>
+              </div>
+              <div>
+                <label id="partner-detail-label">PayPal Email</label>
+                <input type="text" class="payout-detail-input" id="partner-payout-details" placeholder="your@email.com" />
+              </div>
+              <p class="payout-minimum">Minimum payout: $10.00</p>
+              <button class="partner-payout-btn" id="partner-request-payout-btn">Request Partner Payout</button>
+              <div class="payout-msg" id="partner-payout-msg"></div>
             </div>
           </div>
         </div>
@@ -1596,7 +1954,201 @@
     loadReferralData = async function () {
       await origLoadReferralData();
       await loadPayoutData();
+      await loadPartnerData();
     };
+
+    // =============================================
+    // MARKETING PARTNER PROGRAM
+    // =============================================
+
+    const partnerSection = document.getElementById("partner-section");
+
+    async function loadPartnerData() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const res = await fetch(`/api/partner?uid=${user.uid}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        // Not a partner — keep the section hidden.
+        if (!data.isPartner) {
+          partnerSection.style.display = "none";
+          return;
+        }
+
+        partnerSection.style.display = "block";
+
+        // Tier card
+        const tierName = data.tier === "elite" ? "Elite" : "Standard";
+        const ratePct = Math.round((data.commissionRate || 0.10) * 100);
+        document.getElementById("partner-tier-name").textContent = tierName;
+        document.getElementById("partner-tier-rate").textContent = `${ratePct}%`;
+
+        const active = data.activeCreatorCount || 0;
+        const progressWrap = document.getElementById("partner-tier-progress-wrap");
+        if (data.tier === "elite") {
+          // At top tier → show the achievement, no progress bar goal
+          document.getElementById("partner-progress-current").textContent = `${active} active creators`;
+          document.getElementById("partner-progress-next").textContent = "Max tier unlocked";
+          document.getElementById("partner-progress-fill").style.width = "100%";
+        } else {
+          const target = 15;
+          const pct = Math.min(100, Math.round((active / target) * 100));
+          document.getElementById("partner-progress-current").textContent = `${active} / ${target} active creators`;
+          document.getElementById("partner-progress-next").textContent = "to Elite (12%)";
+          document.getElementById("partner-progress-fill").style.width = `${pct}%`;
+        }
+
+        // Stats
+        document.getElementById("partner-stat-active").textContent = active;
+        document.getElementById("partner-stat-month").textContent =
+          "$" + (data.stats?.totalEarnedThisMonth || 0).toFixed(2);
+        document.getElementById("partner-stat-alltime").textContent =
+          "$" + (data.stats?.totalEarnings || 0).toFixed(2);
+
+        // Creators list
+        const creators = data.linkedCreators || [];
+        document.getElementById("partner-creator-count").textContent =
+          `${creators.length} creator${creators.length !== 1 ? "s" : ""}`;
+        const creatorsBody = document.getElementById("partner-creators-body");
+        if (creators.length === 0) {
+          creatorsBody.innerHTML = `
+            <div class="empty-state">
+              <p>&#128227;</p>
+              <p>No creators linked yet. Contact an admin to get started.</p>
+            </div>`;
+        } else {
+          creatorsBody.innerHTML = creators.map((c) => {
+            const codeStr = c.referralCode ? escapeHtml(c.referralCode) : "(no code yet)";
+            const emailStr = c.email ? escapeHtml(c.email) : "Creator " + c.uid.slice(0, 6);
+            return `
+              <div class="partner-creator-row">
+                <div class="partner-creator-left">
+                  <span class="partner-creator-dot ${c.isActiveThisMonth ? "active" : ""}"></span>
+                  <div class="partner-creator-info">
+                    <span class="partner-creator-name">${emailStr}</span>
+                    <span class="partner-creator-code">${codeStr}</span>
+                  </div>
+                </div>
+                <div class="partner-creator-right">$${(c.totalReferralEarnings || 0).toFixed(2)}</div>
+              </div>
+            `;
+          }).join("");
+        }
+
+        // Partner payout wallet
+        await loadPartnerPayoutData();
+      } catch (err) {
+        console.error("Failed to load partner data:", err);
+      }
+    }
+
+    // Partner payout (separate wallet, uses balanceType=partner)
+    const partnerPayoutMethod = document.getElementById("partner-payout-method");
+    const partnerPayoutDetails = document.getElementById("partner-payout-details");
+    const partnerDetailLabel = document.getElementById("partner-detail-label");
+    const partnerRequestBtn = document.getElementById("partner-request-payout-btn");
+    const partnerPayoutMsg = document.getElementById("partner-payout-msg");
+    const partnerPayoutForm = document.getElementById("partner-payout-form");
+    const partnerPendingBanner = document.getElementById("partner-pending-banner");
+
+    partnerPayoutMethod.addEventListener("change", () => {
+      const m = methodLabels[partnerPayoutMethod.value];
+      if (m) {
+        partnerDetailLabel.textContent = m.label;
+        partnerPayoutDetails.placeholder = m.placeholder;
+      }
+    });
+
+    async function loadPartnerPayoutData() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const res = await fetch(`/api/payout?uid=${user.uid}&balanceType=partner`);
+        const data = await res.json();
+
+        document.getElementById("partner-payout-balance").textContent =
+          "$" + (data.availableBalance || 0).toFixed(2);
+
+        if (data.preferredPaymentMethod) {
+          partnerPayoutMethod.value = data.preferredPaymentMethod;
+          partnerPayoutMethod.dispatchEvent(new Event("change"));
+        }
+        if (data.preferredPaymentDetails && !partnerPayoutDetails.value) {
+          partnerPayoutDetails.value = data.preferredPaymentDetails;
+        }
+
+        const pending = data.payouts?.find((p) => p.status === "pending");
+        if (pending) {
+          partnerPayoutForm.style.display = "none";
+          partnerPendingBanner.style.display = "flex";
+          document.getElementById("partner-pending-amount").textContent =
+            "$" + pending.amount.toFixed(2);
+        } else {
+          partnerPayoutForm.style.display = "flex";
+          partnerPendingBanner.style.display = "none";
+        }
+
+        if ((data.availableBalance || 0) < (data.minimumPayout || 10)) {
+          partnerRequestBtn.disabled = true;
+          partnerRequestBtn.textContent = "Balance below $10 minimum";
+        } else {
+          partnerRequestBtn.disabled = false;
+          partnerRequestBtn.textContent = "Request Partner Payout";
+        }
+      } catch (err) {
+        console.error("Failed to load partner payout data:", err);
+      }
+    }
+
+    partnerRequestBtn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const method = partnerPayoutMethod.value;
+      const details = partnerPayoutDetails.value.trim();
+
+      if (!details) {
+        partnerPayoutMsg.textContent = "Please enter your payment details.";
+        partnerPayoutMsg.className = "payout-msg error";
+        return;
+      }
+
+      partnerRequestBtn.disabled = true;
+      partnerRequestBtn.textContent = "Requesting...";
+
+      try {
+        const res = await fetch("/api/payout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uid: user.uid,
+            paymentMethod: method,
+            paymentDetails: details,
+            balanceType: "partner",
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          partnerPayoutMsg.textContent = `Payout of $${data.amount.toFixed(2)} requested! We'll process it shortly.`;
+          partnerPayoutMsg.className = "payout-msg success";
+          await loadPartnerPayoutData();
+        } else {
+          partnerPayoutMsg.textContent = data.error || "Failed to request payout.";
+          partnerPayoutMsg.className = "payout-msg error";
+          partnerRequestBtn.disabled = false;
+          partnerRequestBtn.textContent = "Request Partner Payout";
+        }
+      } catch (err) {
+        partnerPayoutMsg.textContent = "Something went wrong. Try again.";
+        partnerPayoutMsg.className = "payout-msg error";
+        partnerRequestBtn.disabled = false;
+        partnerRequestBtn.textContent = "Request Partner Payout";
+      }
+    });
   </script>
 </body>
 </html>

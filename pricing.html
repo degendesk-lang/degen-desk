@@ -821,14 +821,15 @@
 
     // Platform-aware pricing
     //  - Web (Stripe):   $14.99/mo or $149.99/yr (~17% off)
-    //  - iOS  (Apple):   $18.99/mo or $189.99/yr (~17% off, includes 3-day free trial on yearly)
+    //  - iOS  (Apple):   $17.99/mo or $179.99/yr (~17% off, includes 3-day free trial on yearly)
+    //    The iOS price premium offsets Apple's IAP cut (30% year 1 / 15% year 2+).
     const WEB_PLANS = {
       monthly: { price: "$14.99", period: "/month", billed: "&nbsp;", plan: "monthly" },
       yearly:  { price: "$12.50", period: "/month", billed: "Billed $149.99/year", plan: "yearly" },
     };
     const IOS_PLANS = {
-      monthly: { price: "$18.99", period: "/month", billed: "&nbsp;", plan: "monthly" },
-      yearly:  { price: "$15.83", period: "/month", billed: "Billed $189.99/year &bull; 3-day free trial", plan: "yearly" },
+      monthly: { price: "$17.99", period: "/month", billed: "&nbsp;", plan: "monthly" },
+      yearly:  { price: "$15.00", period: "/month", billed: "Billed $179.99/year &bull; 3-day free trial", plan: "yearly" },
     };
 
     const plans = isNative ? IOS_PLANS : WEB_PLANS;

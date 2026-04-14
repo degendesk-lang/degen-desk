@@ -34,9 +34,18 @@ module.exports = async function handler(req, res) {
   try {
     // =========================================
     // POST — Request a payout
+    //
+    // balanceType controls which bucket to pay from:
+    //   "referral" (default) — creator referral earnings
+    //   "partner"             — marketing partner earnings (separate wallet)
+    //
+    // The two balances are tracked independently so partners who are also
+    // creators can keep their two earnings streams separate. Pending-payout
+    // uniqueness is enforced PER balance type (one pending of each at a time).
     // =========================================
     if (req.method === "POST") {
       const { uid, paymentMethod, paymentDetails } = req.body || {};
+      const balanceType = req.body?.balanceType === "partner" ? "partner" : "referral";
 
       if (!uid || !paymentMethod || !paymentDetails) {
         return res.status(400).json({ error: "uid, paymentMethod, and paymentDetails are required" });
@@ -59,9 +68,20 @@ module.exports = async function handler(req, res) {
       }
 
       const userData = userDoc.data();
-      const totalEarnings = userData.totalReferralEarnings || 0;
-      const totalPaidOut = userData.totalPaidOut || 0;
+      const totalEarnings =
+        balanceType === "partner"
+          ? userData.totalPartnerEarnings || 0
+          : userData.totalReferralEarnings || 0;
+      const totalPaidOut =
+        balanceType === "partner"
+          ? userData.totalPartnerPaidOut || 0
+          : userData.totalPaidOut || 0;
       const availableBalance = parseFloat((totalEarnings - totalPaidOut).toFixed(2));
+
+      // Partner payouts require the user to actually be a partner
+      if (balanceType === "partner" && !userData.isPartner) {
+        return res.status(403).json({ error: "You are not registered as a marketing partner." });
+      }
 
       if (availableBalance < MINIMUM_PAYOUT) {
         return res.status(400).json({
@@ -69,15 +89,20 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Check for pending payout already
-      const pendingSnap = await db
+      // Check for pending payout already — scoped to this balance type, so a
+      // user can have one referral payout pending + one partner payout pending
+      // at the same time.
+      const pendingQuery = db
         .collection("payoutRequests")
         .where("userId", "==", uid)
-        .where("status", "==", "pending")
-        .limit(1)
-        .get();
+        .where("status", "==", "pending");
+      const pendingSnap = await pendingQuery.get();
+      const hasPendingSameType = pendingSnap.docs.some((d) => {
+        const bt = d.data().balanceType || "referral";
+        return bt === balanceType;
+      });
 
-      if (!pendingSnap.empty) {
+      if (hasPendingSameType) {
         return res.status(409).json({
           error: "You already have a pending payout request. Please wait for it to be processed.",
         });
@@ -89,6 +114,7 @@ module.exports = async function handler(req, res) {
         email: userData.email || "",
         referralCode: userData.referralCode || "",
         amount: availableBalance,
+        balanceType,
         paymentMethod: paymentMethod,
         paymentDetails: paymentDetails.trim(),
         status: "pending",
@@ -117,9 +143,14 @@ module.exports = async function handler(req, res) {
 
     // =========================================
     // GET — Get payout history for a user
+    //
+    // Optional query param `balanceType=partner` returns the partner wallet's
+    // history and balance. Without it, the referral wallet is returned (same
+    // behavior as before).
     // =========================================
     if (req.method === "GET") {
       const uid = req.query?.uid;
+      const balanceType = req.query?.balanceType === "partner" ? "partner" : "referral";
 
       if (!uid) {
         return res.status(400).json({ error: "uid query parameter required" });
@@ -128,40 +159,52 @@ module.exports = async function handler(req, res) {
       // Get user balance info
       const userDoc = await db.collection("users").doc(uid).get();
       const userData = userDoc.exists ? userDoc.data() : {};
-      const totalEarnings = userData.totalReferralEarnings || 0;
-      const totalPaidOut = userData.totalPaidOut || 0;
+      const totalEarnings =
+        balanceType === "partner"
+          ? userData.totalPartnerEarnings || 0
+          : userData.totalReferralEarnings || 0;
+      const totalPaidOut =
+        balanceType === "partner"
+          ? userData.totalPartnerPaidOut || 0
+          : userData.totalPaidOut || 0;
       const availableBalance = parseFloat((totalEarnings - totalPaidOut).toFixed(2));
 
-      // Get payout history
+      // Get payout history. We can't use Firestore `where` on a field that
+      // some old docs don't have, so we pull all the user's payouts and
+      // filter client-side. 20-row limit keeps this cheap.
       const payoutsSnap = await db
         .collection("payoutRequests")
         .where("userId", "==", uid)
         .orderBy("createdAt", "desc")
-        .limit(20)
+        .limit(40)
         .get();
 
       const payouts = [];
       payoutsSnap.forEach((doc) => {
         const data = doc.data();
+        const docBalanceType = data.balanceType || "referral";
+        if (docBalanceType !== balanceType) return;
         payouts.push({
           id: doc.id,
           amount: data.amount,
           paymentMethod: data.paymentMethod,
           paymentDetails: data.paymentDetails,
           status: data.status,
+          balanceType: docBalanceType,
           createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : null,
           processedAt: data.processedAt?.toDate ? data.processedAt.toDate().toISOString() : null,
         });
       });
 
       return res.status(200).json({
+        balanceType,
         availableBalance,
         totalEarnings: parseFloat(totalEarnings.toFixed(2)),
         totalPaidOut: parseFloat(totalPaidOut.toFixed(2)),
         minimumPayout: MINIMUM_PAYOUT,
         preferredPaymentMethod: userData.preferredPaymentMethod || null,
         preferredPaymentDetails: userData.preferredPaymentDetails || null,
-        payouts,
+        payouts: payouts.slice(0, 20),
       });
     }
 
@@ -187,20 +230,27 @@ module.exports = async function handler(req, res) {
       const payoutData = payoutDoc.data();
 
       if (action === "complete") {
-        // Mark as completed and update user's totalPaidOut
+        // Mark as completed and update the correct totalPaidOut counter.
+        // Legacy payouts without balanceType are referral payouts.
         await db.collection("payoutRequests").doc(payoutId).update({
           status: "completed",
           processedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
+        const payoutBalanceType = payoutData.balanceType || "referral";
+        const counterField =
+          payoutBalanceType === "partner" ? "totalPartnerPaidOut" : "totalPaidOut";
+
         await db.collection("users").doc(payoutData.userId).set(
           {
-            totalPaidOut: admin.firestore.FieldValue.increment(payoutData.amount),
+            [counterField]: admin.firestore.FieldValue.increment(payoutData.amount),
           },
           { merge: true }
         );
 
-        console.log(`Payout completed: $${payoutData.amount} for user ${payoutData.userId}`);
+        console.log(
+          `Payout completed: $${payoutData.amount} (${payoutBalanceType}) for user ${payoutData.userId}`
+        );
         return res.status(200).json({ success: true, status: "completed" });
       }
 

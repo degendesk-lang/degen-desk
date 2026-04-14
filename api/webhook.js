@@ -1,5 +1,6 @@
 const Stripe = require("stripe");
 const admin = require("firebase-admin");
+const { processPartnerCommission } = require("../lib/partner");
 
 // Initialize Firebase Admin (only once)
 if (!admin.apps.length) {
@@ -123,6 +124,29 @@ module.exports = async function handler(req, res) {
                 );
 
                 console.log(`Referral commission: ${referralCode} → $${commissionAmount} for user ${referrerId}`);
+
+                // Marketing Partner Program — if this creator is recruited
+                // by a partner, create a parallel partner commission.
+                try {
+                  const partnerResult = await processPartnerCommission({
+                    db,
+                    admin,
+                    creatorId: referrerId,
+                    referredUserId: uid,
+                    paymentAmount: amountTotal / 100,
+                    plan,
+                    type: "initial",
+                    store: "STRIPE",
+                    sourceIds: { stripeSessionId: session.id },
+                  });
+                  if (partnerResult) {
+                    console.log(
+                      `Partner commission: $${partnerResult.commissionAmount} → partner ${partnerResult.partnerId} (${partnerResult.tier}, ${partnerResult.activeCount} active)`
+                    );
+                  }
+                } catch (partnerErr) {
+                  console.error("Partner commission error (non-fatal):", partnerErr.message);
+                }
               }
             } catch (refErr) {
               console.error("Referral processing error (non-fatal):", refErr.message);
@@ -246,6 +270,28 @@ module.exports = async function handler(req, res) {
                 );
 
                 console.log(`Recurring referral commission: ${referredByCode} → $${commissionAmount} from ${customerId}`);
+
+                // Marketing Partner Program — recurring partner commission
+                try {
+                  const partnerResult = await processPartnerCommission({
+                    db,
+                    admin,
+                    creatorId: referrerId,
+                    referredUserId: payingUser.id,
+                    paymentAmount: amountPaid / 100,
+                    plan,
+                    type: "recurring",
+                    store: "STRIPE",
+                    sourceIds: { stripeInvoiceId: invoice.id },
+                  });
+                  if (partnerResult) {
+                    console.log(
+                      `Recurring partner commission: $${partnerResult.commissionAmount} → partner ${partnerResult.partnerId}`
+                    );
+                  }
+                } catch (partnerErr) {
+                  console.error("Partner recurring commission error (non-fatal):", partnerErr.message);
+                }
               }
             } catch (refErr) {
               console.error("Recurring referral error (non-fatal):", refErr.message);
