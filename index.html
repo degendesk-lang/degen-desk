@@ -17,7 +17,7 @@
     html, body { background: #060610 !important; color: #f0f0f8; }
     #app { background: #060610; }
   </style>
-  <link rel="stylesheet" href="styles.css?v=25" />
+  <link rel="stylesheet" href="styles.css?v=26" />
 </head>
 <body style="background:#060610;">
   <div id="app">
@@ -105,13 +105,23 @@
           <span>Referrals</span>
           <span class="referral-badge">Earn 15%</span>
         </a>
-        <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer" class="sidebar-x-link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          <span>Follow @DegenDeskXYZ</span>
-          <span class="x-link-badge">Updates</span>
-        </a>
+        <div class="sidebar-socials">
+          <span class="sidebar-socials-label">Socials</span>
+          <div class="sidebar-socials-icons">
+            <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer" class="sidebar-social-btn sidebar-social-x" aria-label="Follow Degen Desk on X">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/degendeskxyz/" target="_blank" rel="noopener noreferrer" class="sidebar-social-btn sidebar-social-ig" aria-label="Follow Degen Desk on Instagram">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </a>
+          </div>
+        </div>
         <div id="sidebar-auth">
           <button id="google-sign-in" class="sidebar-sign-in-btn">
             <svg width="16" height="16" viewBox="0 0 24 24">

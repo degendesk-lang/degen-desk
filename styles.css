@@ -478,50 +478,80 @@ html, body {
   border-radius: 4px;
 }
 
-.sidebar-x-link {
+.sidebar-socials {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 10px 8px 14px;
   margin-bottom: 10px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.sidebar-socials:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sidebar-socials-label {
   font-family: var(--font-main);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+}
+
+.sidebar-socials-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar-social-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
   text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, background 0.15s ease,
+              border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.sidebar-x-link:hover {
-  border-color: rgba(29, 155, 240, 0.4);
-  color: var(--text-primary);
-  background: rgba(29, 155, 240, 0.06);
-}
-
-.sidebar-x-link svg {
+.sidebar-social-btn svg {
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
 }
 
-.sidebar-x-link:hover svg {
+.sidebar-social-btn:hover {
+  transform: translateY(-1px);
+  color: var(--text-primary);
+}
+
+.sidebar-social-btn:hover svg {
   opacity: 1;
 }
 
-.x-link-badge {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: rgba(29, 155, 240, 0.8);
-  background: rgba(29, 155, 240, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
+.sidebar-social-x:hover {
+  background: rgba(29, 155, 240, 0.12);
+  border-color: rgba(29, 155, 240, 0.35);
+  color: #1d9bf0;
+  box-shadow: 0 4px 14px rgba(29, 155, 240, 0.18);
+}
+
+.sidebar-social-ig:hover {
+  background: linear-gradient(135deg, rgba(240, 73, 175, 0.14), rgba(253, 148, 52, 0.14));
+  border-color: rgba(240, 73, 175, 0.4);
+  color: #f0498f;
+  box-shadow: 0 4px 14px rgba(240, 73, 175, 0.18);
 }
 
 .sidebar-sign-in-btn {
