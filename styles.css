@@ -823,50 +823,6 @@ html, body {
   letter-spacing: 0.1px;
 }
 
-/* === Mobile Quick Topics === */
-#mobile-topics {
-  display: none;
-}
-
-.mobile-topics-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text-muted);
-  font-weight: 700;
-  padding: 0 4px 10px;
-}
-
-.mobile-topics-scroll {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.mobile-topic-pill {
-  flex-shrink: 0;
-  padding: 10px 16px;
-  border: 1px solid var(--border-color);
-  background: linear-gradient(135deg, var(--bg-tertiary), rgba(18, 18, 36, 0.7));
-  color: var(--text-secondary);
-  font-family: var(--font-main);
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: var(--radius-xl);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-.mobile-topic-pill:active {
-  background: var(--bg-elevated);
-  border-color: rgba(0, 255, 136, 0.4);
-  color: var(--accent-green);
-  transform: scale(0.95);
-  box-shadow: 0 0 12px rgba(0, 255, 136, 0.08);
-}
-
 /* === Messages === */
 #messages {
   flex: 1;
@@ -1466,11 +1422,6 @@ html, body {
 
   .status-text { font-size: 11px; }
 
-  /* Mobile Quick Topic Pills */
-  #mobile-topics { display: block; padding: 4px 0 8px; }
-  .mobile-topics-scroll { display: flex; flex-wrap: wrap; gap: 7px; }
-  .mobile-topic-pill { padding: 9px 14px; font-size: 12.5px; border-radius: 20px; }
-
   /* Welcome bubble + grid — compact on mobile */
   .bot-message .message-bubble.welcome-bubble { padding: 18px 18px 16px; }
   .message-bubble.welcome-bubble h2 { font-size: 19px; }
@@ -1517,7 +1468,6 @@ html, body {
   #messages { padding: 12px 10px; gap: 14px; }
   .message-avatar { width: 28px; height: 28px; }
   .message-bubble { padding: 12px 14px; font-size: 13px; }
-  .mobile-topic-pill { padding: 8px 12px; font-size: 12px; }
   #input-area { padding: 8px 10px calc(8px + var(--safe-bottom)); }
 
   /* Welcome bubble stays roomier than normal messages on small screens */

@@ -95,8 +95,6 @@ window.DegenToast = (function () {
   const sidebar = document.getElementById("sidebar");
   const sidebarOverlay = document.getElementById("sidebar-overlay");
   const topicButtons = document.querySelectorAll(".topic-btn");
-  const mobileTopicPills = document.querySelectorAll(".mobile-topic-pill");
-  const mobileTopics = document.getElementById("mobile-topics");
   const welcomeMessage = document.getElementById("welcome-message");
 
   // Auth / conversation UI elements
@@ -324,17 +322,12 @@ window.DegenToast = (function () {
       `;
       messagesContainer.innerHTML = welcomeHTML;
     }
-
-    // Show mobile topics again
-    if (mobileTopics) mobileTopics.style.display = "";
   }
 
   function clearChatUI() {
     // Remove all messages
     const allMsgs = messagesContainer.querySelectorAll(".message");
     allMsgs.forEach((m) => m.remove());
-    // Remove mobile topics
-    if (mobileTopics) mobileTopics.style.display = "none";
     // Remove welcome if exists
     const welcome = document.getElementById("welcome-message");
     if (welcome) welcome.remove();
@@ -406,7 +399,7 @@ window.DegenToast = (function () {
   }
 
   const sidebarQueries = new Set();
-  document.querySelectorAll(".topic-btn, .mobile-topic-pill").forEach((btn) => {
+  document.querySelectorAll(".topic-btn").forEach((btn) => {
     const q = btn.getAttribute("data-query");
     if (q) sidebarQueries.add(q.trim());
   });
@@ -555,10 +548,6 @@ window.DegenToast = (function () {
     return div.innerHTML;
   }
 
-  function hideMobileTopics() {
-    if (mobileTopics) mobileTopics.style.display = "none";
-  }
-
   function hideWelcome() {
     const welcome = document.getElementById("welcome-message");
     if (welcome) welcome.remove();
@@ -583,7 +572,6 @@ window.DegenToast = (function () {
 
     isProcessing = true;
     if (typeof updateSendBtnState === "function") updateSendBtnState();
-    hideMobileTopics();
     hideWelcome();
 
     // If logged in and no current conversation, create one
@@ -707,15 +695,6 @@ window.DegenToast = (function () {
       userInput.value = query;
       sendMessage(query);
       closeSidebar();
-    });
-  });
-
-  // Mobile topic pill buttons
-  mobileTopicPills.forEach((pill) => {
-    pill.addEventListener("click", () => {
-      const query = pill.getAttribute("data-query");
-      userInput.value = query;
-      sendMessage(query);
     });
   });
 
