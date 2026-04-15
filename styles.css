@@ -1866,6 +1866,24 @@ html, body {
   border-color: rgba(255, 200, 0, 0.22);
 }
 
+/* The chat app sets `html, body { overflow: hidden }` so the messages
+   list can manage its own scroll. That breaks scrolling on the Token
+   Analysis page, which is a long-form document. Opt out via html class. */
+html.ta-html,
+html.ta-html body.ta-body {
+  overflow: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* The .ta-app wrapper needs to let content flow naturally too —
+   the default sets min-height: 100vh which is fine, but its default
+   overflow needs to be visible so body handles the scroll. */
+html.ta-html .ta-app {
+  overflow: visible;
+}
+
 /* Ensure the hidden attribute wins over any class-based display rule
    below. Without this, elements like .ta-auth-loading (display:flex)
    or .ta-report (display:flex) stay visible after setting .hidden=true. */
