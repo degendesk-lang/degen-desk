@@ -120,7 +120,7 @@ async function fetchRugCheck(mint) {
   }
 }
 
-// RugCheck full report (gives us top holders + insider analysis)
+// RugCheck full report (gives us top holders + insider analysis + markets)
 async function fetchRugCheckFull(mint) {
   try {
     const res = await fetchWithTimeout(
@@ -129,14 +129,61 @@ async function fetchRugCheckFull(mint) {
     );
     if (!res.ok) return null;
     const data = await res.json();
+
+    // Build a set of addresses that are known AMM liquidity pools so we
+    // can tag those entries inside topHolders. RugCheck's `markets` array
+    // lists each trading pair with the token-account addresses the LP
+    // holds — those are the same addresses that show up in topHolders.
+    const lpAddresses = new Set();
+    const markets = Array.isArray(data.markets) ? data.markets : [];
+    for (const m of markets) {
+      // Different RugCheck versions expose these under different names
+      const candidates = [
+        m.mintAAccount, m.mintBAccount,
+        m.lp?.mintAAccount, m.lp?.mintBAccount,
+        m.pubkey, m.liquidityA, m.liquidityB,
+        m.lpMint, m.lp?.lpMint,
+      ].filter(Boolean);
+      for (const addr of candidates) lpAddresses.add(addr);
+    }
+
+    // Tag each top holder with isLiquidityPool based on the LP address set.
+    const rawTopHolders = Array.isArray(data.topHolders) ? data.topHolders.slice(0, 10) : [];
+    const tagged = rawTopHolders.map((h) => ({
+      address: h.address || null,
+      owner: h.owner || null,
+      pct: typeof h.pct === "number" ? h.pct : null,
+      uiAmount: h.uiAmount ?? null,
+      insider: !!h.insider,
+      isLiquidityPool:
+        lpAddresses.has(h.address) ||
+        lpAddresses.has(h.owner) ||
+        // Heuristic fallback: RugCheck sometimes labels these inline
+        (typeof h.address === "string" && h.address.toLowerCase().includes("pool")),
+    }));
+
+    // Non-LP view — the one we care about for "top wallet concentration"
+    const nonLpTopHolders = tagged.filter((h) => !h.isLiquidityPool);
+
+    // Aggregate LP share so GPT can report it separately
+    const lpShareTotalPct = tagged
+      .filter((h) => h.isLiquidityPool)
+      .reduce((sum, h) => sum + (h.pct || 0), 0);
+
     return {
-      topHolders: Array.isArray(data.topHolders) ? data.topHolders.slice(0, 10) : [],
+      topHolders: tagged,               // full list with LP tagging
+      topHoldersNonLp: nonLpTopHolders, // wallets only (the list users care about)
+      lpShareTotalPct: lpShareTotalPct || null,
       creator: data.creator || null,
       mintAuthority: data.mintAuthority || null,
       freezeAuthority: data.freezeAuthority || null,
       totalMarketLiquidity: data.totalMarketLiquidity || null,
       totalHolders: data.totalHolders || null,
       insiderNetworks: Array.isArray(data.insiderNetworks) ? data.insiderNetworks.slice(0, 5) : [],
+      markets: markets.slice(0, 5).map((m) => ({
+        pubkey: m.pubkey || null,
+        marketType: m.marketType || null,
+      })),
     };
   } catch (err) {
     console.error("RugCheck full report fetch failed:", err.message);
@@ -238,6 +285,13 @@ CRITICAL LEGAL RULES (NEVER BREAK THESE):
 6. Every section must implicitly or explicitly remind the user this is NFA/DYOR.
 7. If data is missing or incomplete, say so clearly — don't speculate to fill gaps.
 
+CRITICAL HOLDER RULES (NEVER BREAK THESE):
+8. The rugCheckFull.topHolders array may include liquidity pool (LP / AMM) accounts. Each entry has an isLiquidityPool boolean.
+9. When stating "the top holder owns X%" or discussing wallet concentration, YOU MUST USE rugCheckFull.topHoldersNonLp — the LP-filtered list. NEVER cite an LP entry as "a top holder." LPs are trading reserves, not individual wallets.
+10. If ALL top holders are LPs (topHoldersNonLp is empty), say "Top wallet holders are below the reporting threshold — supply appears distributed across many small wallets."
+11. Report LP share SEPARATELY from wallet concentration. Phrase LP as "liquidity pool reserves" or "AMM-held supply." Example: "The top non-LP wallet holds 2.2% of supply. Liquidity pool reserves account for ~22% of supply, which is normal for tradeable tokens."
+12. Always use the pct value directly from the data. It is already a percentage (e.g. 2.2 means 2.2%). NEVER multiply, divide, or transform it.
+
 YOUR JOB:
 Analyze the raw data provided and return a structured JSON response. The frontend will render it. Keep it factual, observational, and cautious.
 
@@ -248,9 +302,10 @@ OUTPUT FORMAT (JSON, no markdown wrapping):
   "riskLabel": "Short risk label (e.g., 'Low observable risk', 'Multiple red flags detected', 'Insufficient data')",
   "keyFindings": [
     "Bullet point observations. 3-6 items. Mix of positive and concerning signals.",
-    "Each bullet should reference a specific data point (liquidity, holders, dev wallet, etc.)"
+    "Each bullet should reference a specific data point (liquidity, holders, dev wallet, etc.)",
+    "When citing holder concentration, use topHoldersNonLp only. Never call an LP entry a 'top holder'."
   ],
-  "holderAnalysis": "2-3 sentences about holder distribution. Mention top holder %, if supply looks concentrated, insider network flags from RugCheck.",
+  "holderAnalysis": "2-3 sentences about WALLET concentration using ONLY topHoldersNonLp. Cite the top non-LP wallet percentage. Mention LP/AMM reserves separately (using lpShareTotalPct if present) and note that LP reserves are normal for tradeable tokens. Mention insider network flags from RugCheck if present.",
   "bundleAnalysis": "2-3 sentences about bundling. If RugCheck flagged bundled supply or insider networks, mention it. If not, say 'No obvious bundling patterns detected in available data.'",
   "devWalletAnalysis": "3-4 sentences about the dev/creator wallet. Mention funding source if known, transaction activity, any rug history flags from RugCheck. Never say 'the dev is a scammer' — say 'the dev wallet shows [observable patterns]'.",
   "comparables": "For established meta tokens (dog, cat, frog, political, AI, etc.), mention 1-3 similar tokens and their historical peak MC as factual reference points. For unique/new tokens: 'This token is unique and has no direct comparables. It shows potential characteristics worth monitoring. NFA. DYOR.'",
