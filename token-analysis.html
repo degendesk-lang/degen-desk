@@ -15,7 +15,7 @@
   <style>
     html, body { background: #060610 !important; color: #f0f0f8; }
   </style>
-  <link rel="stylesheet" href="styles.css?v=28" />
+  <link rel="stylesheet" href="styles.css?v=29" />
 </head>
 <body style="background:#060610;">
   <div id="ta-app" class="ta-app">
@@ -48,6 +48,12 @@
         <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
         <p>This tool analyzes publicly available blockchain data. Nothing here is financial, investment, or trading advice. Degen Desk makes no guarantees about token performance, safety, or outcomes. Always DYOR.</p>
       </div>
+
+      <!-- Auth-check loading state (shown by default until Firebase resolves) -->
+      <section id="ta-auth-loading" class="ta-auth-loading">
+        <div class="ta-spinner"></div>
+        <div class="ta-loading-text">Checking access&hellip;</div>
+      </section>
 
       <!-- AUTH / PRO GATE (shown for non-Pro users) -->
       <section id="ta-gate" class="ta-gate" hidden>
@@ -131,6 +137,6 @@
 
   <!-- Shared auth + token analysis logic -->
   <script src="auth.js?v=14"></script>
-  <script src="token-analysis.js?v=1"></script>
+  <script src="token-analysis.js?v=2"></script>
 </body>
 </html>

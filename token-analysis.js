@@ -9,6 +9,7 @@
   // =============================================
   // DOM
   // =============================================
+  const authLoadingEl = document.getElementById("ta-auth-loading");
   const gateEl = document.getElementById("ta-gate");
   const gateTitleEl = document.getElementById("ta-gate-title");
   const gateMessageEl = document.getElementById("ta-gate-message");
@@ -33,6 +34,7 @@
   // HELPERS
   // =============================================
   function showGate(opts) {
+    if (authLoadingEl) authLoadingEl.hidden = true;
     gateEl.hidden = false;
     analyzerEl.hidden = true;
     if (opts?.title) gateTitleEl.textContent = opts.title;
@@ -47,6 +49,7 @@
   }
 
   function showAnalyzer() {
+    if (authLoadingEl) authLoadingEl.hidden = true;
     gateEl.hidden = true;
     analyzerEl.hidden = false;
   }

@@ -1866,6 +1866,30 @@ html, body {
   border-color: rgba(255, 200, 0, 0.22);
 }
 
+/* AUTH CHECK LOADING (shown briefly while Firebase resolves the user) */
+.ta-auth-loading {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 48px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.ta-auth-loading .ta-spinner {
+  margin: 0;
+}
+
+.ta-auth-loading .ta-loading-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
 /* PRO GATE */
 .ta-gate {
   padding: 20px 0;
