@@ -1871,9 +1871,12 @@ html, body {
    Analysis page, which is a long-form document. Opt out via html class. */
 html.ta-html,
 html.ta-html body.ta-body {
-  overflow: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   height: auto !important;
   min-height: 100%;
+  overscroll-behavior: auto !important;
+  position: static !important;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -1881,7 +1884,14 @@ html.ta-html body.ta-body {
    the default sets min-height: 100vh which is fine, but its default
    overflow needs to be visible so body handles the scroll. */
 html.ta-html .ta-app {
-  overflow: visible;
+  overflow: visible !important;
+  height: auto !important;
+}
+
+html.ta-html .ta-main,
+html.ta-html .ta-analyzer,
+html.ta-html .ta-report {
+  overflow: visible !important;
 }
 
 /* Ensure the hidden attribute wins over any class-based display rule
