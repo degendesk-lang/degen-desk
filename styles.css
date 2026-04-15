@@ -1866,6 +1866,13 @@ html, body {
   border-color: rgba(255, 200, 0, 0.22);
 }
 
+/* Ensure the hidden attribute wins over any class-based display rule
+   below. Without this, elements like .ta-auth-loading (display:flex)
+   or .ta-report (display:flex) stay visible after setting .hidden=true. */
+.ta-app [hidden] {
+  display: none !important;
+}
+
 /* AUTH CHECK LOADING (shown briefly while Firebase resolves the user) */
 .ta-auth-loading {
   background: var(--bg-secondary);
