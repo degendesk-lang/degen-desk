@@ -90,6 +90,9 @@ window.DegenToast = (function () {
   const messagesContainer = document.getElementById("messages");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
+  const attachBtn = document.getElementById("attach-btn");
+  const imageInput = document.getElementById("image-input");
+  const imagePreviews = document.getElementById("image-previews");
   const sidebarToggle = document.getElementById("sidebar-toggle");
   const sidebarClose = document.getElementById("sidebar-close");
   const sidebar = document.getElementById("sidebar");
@@ -424,25 +427,45 @@ window.DegenToast = (function () {
   // AI API CALL
   // =============================================
 
-  async function getAIResponse(query) {
+  async function getAIResponse(query, attachedImages) {
     try {
       const uid = window.DegenAuth?.currentUser?.uid || null;
+      const body = {
+        message: query,
+        history: chatHistory.slice(-6),
+        uid: uid,
+      };
+      if (Array.isArray(attachedImages) && attachedImages.length > 0) {
+        body.images = attachedImages.map((img) => img.dataUrl);
+      }
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: query,
-          history: chatHistory.slice(-6),
-          uid: uid,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (response.status === 429) {
         const errData = await response.json();
+        if (errData.imageLimit) {
+          const headline = errData.upgrade
+            ? "&#9888;&#65039; Daily image limit reached"
+            : "&#9888;&#65039; Daily image cap reached";
+          const cta = errData.upgrade
+            ? `<a href="/pricing.html" style="display:inline-block;margin-top:10px;padding:10px 20px;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Upgrade to Pro</a>`
+            : "";
+          return `<div class="warning-box"><strong>${headline}</strong><p style="margin-top:8px;">${escapeHtml(errData.error || "")}</p>${cta}</div>`;
+        }
         if (errData.upgrade) {
           return `<div class="warning-box"><strong>&#9888;&#65039; Daily limit reached</strong><p style="margin-top:8px;">You've used all 15 free messages today. Upgrade to <strong>Pro</strong> for unlimited messages and a smarter AI model.</p><a href="/pricing.html" style="display:inline-block;margin-top:10px;padding:10px 20px;background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Upgrade to Pro</a></div>`;
         }
         return null;
+      }
+
+      if (response.status === 401) {
+        const errData = await response.json().catch(() => ({}));
+        if (errData.requireAuth) {
+          return `<div class="warning-box"><strong>&#128274; Sign in required</strong><p style="margin-top:8px;">Please sign in to attach images to your messages.</p></div>`;
+        }
       }
 
       if (!response.ok) {
@@ -488,7 +511,7 @@ window.DegenToast = (function () {
   // UI FUNCTIONS
   // =============================================
 
-  function createMessageElement(content, isUser) {
+  function createMessageElement(content, isUser, opts) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `message ${isUser ? "user-message" : "bot-message"}`;
 
@@ -503,7 +526,20 @@ window.DegenToast = (function () {
     bubble.className = "message-bubble";
 
     if (isUser) {
-      bubble.innerHTML = `<p>${escapeHtml(content)}</p>`;
+      const images = opts && Array.isArray(opts.images) ? opts.images : [];
+      let html = "";
+      if (images.length > 0) {
+        html += '<div class="user-images">';
+        for (const img of images) {
+          const src = typeof img === "string" ? img : img.dataUrl;
+          if (src) html += `<img src="${src}" alt="Attached image" />`;
+        }
+        html += "</div>";
+      }
+      if (content) {
+        html += `<p>${escapeHtml(content)}</p>`;
+      }
+      bubble.innerHTML = html;
     } else {
       bubble.innerHTML = content;
     }
@@ -561,14 +597,207 @@ window.DegenToast = (function () {
   }
 
   // =============================================
+  // IMAGE ATTACHMENTS
+  // Max 2 images per message, resized client-side before upload.
+  // =============================================
+
+  const MAX_IMAGES = 2;
+  const MAX_IMAGE_DIMENSION = 1568; // OpenAI vision internal scale
+  const JPEG_QUALITY = 0.85;
+  const pendingImages = []; // array of { dataUrl: string, id: string }
+
+  function notify(msg, type) {
+    if (window.DegenToast) {
+      if (type === "error") DegenToast.error(msg);
+      else if (type === "success") DegenToast.success(msg);
+      else DegenToast.info(msg);
+    } else {
+      console.log(`[${type || "info"}]`, msg);
+    }
+  }
+
+  // Resize a File/Blob to an OpenAI-friendly JPEG data URL.
+  function resizeImageToDataUrl(fileOrBlob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Failed to read image"));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("Failed to decode image"));
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+            if (width >= height) {
+              height = Math.round((height * MAX_IMAGE_DIMENSION) / width);
+              width = MAX_IMAGE_DIMENSION;
+            } else {
+              width = Math.round((width * MAX_IMAGE_DIMENSION) / height);
+              height = MAX_IMAGE_DIMENSION;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          // Use JPEG for all images (smaller than PNG, vision models don't care)
+          try {
+            const dataUrl = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+            resolve(dataUrl);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(fileOrBlob);
+    });
+  }
+
+  function renderImagePreviews() {
+    if (!imagePreviews) return;
+    if (pendingImages.length === 0) {
+      imagePreviews.innerHTML = "";
+      imagePreviews.hidden = true;
+    } else {
+      imagePreviews.hidden = false;
+      imagePreviews.innerHTML = pendingImages
+        .map(
+          (img) => `
+          <div class="image-preview-thumb" data-id="${img.id}">
+            <img src="${img.dataUrl}" alt="Attached image" />
+            <button type="button" class="remove-img" aria-label="Remove image" data-id="${img.id}">&times;</button>
+          </div>`
+        )
+        .join("");
+    }
+    if (attachBtn) {
+      attachBtn.disabled = pendingImages.length >= MAX_IMAGES;
+    }
+    if (typeof updateSendBtnState === "function") updateSendBtnState();
+  }
+
+  async function addImageFile(file) {
+    if (!file || !file.type || !file.type.startsWith("image/")) {
+      notify("That file doesn't look like an image.", "error");
+      return;
+    }
+    if (pendingImages.length >= MAX_IMAGES) {
+      notify(`You can attach up to ${MAX_IMAGES} images per message.`, "error");
+      return;
+    }
+    // Require sign-in so the server can track per-user daily limits.
+    if (!window.DegenAuth || !DegenAuth.currentUser) {
+      notify("Sign in to attach images.", "error");
+      return;
+    }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file);
+      pendingImages.push({
+        dataUrl,
+        id: "img_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8),
+      });
+      renderImagePreviews();
+    } catch (err) {
+      console.error("Image processing failed:", err);
+      notify("Couldn't process that image. Please try another.", "error");
+    }
+  }
+
+  function clearPendingImages() {
+    pendingImages.length = 0;
+    if (imageInput) imageInput.value = "";
+    renderImagePreviews();
+  }
+
+  // Attach button → open native file picker (camera or library on iOS)
+  if (attachBtn && imageInput) {
+    attachBtn.addEventListener("click", () => {
+      if (!window.DegenAuth || !DegenAuth.currentUser) {
+        notify("Sign in to attach images.", "error");
+        return;
+      }
+      if (pendingImages.length >= MAX_IMAGES) {
+        notify(`You can attach up to ${MAX_IMAGES} images per message.`, "error");
+        return;
+      }
+      imageInput.click();
+    });
+
+    imageInput.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files || []);
+      const slots = MAX_IMAGES - pendingImages.length;
+      const chosen = files.slice(0, slots);
+      for (const f of chosen) {
+        // eslint-disable-next-line no-await-in-loop
+        await addImageFile(f);
+      }
+      // Reset so selecting the same file again still fires 'change'
+      imageInput.value = "";
+    });
+  }
+
+  // Remove-thumb click (event delegation)
+  if (imagePreviews) {
+    imagePreviews.addEventListener("click", (e) => {
+      const btn = e.target.closest(".remove-img");
+      if (!btn) return;
+      const id = btn.getAttribute("data-id");
+      const idx = pendingImages.findIndex((img) => img.id === id);
+      if (idx >= 0) {
+        pendingImages.splice(idx, 1);
+        renderImagePreviews();
+      }
+    });
+  }
+
+  // Paste-from-clipboard: catch screenshots pasted into the composer
+  if (userInput) {
+    userInput.addEventListener("paste", async (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      const imageItems = [];
+      for (const item of items) {
+        if (item.kind === "file" && item.type && item.type.startsWith("image/")) {
+          imageItems.push(item);
+        }
+      }
+      if (imageItems.length === 0) return; // normal text paste — let it through
+
+      e.preventDefault();
+      if (!window.DegenAuth || !DegenAuth.currentUser) {
+        notify("Sign in to attach images.", "error");
+        return;
+      }
+      const slots = MAX_IMAGES - pendingImages.length;
+      if (slots <= 0) {
+        notify(`You can attach up to ${MAX_IMAGES} images per message.`, "error");
+        return;
+      }
+      const chosen = imageItems.slice(0, slots);
+      for (const item of chosen) {
+        const file = item.getAsFile();
+        if (file) {
+          // eslint-disable-next-line no-await-in-loop
+          await addImageFile(file);
+        }
+      }
+    });
+  }
+
+  // =============================================
   // SEND MESSAGE HANDLER
   // =============================================
 
   let isProcessing = false;
 
   async function sendMessage(text) {
-    const query = text.trim();
-    if (!query || isProcessing) return;
+    const query = (text || "").trim();
+    // Snapshot pending images so the preview row can be cleared before the
+    // network call returns.
+    const sentImages = pendingImages.slice();
+    if (!query && sentImages.length === 0) return;
+    if (isProcessing) return;
 
     isProcessing = true;
     if (typeof updateSendBtnState === "function") updateSendBtnState();
@@ -579,21 +808,22 @@ window.DegenToast = (function () {
       await DegenAuth.createConversation("New chat");
     }
 
-    // Add user message to UI
-    const userMsg = createMessageElement(query, true);
+    // Add user message to UI (with inline image thumbnails if any)
+    const userMsg = createMessageElement(query, true, { images: sentImages });
     messagesContainer.appendChild(userMsg);
     scrollToBottom();
 
-    // Clear input
+    // Clear input + pending images
     userInput.value = "";
     userInput.style.height = "auto";
+    clearPendingImages();
 
-    // Add to chat history
+    // Add to chat history (text only — images are not kept in history)
     chatHistory.push({ role: "user", content: query });
 
     // Save user message
     if (window.DegenAuth && DegenAuth.currentUser) {
-      const titleUpdated = await DegenAuth.saveMessage("user", query);
+      const titleUpdated = await DegenAuth.saveMessage("user", query || "(image)");
       if (titleUpdated) refreshChatList();
     }
 
@@ -603,7 +833,8 @@ window.DegenToast = (function () {
     scrollToBottom();
 
     // 1. Try strong local match first (sidebar topic clicks)
-    const localResponse = getLocalResponse(query);
+    // Skip local matching when images are attached — the user wants vision.
+    const localResponse = sentImages.length === 0 ? getLocalResponse(query) : null;
 
     if (localResponse) {
       setTimeout(async () => {
@@ -619,8 +850,8 @@ window.DegenToast = (function () {
       return;
     }
 
-    // 2. Call AI API
-    const aiResponse = await getAIResponse(query);
+    // 2. Call AI API (with any attached images)
+    const aiResponse = await getAIResponse(query, sentImages);
     typing.remove();
 
     if (aiResponse) {
@@ -663,7 +894,8 @@ window.DegenToast = (function () {
 
   function updateSendBtnState() {
     const hasText = userInput.value.trim().length > 0;
-    sendBtn.disabled = !hasText || isProcessing;
+    const hasImages = pendingImages.length > 0;
+    sendBtn.disabled = (!hasText && !hasImages) || isProcessing;
   }
 
   userInput.addEventListener("input", () => {
