@@ -2954,6 +2954,21 @@ html.ta-html .ta-report {
   flex-shrink: 0;
 }
 
+/* When a real logo image is used, strip the placeholder gradient/border
+   so the logo's own design shows through cleanly. */
+.gd-guide-logo.gd-logo-img {
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.gd-guide-logo.gd-logo-img img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .gd-guide-title {
   margin: 0 0 4px;
   font-size: 22px;

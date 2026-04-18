@@ -47,6 +47,23 @@ for (const file of filesToCopy) {
   }
 }
 
+// Copy guides/logos/ directory recursively for the Setup Guides logos
+function copyDir(src, dest) {
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else if (entry.name.endsWith(".png") || entry.name.endsWith(".jpg") || entry.name.endsWith(".svg")) {
+      fs.copyFileSync(srcPath, destPath);
+      console.log(`  Copied: ${path.relative(ROOT, destPath)}`);
+    }
+  }
+}
+copyDir(path.join(ROOT, "guides", "logos"), path.join(WWW, "guides", "logos"));
+
 // Modify index.html for the native app
 // - Add Capacitor bridge script
 // - Add native-specific meta tags
