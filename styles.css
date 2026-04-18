@@ -2876,6 +2876,24 @@ html.ta-html .ta-report {
   letter-spacing: 0.2px;
 }
 
+.gd-intro-note {
+  margin-top: 12px;
+  background: rgba(100, 130, 255, 0.06);
+  border: 1px solid rgba(100, 130, 255, 0.22);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(200, 215, 255, 0.88);
+}
+.gd-intro-note strong {
+  display: inline;
+  color: #8ca3ff;
+  font-weight: 700;
+  margin-right: 4px;
+  letter-spacing: 0.2px;
+}
+
 /* Section header (category divider) */
 .gd-section-header {
   margin: 56px 0 20px;
@@ -3146,6 +3164,62 @@ html.ta-html .ta-report {
 .gd-next-link:hover {
   border-color: rgba(0, 255, 136, 0.5);
   background: rgba(0, 255, 136, 0.1);
+}
+
+/* Pro CTA — token analysis conversion callout */
+.gd-pro-cta {
+  margin: 18px 0;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.08), rgba(0, 212, 255, 0.04));
+  border: 1px solid rgba(0, 255, 136, 0.28);
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.gd-pro-cta-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.gd-pro-cta-body {
+  flex: 1;
+  min-width: 180px;
+}
+.gd-pro-cta-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #00ff88;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 3px;
+}
+.gd-pro-cta-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0;
+}
+.gd-guide a.gd-pro-cta-btn,
+.gd-pro-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, #00ff88, #00d9a8);
+  color: #060610 !important;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: none !important;
+  border-radius: 9px;
+  flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.2px;
+}
+.gd-pro-cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 255, 136, 0.3);
+  color: #060610;
 }
 
 /* NFA inline disclaimer */

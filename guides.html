@@ -91,16 +91,19 @@
             <div class="gd-toc-section-label">2 · Wallets</div>
             <a href="#phantom" class="gd-toc-link">Phantom Wallet</a>
             <a href="#backpack" class="gd-toc-link">Backpack Wallet</a>
+            <a href="#solflare" class="gd-toc-link">Solflare Wallet</a>
             <a href="#wallet-security" class="gd-toc-link">Wallet security basics</a>
+            <a href="#ledger" class="gd-toc-link">Ledger hardware wallet</a>
           </div>
 
           <div class="gd-toc-section">
-            <div class="gd-toc-section-label">3 · Trading Terminals (Browser)</div>
+            <div class="gd-toc-section-label">3 · Swaps &amp; Terminals (Browser)</div>
             <a href="#axiom" class="gd-toc-link">Axiom.trade</a>
             <a href="#photon" class="gd-toc-link">Photon</a>
             <a href="#padre" class="gd-toc-link">Padre</a>
             <a href="#bullx" class="gd-toc-link">BullX</a>
             <a href="#gmgn" class="gd-toc-link">GMGN</a>
+            <a href="#jupiter" class="gd-toc-link">Jupiter (aggregator)</a>
           </div>
 
           <div class="gd-toc-section">
@@ -115,6 +118,17 @@
             <a href="#bonkbot" class="gd-toc-link">BONKbot</a>
             <a href="#trojan" class="gd-toc-link">Trojan</a>
             <a href="#bloom" class="gd-toc-link">Bloom</a>
+          </div>
+
+          <div class="gd-toc-section">
+            <div class="gd-toc-section-label">6 · Next Steps</div>
+            <a href="#after-first-trade" class="gd-toc-link">After your first trade</a>
+          </div>
+
+          <div class="gd-toc-section">
+            <div class="gd-toc-section-label">7 · Reference</div>
+            <a href="#glossary" class="gd-toc-link">Glossary</a>
+            <a href="#faq" class="gd-toc-link">FAQ</a>
           </div>
 
           <div class="gd-toc-footer">
@@ -143,6 +157,11 @@
             Crypto is unforgiving. A stolen seed phrase cannot be recovered. A wrong address means lost funds.
             Take your time, double-check everything, and never share your seed phrase with anyone — not support,
             not a giveaway, not Degen Desk. Nothing in these guides is financial advice.
+          </div>
+
+          <div class="gd-intro-note">
+            <strong>📅 UI may have changed:</strong>
+            Solana trading apps update their interfaces frequently (sometimes weekly). If a step mentions a button or menu that isn't where the guide says, the core flow is almost always still the same — buttons just move. When in doubt, verify the current UI from the tool's official X account (linked at the top of each guide) before following steps that commit funds.
           </div>
         </section>
 
@@ -409,6 +428,16 @@
             Create a separate "trading" wallet with a fresh seed phrase, funded with only what you're actively trading. Keep your long-term holdings in a different wallet (ideally a hardware wallet) that never connects to random terminals or sketchy sites. Compartmentalization limits damage if a session token leaks or you fall for a phishing site.
           </div>
 
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>"Transaction failed"</strong> — usually priority fee too low or slippage too tight. Open Phantom → Settings → Transaction Priority → switch from <code>Normal</code> to <code>Fast</code> or <code>Turbo</code>.</li>
+            <li><strong>I sent SOL but my balance hasn't updated</strong> — pull to refresh in the app, or tap your wallet name then back out. Solana confirmations are usually under 2 seconds — if it's been more than a minute, check the transaction on <a href="https://solscan.io/" target="_blank" rel="noopener noreferrer">solscan.io</a> using the tx signature.</li>
+            <li><strong>My tokens aren't showing</strong> — Phantom hides spam/low-value tokens by default. Settings → Manage Token List → toggle visibility for the specific token.</li>
+            <li><strong>Wallet shows "No networks" or wrong network</strong> — Phantom supports multiple chains; make sure Solana is selected in the network dropdown at the top of the main screen.</li>
+            <li><strong>Connect button doesn't work on a terminal</strong> — refresh the terminal page. Make sure your extension is pinned and unlocked. If on mobile, use the in-wallet browser (Phantom → tap the browser icon) instead of opening the terminal in Safari/Chrome — WalletConnect can be flaky.</li>
+            <li><strong>Lost my seed phrase</strong> — unrecoverable. If you still have Phantom unlocked on a device, immediately export the seed (Settings → Security → Show Secret Recovery Phrase), write it down, and move funds to a new wallet. If Phantom is locked and you can't remember the password, the funds are effectively lost unless you have the seed phrase written down.</li>
+          </ul>
+
           <div class="gd-next">
             <span class="gd-next-label">Alternatives</span>
             <a href="#backpack" class="gd-next-link">Try Backpack instead →</a>
@@ -474,6 +503,104 @@
             <strong>You can use both</strong>
             Some traders run Phantom as their main and Backpack as a secondary or holding wallet. Each needs its own seed phrase written down separately.
           </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Can't connect Backpack to a terminal that only supports Phantom</strong> — many Solana sites support Backpack via the wallet adapter, but some older ones default to Phantom. Backpack can be set as your "Solana default wallet" in Backpack Settings → Advanced, which makes most dApps auto-detect it.</li>
+            <li><strong>Swap failed in the built-in DEX</strong> — Backpack routes swaps via Jupiter. Failures usually mean slippage too tight. Bump slippage in the swap interface.</li>
+            <li><strong>Extension icon disappeared from my browser toolbar</strong> — Chrome sometimes hides infrequently-used extensions. Click the puzzle-piece icon → pin Backpack. Or re-install from backpack.app.</li>
+            <li><strong>Signing loop on a site</strong> — some sites trigger repeated signature prompts. Hard-refresh the site (Cmd/Ctrl+Shift+R) and disconnect/reconnect the wallet.</li>
+            <li><strong>xNFTs not loading</strong> — xNFT support is experimental. If an xNFT won't open, skip it — it's not mission-critical for trading.</li>
+          </ul>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternatives</span>
+            <a href="#solflare" class="gd-next-link">Try Solflare →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Solflare =========== -->
+        <article id="solflare" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">☀</div>
+            <div>
+              <h3 class="gd-guide-title">Solflare Wallet setup</h3>
+              <p class="gd-guide-tagline">The third major Solana wallet. Native staking, built-in DEX, strong support for validators and advanced users.</p>
+            </div>
+          </div>
+
+          <a href="https://solflare.com/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>solflare.com</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Only install from solflare.com</strong>
+            The real iOS app is by <strong>Solana Labs / Solflare</strong>. Chrome extension is linked directly from solflare.com. Fake "Solflare Pro" / "Solflare Wallet Plus" apps exist — ignore them.
+          </div>
+
+          <div class="gd-subhead">Install Solflare</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://solflare.com/" target="_blank" rel="noopener noreferrer">solflare.com</a> and click <code>Download</code>.
+            </li>
+            <li>
+              <strong>Browser extension</strong> (Chrome / Brave / Firefox / Edge) — most popular option. Pin it to your toolbar after install.
+            </li>
+            <li>
+              <strong>Mobile</strong> (iOS / Android) — install from official app stores. Verify publisher.
+            </li>
+            <li>
+              <strong>Web wallet</strong> — you can also use Solflare entirely through the browser at solflare.com, no install needed. Secured by a downloadable keystore file.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Create your wallet</div>
+          <ol class="gd-steps">
+            <li>
+              Open Solflare and choose <code>I need a new wallet</code> (not "Paste an existing recovery phrase" — that's for importing).
+            </li>
+            <li>
+              Solflare shows your <strong>12- or 24-word recovery phrase</strong>. <strong>Write it on paper. Never type it into any website.</strong> Never photograph it.
+            </li>
+            <li>
+              Confirm the phrase in the next step by selecting the words in order.
+            </li>
+            <li>
+              Set a password for local device access. This is a device password, not your seed phrase — you can reset it later with the seed phrase.
+            </li>
+            <li>
+              You're in. Solflare shows your wallet address and a balance of zero SOL to start.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Why choose Solflare</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">
+            <li><strong>Built-in staking</strong> — stake SOL directly to validators without a separate tool. Best UX for SOL staking of the 3 major wallets.</li>
+            <li><strong>Ledger hardware wallet support</strong> — native integration, just plug in and confirm.</li>
+            <li><strong>Portfolio tab</strong> shows SPL tokens, NFTs, and staking positions in one view.</li>
+            <li><strong>Built-in swap</strong> powered by Jupiter under the hood — fair prices, no need to open another tab.</li>
+            <li><strong>Open-source</strong> — community can audit the code (Phantom is closed-source).</li>
+          </ul>
+
+          <div class="gd-subhead">Funding &amp; first trade</div>
+          <ol class="gd-steps">
+            <li>Copy your Solflare address from the main screen (tap the address at the top).</li>
+            <li>Send SOL from Coinbase / Robinhood / Phantom. Test small first.</li>
+            <li>For a simple swap, use Solflare's built-in Swap tab. For memecoin trading, connect Solflare to a terminal (Axiom, Photon, etc.) — same process as Phantom.</li>
+          </ol>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Solflare is often the pro choice for long-term holders</strong>
+            Because of its first-class staking UX and Ledger integration, many traders use Solflare for their "holding wallet" (staked positions, long-term holds) and Phantom or Backpack for active trading.
+          </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>"Transaction failed" when swapping</strong> — bump the priority fee. In Settings → Fees, switch from Low to Medium or High.</li>
+            <li><strong>Tokens not appearing</strong> — Solflare hides spam tokens by default. Go to Settings → Token visibility to show all.</li>
+            <li><strong>Can't connect to a terminal</strong> — make sure the extension is pinned and enabled. Try refreshing the terminal page. Chrome sometimes loses the Solflare context on fresh tabs.</li>
+            <li><strong>Staking rewards not showing</strong> — Solana rewards compound per epoch (~2–3 days). Check again after the next epoch.</li>
+          </ul>
 
           <div class="gd-next">
             <span class="gd-next-label">Next up</span>
@@ -555,17 +682,145 @@
 
           <div class="gd-next">
             <span class="gd-next-label">Next up</span>
+            <a href="#ledger" class="gd-next-link">Ledger hardware wallet setup →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Ledger hardware wallet =========== -->
+        <article id="ledger" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🔐</div>
+            <div>
+              <h3 class="gd-guide-title">Ledger hardware wallet setup</h3>
+              <p class="gd-guide-tagline">A physical device that keeps your private key offline. The gold standard for storing serious amounts of crypto. Unaffected by browser exploits, phishing sites, or malware on your computer.</p>
+            </div>
+          </div>
+
+          <a href="https://www.ledger.com/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>ledger.com</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Only buy from ledger.com directly</strong>
+            Never buy a Ledger from Amazon, eBay, Facebook Marketplace, or any third-party reseller. Supply-chain attacks are real — a tampered device can have a pre-compromised seed. Buy new, sealed, directly from Ledger. Cost is usually $80–$200 depending on model.
+          </div>
+
+          <div class="gd-subhead">Which Ledger to buy</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Ledger Nano S Plus</strong> — cheapest full-featured option (~$80). Plugs into USB, supports Solana + all major chains. Best value for most people.</li>
+            <li><strong>Ledger Nano X</strong> — adds Bluetooth (pair with phone wallet apps) and larger memory. ~$150. Worth it if you plan to use mobile regularly.</li>
+            <li><strong>Ledger Stax / Flex</strong> — newer touchscreen models. Pricier. Skippable unless you specifically want the touchscreen UX.</li>
+          </ul>
+
+          <div class="gd-subhead">Initial setup</div>
+          <ol class="gd-steps">
+            <li>
+              Unbox the device. <strong>Inspect the packaging</strong> — Ledger ships with tamper-evident seals. If anything looks cut, reglued, or previously opened, don't use it. Contact Ledger support.
+            </li>
+            <li>
+              Plug the device in via USB. It boots to a welcome screen.
+            </li>
+            <li>
+              Press both buttons to continue. Choose <code>Set up as new device</code>. (If someone hands you a "pre-set-up" Ledger, that's a scam — always set up yourself.)
+            </li>
+            <li>
+              Create a <strong>PIN code</strong> (4–8 digits). You'll enter this every time you use the device. Three wrong attempts wipe the device (which is a feature, not a bug — you can restore from seed).
+            </li>
+            <li>
+              The device displays your <strong>24-word recovery phrase</strong>, one word at a time. Write them down <strong>on the included recovery sheets</strong>. 24 words, in order.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>SEED PHRASE RULES — LEDGER EDITION</strong>
+            The Ledger will <em>never ask you to type the seed phrase into a computer or phone</em>. All seed interactions happen on the physical device screen. If any app, website, or "Ledger support" asks you to enter your 24 words digitally, it's 100% a scam. The seed stays on paper. Full stop.
+          </div>
+
+          <ol class="gd-steps" start="6">
+            <li>
+              The device then asks you to confirm by entering a few of the words back (usually 3–4 random positions). This proves you wrote them down correctly.
+            </li>
+            <li>
+              Setup complete. The device is ready to pair with Ledger Live.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Install Ledger Live</div>
+          <ol class="gd-steps">
+            <li>
+              Download <strong>Ledger Live</strong> from <a href="https://www.ledger.com/ledger-live" target="_blank" rel="noopener noreferrer">ledger.com/ledger-live</a>. Available for macOS, Windows, Linux, iOS, Android.
+            </li>
+            <li>
+              Plug your Ledger in (USB for desktop, Bluetooth for Nano X mobile).
+            </li>
+            <li>
+              In Ledger Live, go to <code>My Ledger</code> → pair the device. Enter your PIN on the device when prompted.
+            </li>
+            <li>
+              In <code>Manager</code>, install the <strong>Solana</strong> app on your Ledger. (Each chain needs its own tiny app on the device — they don't take much space.)
+            </li>
+            <li>
+              Optional: install Ethereum, Bitcoin, and any other chain apps you'll use.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Connect Ledger to Phantom or Solflare</div>
+          <ol class="gd-steps">
+            <li>
+              In <strong>Phantom</strong>: go to Settings → Hardware Wallets → <code>Connect Ledger</code>. Follow the prompts. Phantom will import your Ledger's Solana account and show it alongside any hot wallets.
+            </li>
+            <li>
+              In <strong>Solflare</strong>: similar — Settings → Wallets → Add Wallet → Ledger.
+            </li>
+            <li>
+              Now when you make a trade, Phantom/Solflare will pop up a "Confirm on Ledger" prompt. You plug in the device, review the transaction on its screen, and <strong>physically press the confirm buttons</strong>. No confirmation = no transaction. That's the security.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">How to use Ledger for trading</div>
+          <p>
+            Realistically, Ledger is slow for active memecoin trading (confirming each trade on a physical device takes ~10 seconds). Most traders use Ledger for:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Holding long-term positions</strong> — buy a token with a hot wallet, then transfer it to your Ledger for storage.</li>
+            <li><strong>Storing the bulk of your SOL</strong> — keep say, 90% on Ledger, 10% in Phantom for active trades. Top up from Ledger when trading float runs low.</li>
+            <li><strong>Staking SOL</strong> — stake from Solflare → Ledger setup. Rewards accrue to the Ledger-secured account.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>The wallet pyramid</strong>
+            Beginner: 1 hot wallet (Phantom). Everything in one place — fine for small amounts.<br>
+            Intermediate: Hot wallet + holding wallet (different hot wallet, doesn't connect to terminals). Compartmentalize active trades from storage.<br>
+            Advanced: Hot wallet + Ledger. Everything you're not actively trading lives on the Ledger. Phishing site can't drain what's on a physical device unplugged from your computer.
+          </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Phantom doesn't detect my Ledger</strong> — make sure the Solana app is open on the device (not just installed). Try a different USB port. Avoid USB hubs for pairing.</li>
+            <li><strong>"Transaction rejected" after confirming</strong> — the Solana blockchain sometimes needs a "blind signing" setting enabled on Ledger for complex transactions. Go to Ledger → Solana app → Settings → Enable blind signing. Re-try.</li>
+            <li><strong>Firmware update prompt keeps appearing</strong> — Ledger Live prompts when new firmware is available. Always update (Ledger-signed firmware only). Don't update from random pop-ups elsewhere — only from Ledger Live itself.</li>
+            <li><strong>Lost my PIN</strong> — three wrong PIN attempts wipe the device. Then you restore from your 24-word seed phrase on a fresh setup. This is why the seed phrase matters more than the device.</li>
+            <li><strong>Lost the device itself</strong> — buy another Ledger, restore from your 24-word seed. Your funds are on the blockchain, not "in" the device — the device is just a signer. As long as you have the seed, you have the funds.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-warn">
+            <strong>Never digitize the 24 words</strong>
+            Not in a password manager. Not in iCloud Notes. Not as a photo. Not split across emails. Serious hodlers use multiple metal seed backup plates (Cryptosteel, Billfodl) stored in geographically separate locations. Paper is better than digital, metal is better than paper.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Next up</span>
             <a href="#axiom" class="gd-next-link">Set up Axiom.trade →</a>
           </div>
         </article>
 
         <!-- ============================================== -->
-        <!-- SECTION 3: TRADING TERMINALS (BROWSER)         -->
+        <!-- SECTION 3: SWAPS & TERMINALS (BROWSER)         -->
         <!-- ============================================== -->
         <div class="gd-section-header">
           <div class="gd-section-header-eyebrow">Section 3</div>
-          <h2>Trading Terminals (Browser)</h2>
-          <p>Terminals are where real trading happens — fast buy/sell buttons, live charts, wallet tracking, trending lists. Pick one to start. Many traders use two in parallel (e.g., Axiom for discovery + Photon for execution). All five here are free to sign up for, but charge small trading fees.</p>
+          <h2>Swaps &amp; Terminals (Browser)</h2>
+          <p>Terminals are where real trading happens — fast buy/sell buttons, live charts, wallet tracking, trending lists. Jupiter is the aggregator DEX for clean swap routing when you don't need a trading terminal's UI. Pick one terminal to start. Many traders use two in parallel (e.g., Axiom for discovery + Photon for execution).</p>
         </div>
 
         <!-- =========== GUIDE: Axiom.trade =========== -->
@@ -663,9 +918,28 @@
             <li><strong>Token Info panel</strong> — quick holder/sniper/bundler stats without leaving the page.</li>
           </ul>
 
+          <div class="gd-pro-cta">
+            <div class="gd-pro-cta-icon">🛡</div>
+            <div class="gd-pro-cta-body">
+              <div class="gd-pro-cta-title">Vet before you ape</div>
+              <p class="gd-pro-cta-text">Axiom's Token Info panel gives you quick stats. For a deeper read — AI-synthesized risk verdict, bundling detection, dev wallet trace — run the CA through Degen Desk's Token Analysis first.</p>
+            </div>
+            <a href="/token-analysis.html" class="gd-pro-cta-btn">Try Token Analysis →</a>
+          </div>
+
           <div class="gd-nfa">
             Nothing on Axiom or in this guide is financial advice. Fast trading tools make it easier to both win and lose quickly. Paper-trade or use tiny amounts while you learn.
           </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>X login fails / can't authenticate</strong> — X's OAuth rate-limits. Wait 2 minutes, try again. If persistent, log out of X in your browser first, then try Axiom.</li>
+            <li><strong>Buy fails with "slippage exceeded"</strong> — bump slippage for that token in the buy panel. Fresh pump.fun tokens often need 15–25%.</li>
+            <li><strong>Chart won't load</strong> — TradingView sometimes chokes on fresh pairs with thin history. Refresh or try a different timeframe (1m → 5m).</li>
+            <li><strong>Embedded wallet balance shows zero after deposit</strong> — Axiom refreshes balances async; give it 30s and reload. Verify the deposit landed on <a href="https://solscan.io/" target="_blank" rel="noopener noreferrer">solscan.io</a> by pasting your Axiom address.</li>
+            <li><strong>Lost access to my X account → lost Axiom access</strong> — Axiom auths via X. If your X is compromised or banned, recover X first. Your funds are tied to the embedded wallet's private key (which you should've backed up during setup) — you can import that key into Phantom to recover funds independent of your X login.</li>
+            <li><strong>Presets not saving</strong> — some users report presets reset after cache clear. Keep a note of your preferred sizes/slippage so you can re-enter quickly if this happens.</li>
+          </ul>
 
           <div class="gd-next">
             <span class="gd-next-label">Alternative terminals</span>
@@ -752,6 +1026,15 @@
             Photon charges a small fee per trade (~0.5–1% depending on tier). Axiom, BullX, and GMGN have similar fees. Compare before you pick — though honestly for beginner-size trades the fee difference is negligible vs. picking the right token.
           </div>
 
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Wallet disconnects mid-session</strong> — Photon's session can expire after ~24 hours. Just reconnect Phantom, sign the auth message again.</li>
+            <li><strong>"Pending" trade stuck</strong> — Solana occasionally has congestion. Wait 30 seconds, then check your wallet transaction history. If it confirmed but Photon didn't update, refresh Photon.</li>
+            <li><strong>Using Photon wallet — forgot to back up private key</strong> — while logged in: Settings → Wallets → Show Private Key → copy and save immediately. Never do this on a shared device.</li>
+            <li><strong>Memescope feed empty / not updating</strong> — occasional data pipeline issues. Try the "Trending" or "New Pairs" tab instead. If Photon itself is down, check <a href="https://x.com/photonsol" target="_blank" rel="noopener noreferrer">@photonsol</a> for status.</li>
+            <li><strong>Sniper not firing</strong> — confirm your sniper rules aren't over-filtered (e.g., minimum liquidity set too high blocks all new pump.fun launches). Test with loose filters first.</li>
+          </ul>
+
           <div class="gd-next">
             <span class="gd-next-label">Alternative terminals</span>
             <a href="#padre" class="gd-next-link">Try Padre →</a>
@@ -822,6 +1105,15 @@
             Padre is worth setting up if you want to trade outside Solana too (Ethereum memecoins, Base memecoins) without juggling multiple terminals. For pure Solana trading, Axiom and Photon have more mature discovery feeds.
           </div>
 
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Cross-chain swap takes forever</strong> — EVM chains (Ethereum, Base) are slower than Solana. A swap on Ethereum can take 30–60s vs. sub-2s on Solana. That's the chain, not Padre.</li>
+            <li><strong>Gas fees look high on EVM trades</strong> — Ethereum mainnet gas is expensive. For small trades ($50–$200), use Base or BNB Chain instead — fees are pennies.</li>
+            <li><strong>Can't find a token on the chain I expect</strong> — Padre autodetects chain based on the CA format. Solana CAs are base58, EVM CAs are hex (start with 0x). Make sure you're pasting the right format for the chain you want.</li>
+            <li><strong>Copy trade orders not executing</strong> — copy-trade needs enough SOL balance + sufficient priority fee settings. Check Settings → Copy Trade → ensure priority fee is set to "Medium" or higher.</li>
+            <li><strong>Forgot to back up Padre wallet keys</strong> — Settings → Wallets → Export for each chain. Save each key separately. Your Padre account password doesn't protect the keys if Padre's servers go down.</li>
+          </ul>
+
           <div class="gd-next">
             <span class="gd-next-label">Alternative terminals</span>
             <a href="#bullx" class="gd-next-link">Try BullX →</a>
@@ -891,6 +1183,15 @@
             <strong>Power-user platform</strong>
             BullX has a steeper learning curve than Axiom or Photon — more settings, more knobs. The payoff is that experienced traders can tune BullX for speed and edge. If you're day one, start with Axiom, then level up to BullX once you know what you're optimizing for.
           </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Signup asks for referral code I don't have</strong> — check <a href="https://x.com/bullx_io" target="_blank" rel="noopener noreferrer">@bullx_io</a> on X; they periodically post open codes. Or use a code from a trader you follow. Never buy a code from a stranger — it's not worth anything.</li>
+            <li><strong>Trades executing slower than Axiom</strong> — check Settings → Priority Fee. BullX gives you more control; if you left priority fee at the default, bump it up during congestion.</li>
+            <li><strong>Strategy didn't trigger an auto-buy</strong> — strategies require rigorous filter matching. Loosen conditions (e.g., lower the minimum liquidity threshold) if nothing's firing.</li>
+            <li><strong>Cross-chain portfolio not syncing</strong> — BullX pulls balances per chain; the sync can lag during high load. Refresh the Portfolio tab or log out and back in.</li>
+            <li><strong>Neo interface feels overwhelming</strong> — BullX has both "classic" and "Neo" interfaces. If Neo is too much, look for the classic toggle in settings or switch to <code>bullx.io</code> (older UI) vs. <code>neo.bullx.io</code>.</li>
+          </ul>
 
           <div class="gd-next">
             <span class="gd-next-label">Alternative terminals</span>
@@ -975,9 +1276,116 @@
             Many traders use GMGN for <strong>research</strong> (find smart wallets, track them, analyze holders) and Axiom or Photon for <strong>execution</strong> (faster, better UX for actual buys/sells). You can absolutely stack them.
           </div>
 
+          <div class="gd-pro-cta">
+            <div class="gd-pro-cta-icon">🔍</div>
+            <div class="gd-pro-cta-body">
+              <div class="gd-pro-cta-title">Degen Desk Pro</div>
+              <p class="gd-pro-cta-text">Before you buy — paste the contract address into Token Analysis for an AI-synthesized risk verdict: holder concentration, bundling detection, dev wallet history, and manipulation signals. Takes ~15 seconds.</p>
+            </div>
+            <a href="/token-analysis.html" class="gd-pro-cta-btn">Try Token Analysis →</a>
+          </div>
+
           <div class="gd-nfa">
             Wallet analytics don't predict the future. A wallet with a great historical win rate can still lose on your trade. Use data to inform, not to guarantee.
           </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Holder win rates showing 0% or N/A</strong> — requires sufficient trade history. Brand-new tokens (&lt;24 hours old) often don't have enough data yet. Wait for more trades.</li>
+            <li><strong>Trade execution feels slow</strong> — GMGN isn't optimized for speed; it's optimized for research. If you're flipping fast trades, execute in Axiom/Photon after researching on GMGN.</li>
+            <li><strong>Wallet tracker not alerting</strong> — check that notifications are enabled for that specific wallet AND for your account overall (Settings → Notifications).</li>
+            <li><strong>Chart missing or broken for a specific token</strong> — GMGN occasionally lags on new listings. Check <a href="https://dexscreener.com/" target="_blank" rel="noopener noreferrer">dexscreener.com</a> for a chart in the meantime.</li>
+            <li><strong>Telegram-based GMGN account can't sign in to web</strong> — they're separate flows. Your Telegram bot access and your web gmgn.ai account aren't auto-linked. Sign up on web separately with a wallet or email.</li>
+          </ul>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative: aggregator</span>
+            <a href="#jupiter" class="gd-next-link">Try Jupiter →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Jupiter =========== -->
+        <article id="jupiter" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🪐</div>
+            <div>
+              <h3 class="gd-guide-title">Jupiter (aggregator DEX)</h3>
+              <p class="gd-guide-tagline">Not a trading terminal — an <strong>aggregator</strong>. Jupiter finds the best price across every Solana DEX and routes your trade through multiple pools automatically. The benchmark for fair swap pricing.</p>
+            </div>
+          </div>
+
+          <a href="https://jup.ag/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>jup.ag</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Verify the URL</strong>
+            Real Jupiter is <code>jup.ag</code>. Copycats like <code>jupiter-exchange.com</code>, <code>jup-ag.com</code>, <code>jupiterswap.io</code> are drainers. Bookmark jup.ag after verifying from <a href="https://x.com/JupiterExchange" target="_blank" rel="noopener noreferrer">@JupiterExchange</a>.
+          </div>
+
+          <div class="gd-subhead">What Jupiter does differently</div>
+          <p>
+            Every terminal (Axiom, Photon, BullX) is itself using Jupiter under the hood for most swap routing. Going directly to jup.ag gives you:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>The best possible price</strong> — no terminal fees on top of Jupiter's already-optimal routing.</li>
+            <li><strong>The cleanest interface</strong> — just a swap box, nothing else. Good for when you know the token and just want to trade.</li>
+            <li><strong>Deep SPL token support</strong> — any token with a pool somewhere on Solana is swappable on Jupiter.</li>
+            <li><strong>Limit orders &amp; DCA</strong> (Jupiter Pro) — schedule orders without signing up for anything.</li>
+          </ul>
+
+          <div class="gd-subhead">How to swap on Jupiter</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://jup.ag/" target="_blank" rel="noopener noreferrer">jup.ag</a>.
+            </li>
+            <li>
+              Click <code>Connect Wallet</code> top-right. Select Phantom (or Backpack / Solflare). Sign the auth message in your wallet.
+            </li>
+            <li>
+              In the swap box: <strong>You're paying</strong> = SOL, <strong>You're receiving</strong> = paste the token CA you want to buy. Jupiter auto-loads the token.
+            </li>
+            <li>
+              Enter SOL amount. Jupiter shows the expected output, route breakdown (which DEXes the swap goes through), and price impact.
+            </li>
+            <li>
+              Click the ⚙ icon to check <strong>slippage</strong> — default 0.5–1% is fine for big-cap tokens, bump to 5–15% for low-cap volatile ones.
+            </li>
+            <li>
+              Click <code>Swap</code>. Phantom pops up for signature. Approve. Transaction lands in seconds.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Jupiter Pro — limit orders &amp; DCA</div>
+          <ol class="gd-steps">
+            <li>
+              At the top of jup.ag, toggle <code>Limit</code> to place orders at a target price (e.g., "buy 1 SOL worth of BONK when price hits X").
+            </li>
+            <li>
+              Toggle <code>DCA</code> to schedule recurring buys (e.g., "buy 0.2 SOL of SOL-MAJOR every day for 30 days").
+            </li>
+            <li>
+              Orders live on-chain — no signup, no account. Your wallet signature is all you need. Cancel any time.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>When to use Jupiter vs. a terminal</strong>
+            <ul style="margin: 8px 0 0 16px; padding: 0;">
+              <li><strong>Use Jupiter</strong> for clean swaps of a specific token at the best price. No chart, no research, just buy/sell.</li>
+              <li><strong>Use a terminal</strong> (Axiom, Photon) for discovery, charting, wallet tracking, and fast repeated trades.</li>
+              <li>Most traders use both. Terminal for active flow, Jupiter for occasional direct swaps.</li>
+            </ul>
+          </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>"Transaction failed"</strong> — usually slippage too tight for a volatile token. Bump slippage to 5–10% and retry. Also check SOL balance covers the gas buffer.</li>
+            <li><strong>"High price impact"</strong> warning — means the pool is thin and your trade will move the price significantly. For low-cap tokens, split a big trade into 2–3 smaller swaps.</li>
+            <li><strong>Can't find a token</strong> — Jupiter indexes anything with a pool. If it doesn't appear, the token probably has no liquidity yet (not listed on any DEX).</li>
+            <li><strong>Weird route going through 5+ DEXes</strong> — that's Jupiter's optimizer doing its job for exotic pairs. Safe to execute, just larger transaction fee.</li>
+            <li><strong>Limit order not filling</strong> — your price needs to be within the market's tradeable range. If you set a limit too far from spot, it may never fill.</li>
+          </ul>
 
           <div class="gd-next">
             <span class="gd-next-label">Next up</span>
@@ -1078,6 +1486,15 @@
             Pump.fun tokens go through a bonding curve phase before "graduating" to a real AMM pair (Raydium, Meteora). Pre-graduation tokens trade on the internal curve — fees differ, and they're not listed on every terminal. Post-graduation tokens trade on normal DEXs and show up everywhere.
           </div>
 
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>App crashes on launch</strong> — force-quit and reopen. If persistent, delete and reinstall from pump.fun (don't lose the wallet — export your private key first from Settings → Wallet before deleting).</li>
+            <li><strong>Feed not loading</strong> — Pump.fun's load can spike during busy hours. Pull to refresh. Try the "Following" or "New" tabs if "For You" is stuck.</li>
+            <li><strong>Livestream freezes or lags</strong> — livestreams are bandwidth-heavy. Switch to Wi-Fi, close other video apps. Livestreams are optional — you can still trade without watching them.</li>
+            <li><strong>Created token isn't appearing</strong> — Pump.fun token creation costs a small SOL fee (usually ~0.02 SOL). Transaction needs to confirm before token appears. Check Solscan with the deploy transaction if it's been more than 30 seconds.</li>
+            <li><strong>Wallet balance stuck showing zero after deposit</strong> — pull-to-refresh, or fully close and reopen the app. Confirm the deposit on solscan.io by pasting your wallet address.</li>
+          </ul>
+
           <div class="gd-next">
             <span class="gd-next-label">Alternative mobile</span>
             <a href="#axiom-mobile" class="gd-next-link">Try Axiom mobile →</a>
@@ -1143,6 +1560,15 @@
             <strong>Cross-device continuity</strong>
             Your Axiom portfolio, tracked wallets, presets, and history all sync across desktop and mobile automatically since you're signed in with the same X account. Start a trade on desktop, monitor on your phone — works seamlessly.
           </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>"Add to Home Screen" option missing</strong> — only works in Safari on iOS. Chrome on iOS doesn't support PWAs on Home Screen (Apple restriction). On Android, both Chrome and Edge support it.</li>
+            <li><strong>PWA icon is generic / wrong</strong> — Safari caches the previous icon. Remove the existing one from Home Screen, clear Safari cache (Settings → Safari → Clear History), then re-add.</li>
+            <li><strong>Face ID prompt doesn't appear on trades</strong> — iOS Safari's Face ID for web is opt-in per site. Go to Settings → Safari → Advanced → Website Data → find axiom.trade → enable biometric permission.</li>
+            <li><strong>Buy/sell buttons are tiny or misaligned</strong> — rotate to landscape for proper button sizing on smaller phones. On iPhone SE / smaller screens, portrait is tight.</li>
+            <li><strong>Push notifications not working</strong> — iOS PWAs only gained push support in iOS 16.4+. Update iOS. Also make sure you've tapped "Allow" when Axiom first asked for notification permission.</li>
+          </ul>
 
           <div class="gd-next">
             <span class="gd-next-label">Alternative mobile</span>
@@ -1221,6 +1647,15 @@
           <div class="gd-nfa">
             Swipe-feed trading is designed to increase engagement — not necessarily to help you make money. Mobile trading apps make it trivially easy to overtrade. Watch your session frequency.
           </div>
+
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Accidental buys from mis-swipes</strong> — turn off one-tap confirmation in Settings and require a hold-to-confirm. Slightly slower, much safer. Also reduce preset buy sizes so mis-taps hurt less.</li>
+            <li><strong>Face ID keeps asking even for small trades</strong> — feature, not a bug. You can lower the Face ID threshold in Settings → Security but don't disable it entirely.</li>
+            <li><strong>Swipe feed shows the same tokens repeatedly</strong> — FOMO's algorithm lags on feed diversity. Pull to refresh. Follow specific wallets/traders to diversify what you see.</li>
+            <li><strong>Portfolio PnL looks wrong</strong> — PnL calculations depend on fair entry pricing. DCA'd positions can show inaccurate PnL temporarily — usually self-corrects after a sync.</li>
+            <li><strong>Deposit not showing after sending SOL</strong> — standard Solana delay. 30 seconds max usually. Check on solscan.io if longer.</li>
+          </ul>
 
           <div class="gd-next">
             <span class="gd-next-label">Next up</span>
@@ -1346,6 +1781,16 @@
             In Settings, default slippage for new pump.fun tokens should be 10–20%; for established Raydium pairs, 3–8% is fine. Too-low slippage = failed transactions in volatile moves. Too-high = you get a worse fill.
           </div>
 
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Bot isn't responding to my CA paste</strong> — the bot chat may have scrolled past. Send <code>/start</code> to refresh. If the bot truly doesn't respond, check <a href="https://x.com/bonkbot_io" target="_blank" rel="noopener noreferrer">@bonkbot_io</a> for status updates — occasional Telegram API issues affect all bots.</li>
+            <li><strong>Buy button shows "Failed"</strong> — most commonly slippage. /settings → Slippage → bump up. Retry. Also check you have enough SOL (trade amount + ~0.01 SOL for priority fee + gas buffer).</li>
+            <li><strong>My wallet balance drained without me doing anything</strong> — if this happens, your private key is compromised. Possible causes: someone saw your phone, your Telegram account got hacked, you exported the private key somewhere risky, or (rarely) a bot exploit. Move any remaining funds out immediately. Generate a fresh wallet via <code>/wallets</code> → new wallet, migrate future deposits there.</li>
+            <li><strong>Can't export private key</strong> — <code>/settings</code> → <code>Wallets</code> → tap the wallet → <code>Export</code>. The bot will show the PK once; screenshot with caution or copy to paper immediately.</li>
+            <li><strong>Wrong token bought because ticker matched a fake</strong> — always verify the CA, never rely on ticker alone. Copy-paste the exact CA from Dexscreener or the original source. Two tokens can share <code>$BONK</code> — only the CA is unique.</li>
+            <li><strong>Position shows "untracked"</strong> — BONKbot's position tracking requires the token to be on its index. Pre-bonding pump.fun tokens sometimes don't show normal PnL. Check your wallet on solscan.io for ground truth.</li>
+          </ul>
+
           <div class="gd-next">
             <span class="gd-next-label">Alternative TG bots</span>
             <a href="#trojan" class="gd-next-link">Try Trojan →</a>
@@ -1424,6 +1869,16 @@
             Pick wallets with long histories and consistent win rates. Blindly copying a wallet because they had one 100x trade is a recipe for getting left holding the bag when they exit early. Use GMGN to vet a wallet before copy-trading it in Trojan.
           </div>
 
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Copy-trade not mirroring trades</strong> — verify the tracked wallet is active (some tracked wallets stop trading). Also check your copy-trade SOL balance is sufficient for the fixed position size you configured.</li>
+            <li><strong>Limit order not firing at target price</strong> — Trojan monitors via polling, not instant triggers. If price spiked past your target and immediately reversed, the order may have missed the window. Set order slightly below major round numbers (e.g., $0.0049 instead of $0.005) to account for short-lived breaches.</li>
+            <li><strong>Anti-MEV protection slowed my trade</strong> — Jito bundle inclusion takes slightly longer than direct submission. On fast-moving plays, you can disable anti-MEV in settings, but you'll be exposed to sandwich attacks. Tradeoff.</li>
+            <li><strong>Auto-sell sold at an unexpected price</strong> — check your TP/SL trigger logic. A "TP at 2x" fires once price hits 2x, not when it sustains 2x. If price briefly wicks above and reverses, you get filled at the wick.</li>
+            <li><strong>Bot says "insufficient gas"</strong> — keep at least 0.05 SOL reserved for priority fees. Trojan doesn't auto-top-up gas like some other platforms.</li>
+            <li><strong>Referral code prompt blocks signup</strong> — check Trojan's official X for a current open code, or ask in their official Telegram group.</li>
+          </ul>
+
           <div class="gd-next">
             <span class="gd-next-label">Alternative TG bots</span>
             <a href="#bloom" class="gd-next-link">Try Bloom →</a>
@@ -1501,13 +1956,350 @@
             Set up one bot (BONKbot is the simplest) and one terminal (Axiom or Photon). Paper-trade or use tiny amounts (0.1 SOL per trade) for the first few sessions. Feel the UX, see which one clicks with how you think. Then commit. Don't juggle five tools as a beginner.
           </div>
 
+          <div class="gd-subhead">Troubleshooting</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Bot handle seems "dead" or unresponsive</strong> — Bloom's team has rotated handles after Telegram bans. Always pull the current official handle from <a href="https://x.com/BloomBotApp" target="_blank" rel="noopener noreferrer">@BloomBotApp</a> — using an old deprecated handle will get no response.</li>
+            <li><strong>Sniper mode bought a token I didn't want</strong> — sniper triggers on whatever filter you set. Tighten filters (minimum liquidity, max market cap, required token flags) before re-enabling.</li>
+            <li><strong>Wallet tracker alert never came for a known wallet move</strong> — Bloom polls transaction history. High-frequency alerts can have slight lag (~5–15 seconds). For alpha-trading, pair with a faster alerting tool like a direct Helius webhook.</li>
+            <li><strong>"Priority fee too low" error during congestion</strong> — bump priority fee in settings. During busy network periods (token launch frenzies), standard priority fees don't get through — use "High" or "Turbo".</li>
+            <li><strong>TP/SL didn't execute at exact price</strong> — like Trojan, Bloom triggers on poll intervals. Short price spikes may miss triggers. For volatile tokens, set TP slightly below your ideal and SL slightly above your danger level.</li>
+            <li><strong>Forgot to back up private key and now I'm locked out</strong> — if you still have Telegram access and the bot still responds, export the key immediately (usually <code>/wallets</code> → export). If Telegram access itself is lost, recovery depends on whether you have the private key written down elsewhere. Without it, funds are gone.</li>
+          </ul>
+
           <div class="gd-nfa">
             Telegram bots are execution tools, not strategy. They make it easier to enter and exit positions but won't improve your token selection. Nothing here is financial advice.
           </div>
 
           <div class="gd-next">
-            <span class="gd-next-label">You're set up</span>
-            <a href="/" class="gd-next-link">Back to Degen Desk chat →</a>
+            <span class="gd-next-label">Next up</span>
+            <a href="#after-first-trade" class="gd-next-link">After your first trade →</a>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- SECTION 6: NEXT STEPS                          -->
+        <!-- ============================================== -->
+        <div class="gd-section-header">
+          <div class="gd-section-header-eyebrow">Section 6</div>
+          <h2>Next Steps</h2>
+          <p>You're set up. Now the part that actually matters — how to trade thoughtfully instead of getting emotionally clipped on your first move.</p>
+        </div>
+
+        <!-- =========== GUIDE: After your first trade =========== -->
+        <article id="after-first-trade" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">📈</div>
+            <div>
+              <h3 class="gd-guide-title">After your first trade</h3>
+              <p class="gd-guide-tagline">Everyone focuses on the entry. Real PnL comes from knowing when to exit and how to manage what's already open.</p>
+            </div>
+          </div>
+
+          <p>
+            You bought your first token. Now what? Most beginners do one of two things — sell too early (a 30% gain feels huge) or hold too long (a 500% gain turns into -60% because they got greedy). Both are fixable with a plan you decide on <strong>before</strong> you're emotional.
+          </p>
+
+          <div class="gd-subhead">Step 1 — Set exit levels before you enter</div>
+          <p>
+            Before you place a buy, decide three things:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Take-profit (TP) levels</strong> — at what prices will you sell portions? Common structure: sell 25% at 2x, 25% at 3x, 25% at 5x, hold 25% as a "moonbag."</li>
+            <li><strong>Stop-loss (SL)</strong> — at what loss do you cut? Typical: -30% to -50% for memecoins, depending on conviction.</li>
+            <li><strong>Max position size</strong> — what's the most of your portfolio you'll commit to this one trade? Common: 1–3% for speculative plays, 5–10% for strong convictions, never more than 20% in a single memecoin.</li>
+          </ul>
+          <p>Write these down. Set them as auto-sell orders in your terminal (Axiom, Photon, Trojan all support TP/SL). Automated exits remove emotion.</p>
+
+          <div class="gd-subhead">Step 2 — What to monitor daily</div>
+          <p>For each open position, check these metrics:</p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Market cap (MC) progression</strong> — is it growing or stalling? A token stuck at the same MC for days after a pump is often distribution (insiders selling into retail).</li>
+            <li><strong>Liquidity</strong> — has it grown with MC? MC up + liquidity flat = thinner walls, harder exits. Liquidity dropping while MC holds is a red flag.</li>
+            <li><strong>Holder count</strong> — growing = new buyers entering = healthy. Flat or declining = momentum fading.</li>
+            <li><strong>Top holder changes</strong> — if top wallets start dumping, the top is usually in.</li>
+            <li><strong>Volume / MC ratio</strong> — healthy tokens maintain 20%+ daily volume relative to MC. If volume craters, momentum is dying.</li>
+            <li><strong>Social &amp; narrative</strong> — is the token's story picking up new attention (KOL mentions, X trending) or going quiet? Memecoins live and die on attention.</li>
+          </ul>
+
+          <div class="gd-subhead">Step 3 — Know when you're in a "bag"</div>
+          <p>
+            A "bag" is a position that's down significantly and you're holding hoping it comes back. Sometimes it does. Usually it doesn't. Signs you're bag-holding instead of investing:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li>You check the chart every hour hoping for a bounce.</li>
+            <li>Your thesis has been invalidated (narrative died, rug indicators appeared, dev went silent) but you haven't exited.</li>
+            <li>You're adding more on the way down without a pre-defined plan.</li>
+            <li>You're telling yourself "just needs one pump" — it never needs one pump. If nothing changes fundamentally, it's not coming back.</li>
+          </ul>
+          <p>Cutting a bag at -40% sucks. Cutting at -80% sucks more. Set your stop, take the loss, redeploy to better setups.</p>
+
+          <div class="gd-subhead">Step 4 — Journal your trades</div>
+          <p>
+            The best traders keep a simple log: token, entry price, size, thesis, exit price, exit reason, PnL. Review weekly. Patterns emerge fast:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li>Which narratives you win on vs. lose on.</li>
+            <li>Whether you exit too early or too late on average.</li>
+            <li>What your win rate actually is (usually lower than you think).</li>
+            <li>Which terminals / tools consistently give you an edge.</li>
+          </ul>
+          <p>Spreadsheet, Notion, paper — doesn't matter. Just track it. Without data you're relying on vibes, and vibes systematically lose money.</p>
+
+          <div class="gd-subhead">Step 5 — Use Degen Desk's tools for ongoing research</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Token Analysis (Pro)</strong> — run any CA through it before you buy. Catches manipulation signals, holder concentration, bundling, dev wallet red flags.</li>
+            <li><strong>Chat</strong> — paste a chart or ask about a narrative. The AI's trained on Solana ecosystem specifics and can help you pressure-test a thesis.</li>
+            <li><strong>GMGN research</strong> — check who's buying and whether they're smart money before committing size.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>The 70/20/10 rule for survival</strong>
+            70% of your trading bankroll in safer plays (established memes at reasonable MCs). 20% in higher-conviction speculative plays. 10% in wild YOLO trades you fully expect to lose. This structure means you can lose every YOLO trade and still be in the game.
+          </div>
+
+          <div class="gd-callout gd-callout-warn">
+            <strong>The biggest mistake new traders make</strong>
+            It's not picking bad tokens — it's oversizing. One 50% allocation to a token that rugs kills your account. Ten 5% allocations that mostly go to zero still leaves you alive to trade tomorrow. <strong>Position sizing matters more than picking winners.</strong>
+          </div>
+
+          <div class="gd-nfa">
+            Every trading framework above is a tool, not a prediction. Nothing here guarantees profit. Plenty of traders following all of this still lose money. The goal is to stay in the game long enough to get better.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Need a term defined?</span>
+            <a href="#glossary" class="gd-next-link">Glossary →</a>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- SECTION 7: REFERENCE                           -->
+        <!-- ============================================== -->
+        <div class="gd-section-header">
+          <div class="gd-section-header-eyebrow">Section 7</div>
+          <h2>Reference</h2>
+          <p>Quick lookup for terms and common beginner questions. Bookmark this for when you're reading something and hit a word you don't know.</p>
+        </div>
+
+        <!-- =========== GLOSSARY =========== -->
+        <article id="glossary" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">📖</div>
+            <div>
+              <h3 class="gd-guide-title">Glossary</h3>
+              <p class="gd-guide-tagline">Plain-English definitions of the terms you'll hear in Solana trading. Alphabetical.</p>
+            </div>
+          </div>
+
+          <dl style="margin: 14px 0; display: grid; gap: 14px;">
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">AMM (Automated Market Maker)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A DEX that uses liquidity pools instead of an order book. Raydium and Meteora are Solana AMMs. When you "buy on Raydium," you're swapping SOL for tokens in a pool.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Bag / Bag-holder</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A position that's significantly down that the holder is still holding ("holding the bag"). The opposite of a winning trade.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Bonding curve</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A pricing mechanism where the token price rises mathematically as supply increases. Pump.fun tokens use a bonding curve until "graduating" to an AMM pair.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Bundled launch / Bundling</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">When a token's deployer buys a large % of supply across many wallets within the same transaction (or within seconds of launch). Signals coordinated dump potential. Detectable via RugCheck, Axiom's sniper analytics, or Degen Desk's Token Analysis.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">CA (Contract Address)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">The unique identifier for a token on Solana. A long base58 string like <code>DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263</code>. Always verify the CA — a token can share a ticker ($BONK) with scam clones.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">DEX (Decentralized Exchange)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A crypto exchange that runs as smart contracts on the blockchain, not a company. Raydium, Meteora, Orca are Solana DEXes. Your wallet connects directly — no account, no deposits.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Dev wallet</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">The wallet that created/deployed a token. If the dev wallet holds a large % and dumps, the token crashes. Checking dev wallet history is standard rug-vetting.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">DCA (Dollar Cost Averaging)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Buying in fixed-size increments over time instead of all at once. Reduces the impact of bad entry timing. Jupiter, Trojan, and Bloom all have DCA features.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">FDV (Fully Diluted Valuation)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">The market cap if every token in existence (including vested / locked) were in circulation. Usually higher than MC. If FDV is 10x MC, future unlocks will flood supply.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Gas / Priority fee</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Solana's transaction fee, paid in SOL. Base fee is ~$0.0005. Priority fee is extra SOL you pay to get your transaction included faster — matters during network congestion and for fast-moving trades.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Jito bundle</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A way to submit a group of Solana transactions to Jito validators with a tip, bypassing the regular mempool and reducing MEV/sandwich risk. Most terminals and bots route through Jito for fast trades.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">KOL (Key Opinion Leader)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A prominent X account or crypto influencer whose call can move a token's price. "KOL rotation" refers to coins passed between different influencers for coordinated pumps — often distribution on retail.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Liquidity / Liquidity Pool (LP)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">The pool of SOL and tokens that enables trading. Thin liquidity = big slippage on trades. Liquidity burned / locked means the LP can't be pulled, reducing rug risk.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Market cap (MC)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Total token supply × current price. $1M MC means all tokens together are "worth" $1M. Caveat: a token's paper MC can be far higher than the actual tradeable value because liquidity is a fraction of MC.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">MEV (Maximal Extractable Value)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Profit bots extract by reordering / front-running / sandwiching transactions. On Solana, MEV mostly manifests as sandwich attacks. Jito bundles and anti-MEV routing in terminals help protect against this.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Moonbag</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A small remaining portion of a position you keep after taking most profits. "Sold 75%, keeping a moonbag in case it runs further."</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">NFA (Not Financial Advice)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Disclaimer indicating opinions are for entertainment/education, not personalized advice. Paired with DYOR — Do Your Own Research.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Rug / Rug pull</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">When a token's creators abandon the project and dump their holdings, crashing the price to zero. "Soft rug" = slow exit over days. "Hard rug" = liquidity pulled instantly.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Seed phrase / Recovery phrase</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">The 12- or 24-word list that is your wallet. Anyone who has it controls your funds. Never digitize. Never share. See the <a href="#wallet-security">security guide</a>.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Slippage</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">The difference between expected price and execution price. Setting "5% slippage" means you'll accept up to 5% worse price. Too low = failed trades in volatility. Too high = worse fills. Typical: 1–3% for big caps, 5–15% for low-cap memecoins.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Sniper</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">A bot or trader that buys tokens the moment they launch (within block 1). Many tokens have huge sniper allocations at launch — those snipers typically dump into the first wave of retail buyers. High sniper % = red flag.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">SOL</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Solana's native currency. Used to pay gas and as the base pair for most token trades. Trading a memecoin means trading SOL for it.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">SPL token</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Solana Program Library token — the Solana equivalent of ERC-20 on Ethereum. Every non-SOL token on Solana is an SPL token.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Take-profit (TP) / Stop-loss (SL)</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Auto-sell orders. TP sells when price hits a gain target. SL sells when it hits a loss threshold. Removes emotion from exits.</dd>
+            </div>
+            <div>
+              <dt style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 3px;">Volume</dt>
+              <dd style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">Total value traded in a period (usually 24h). High volume = active trading = easier to enter/exit. Volume spikes often precede price moves.</dd>
+            </div>
+          </dl>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Common questions</span>
+            <a href="#faq" class="gd-next-link">FAQ →</a>
+          </div>
+        </article>
+
+        <!-- =========== FAQ =========== -->
+        <article id="faq" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">❓</div>
+            <div>
+              <h3 class="gd-guide-title">FAQ</h3>
+              <p class="gd-guide-tagline">The questions every beginner asks in their first two weeks.</p>
+            </div>
+          </div>
+
+          <div class="gd-subhead">Which terminal should I pick first?</div>
+          <p>
+            <strong>Start with Axiom.</strong> Cleanest UX for beginners, discovery (Pulse) is strong, signup is one click via X, and the PWA works beautifully on mobile. Once you know what you like/dislike, try Photon (cleaner minimal UI) or BullX (more power-user features). Don't juggle five tools in your first month.
+          </p>
+
+          <div class="gd-subhead">Browser terminal vs Telegram bot — what's the difference?</div>
+          <p>
+            <strong>Browser terminals</strong> (Axiom, Photon, BullX, GMGN) have charts, discovery feeds, wallet trackers, visual position management. Better for research and deliberate trading.
+          </p>
+          <p>
+            <strong>Telegram bots</strong> (BONKbot, Trojan, Bloom) are execution-optimized — fastest way to get in/out of a position. Worse for research (no chart, minimal UI). Better when you already know what you're trading and just need to act quickly.
+          </p>
+          <p>Most active traders use both: terminal for research, bot for fast execution on alpha plays.</p>
+
+          <div class="gd-subhead">How much SOL should I start with?</div>
+          <p>
+            Enough to experience real outcomes but little enough that you can lose it all without affecting your life. <strong>$100–$500</strong> is the typical "learning bankroll" for beginners. Under $50 and fees/slippage eat too much of small trades; over $1,000 and the risk of catastrophic loss gets real before you know what you're doing. Treat the first couple months as tuition.
+          </p>
+
+          <div class="gd-subhead">What's a safe slippage?</div>
+          <p>
+            <strong>Big-cap established tokens</strong> (>$50M MC, high liquidity): 0.5–2% is fine.<br>
+            <strong>Mid-cap memecoins</strong> ($5–50M MC): 3–8%.<br>
+            <strong>Fresh pump.fun / low-cap</strong> (under $5M MC, thin liquidity): 10–20%.<br>
+            If transactions keep failing with "slippage exceeded," bump up. If fills are way worse than expected, you had too much slippage tolerance.
+          </p>
+
+          <div class="gd-subhead">Is it safe to use an embedded wallet (Axiom/BullX/FOMO)?</div>
+          <p>
+            Safe enough for <strong>active trading float</strong> (what you're currently risking). Not safe for your <strong>entire stack</strong>. Embedded wallets are hot wallets accessible from a web session — if the app gets compromised, your session gets hijacked, or your password is leaked, those funds are at risk. Keep the bulk of your holdings in a separate wallet (ideally Ledger) that never connects to trading sites.
+          </p>
+
+          <div class="gd-subhead">How do I spot a rug before buying?</div>
+          <p>
+            Red flags to check (all covered in Degen Desk's Token Analysis Pro tool):
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li>Top 10 wallets hold &gt;40% of supply → concentrated, high dump risk.</li>
+            <li>Dev wallet holding &gt;5% → they can tank the chart at will.</li>
+            <li>Snipers held large % → they'll dump on the first green candle.</li>
+            <li>High bundled % → coordinated launch, designed to extract from retail.</li>
+            <li>Liquidity &lt;10% of market cap → paper MC, can't actually exit.</li>
+            <li>LP not burned / not locked → dev can pull liquidity any time.</li>
+            <li>Mutable metadata / mint authority not revoked → dev can mint infinite supply or change token details.</li>
+            <li>No social presence despite high MC → suspicious; real projects build community.</li>
+          </ul>
+
+          <div class="gd-subhead">Why did my transaction fail?</div>
+          <p>Three most common reasons:</p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Slippage too tight</strong> — price moved more than your slippage tolerance during execution. Bump slippage and retry.</li>
+            <li><strong>Priority fee too low</strong> — network is congested, your transaction didn't get included. Bump priority fee.</li>
+            <li><strong>Not enough SOL for gas</strong> — you tried to spend all your SOL. Leave at least 0.05 SOL as a gas buffer.</li>
+          </ul>
+
+          <div class="gd-subhead">I sent SOL to the wrong address — can I recover it?</div>
+          <p>
+            <strong>No.</strong> Crypto transactions are irreversible. This is why every guide here hammers "test with a small amount first." If the destination was a known exchange (Coinbase, Binance), you can sometimes contact them with transaction details and they may return funds after a verification process — but this isn't guaranteed and takes weeks. If the destination was a random wallet, funds are gone.
+          </p>
+
+          <div class="gd-subhead">Is Pump.fun legit?</div>
+          <p>
+            Pump.fun itself is a legitimate launchpad platform. But <strong>the vast majority of tokens launched on it are not</strong> — most are quick pump-and-dumps, rugs, or tokens that go to zero. Pump.fun is where most Solana memes start, so most memecoins you find there first. Treat every pump.fun token as high-risk unless it has organic traction (real community, KOL interest, legit dev presence). Graduation to Raydium is a filter but not a guarantee.
+          </p>
+
+          <div class="gd-subhead">What if an app asks for my seed phrase?</div>
+          <p>
+            <strong>It's a scam. 100% of the time.</strong> No legitimate wallet, exchange, support rep, or verification process ever asks for your seed phrase. Not via email, not via DM, not via "verification page," not via "wallet sync tool." Close the tab/app, block the sender, and carry on. If in doubt, don't — assume scam until proven otherwise.
+          </p>
+
+          <div class="gd-subhead">How do I find good tokens to trade?</div>
+          <p>
+            Some approaches traders use:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Discovery feeds</strong> — Axiom Pulse, Photon Memescope, browsing trending sections.</li>
+            <li><strong>Wallet tracking</strong> — follow smart money wallets on GMGN and copy or mirror-trade their entries.</li>
+            <li><strong>Narrative hunting</strong> — read X, find emerging memes (political, AI, seasonal events) and look for early on-chain activity.</li>
+            <li><strong>KOL calls</strong> — double-edged; following calls means buying alongside / after influencers. Sometimes early = good, sometimes = bag-holding.</li>
+          </ul>
+          <p>None of these are guaranteed. Degen Desk chat can help you analyze a specific token or narrative — ask it directly.</p>
+
+          <div class="gd-subhead">What's the difference between Pro and free on Degen Desk?</div>
+          <p>
+            Free gives you the full AI chat and all setup guides. Pro unlocks the <strong>Token Analysis Center</strong> — on-chain intelligence for any Solana token (holder distribution, bundling detection, dev wallet scan, AI-synthesized risk verdict). Worth it if you're actively trading and want to vet tokens before buying.
+          </p>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Ready to trade</span>
+            <a href="/" class="gd-next-link">Open Degen Desk chat →</a>
           </div>
         </article>
 
@@ -1515,12 +2307,15 @@
         <div style="margin-top: 48px; padding: 24px; background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), rgba(0, 212, 255, 0.03)); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 16px; text-align: center;">
           <div style="font-size: 14px; font-weight: 700; color: #00ff88; margin-bottom: 8px; letter-spacing: 0.4px; text-transform: uppercase;">You made it to the end</div>
           <p style="font-size: 14px; color: var(--text-primary); margin: 0 0 12px; line-height: 1.6;">
-            That's the full setup toolkit. Wallets, terminals, mobile apps, and Telegram bots — everything an on-chain trader actually uses.
+            20 guides, a glossary, and an FAQ. Everything an on-chain trader actually uses — wallets, swaps, terminals, mobile apps, Telegram bots, and the judgment to use them well.
           </p>
           <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 16px; line-height: 1.6;">
-            Got questions about any of this? Open the Degen Desk chat and ask — the AI has context on every tool covered here and can help you pick the right combo for your goals.
+            Got questions about any of this? Open the Degen Desk chat and ask — the AI has context on every tool covered here. Ready to vet a specific token? Try Token Analysis (Pro).
           </p>
-          <a href="/" class="gd-next-link" style="display:inline-flex;">Open Degen Desk chat →</a>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="/" class="gd-next-link" style="display:inline-flex;">Open Degen Desk chat →</a>
+            <a href="/token-analysis.html" class="gd-next-link" style="display:inline-flex;">Try Token Analysis →</a>
+          </div>
           <div style="margin-top: 18px; font-size: 11.5px; color: var(--text-muted); line-height: 1.55;">
             Nothing in these guides is financial advice. Crypto trading involves substantial risk of loss. Always do your own research and never invest more than you can afford to lose.
           </div>
