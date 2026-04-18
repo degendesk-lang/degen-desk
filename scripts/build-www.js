@@ -24,12 +24,16 @@ const filesToCopy = [
   "privacy.html",
   "terms.html",
   "auth-callback.html",
+  "token-analysis.html",
+  "guides.html",
   "styles.css",
   "auth.js",
   "iap.js",
   "agent.js",
   "knowledge-base.js",
+  "token-analysis.js",
   "favicon.png",
+  "og-image.png",
 ];
 
 for (const file of filesToCopy) {

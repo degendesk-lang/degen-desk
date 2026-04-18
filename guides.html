@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en" class="gd-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk Setup Guides — step-by-step tutorials for Solana wallets, trading terminals, mobile apps, and Telegram trading bots. Built for beginners." />
+  <title>Setup Guides &middot; Degen Desk</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/guides.html" />
+  <meta property="og:title" content="Setup Guides · Degen Desk" />
+  <meta property="og:description" content="Step-by-step tutorials for Solana wallets, trading terminals, mobile apps, and Telegram bots. Built for beginners." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=2" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=2" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* Inline scroll unlock — same pattern as token-analysis.html, prevents
+       the chat app's global overflow:hidden from breaking this long-form page. */
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    #gd-app { min-height: 100vh; overflow: visible !important; height: auto !important; }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=33" />
+</head>
+<body class="gd-body" style="background:#060610;">
+  <div id="gd-app" class="gd-app">
+
+    <!-- Header -->
+    <header class="gd-header">
+      <a href="/" class="gd-back-link" aria-label="Back to chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="gd-header-title">
+        <div class="gd-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Setup Guides</h1>
+          <span class="gd-subtitle">Step-by-step onboarding for beginners</span>
+        </div>
+      </div>
+      <button class="gd-toc-toggle" id="gd-toc-toggle" aria-label="Open guide index">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="gd-layout">
+
+      <!-- Sticky TOC sidebar -->
+      <aside class="gd-toc" id="gd-toc">
+        <div class="gd-toc-inner">
+          <div class="gd-toc-title">Guide Index</div>
+
+          <div class="gd-toc-section">
+            <div class="gd-toc-section-label">1 · Getting Started</div>
+            <a href="#what-is-solana" class="gd-toc-link">What is Solana &amp; SOL</a>
+            <a href="#how-to-buy-sol" class="gd-toc-link">How to buy SOL</a>
+          </div>
+
+          <div class="gd-toc-section">
+            <div class="gd-toc-section-label">2 · Wallets</div>
+            <a href="#phantom" class="gd-toc-link">Phantom Wallet</a>
+            <a href="#backpack" class="gd-toc-link">Backpack Wallet</a>
+            <a href="#wallet-security" class="gd-toc-link">Wallet security basics</a>
+          </div>
+
+          <div class="gd-toc-section">
+            <div class="gd-toc-section-label">3 · Trading Terminals (Browser)</div>
+            <a href="#axiom" class="gd-toc-link">Axiom.trade</a>
+            <a href="#photon" class="gd-toc-link">Photon</a>
+            <a href="#padre" class="gd-toc-link">Padre</a>
+            <a href="#bullx" class="gd-toc-link">BullX</a>
+            <a href="#gmgn" class="gd-toc-link">GMGN</a>
+          </div>
+
+          <div class="gd-toc-section">
+            <div class="gd-toc-section-label">4 · Mobile Apps</div>
+            <a href="#pumpfun-app" class="gd-toc-link">Pump.fun app</a>
+            <a href="#axiom-mobile" class="gd-toc-link">Axiom mobile</a>
+            <a href="#fomo" class="gd-toc-link">FOMO</a>
+          </div>
+
+          <div class="gd-toc-section">
+            <div class="gd-toc-section-label">5 · Telegram Bots</div>
+            <a href="#bonkbot" class="gd-toc-link">BONKbot</a>
+            <a href="#trojan" class="gd-toc-link">Trojan</a>
+            <a href="#bloom" class="gd-toc-link">Bloom</a>
+          </div>
+
+          <div class="gd-toc-footer">
+            <a href="/" class="gd-toc-footer-link">← Back to Chat</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- TOC backdrop for mobile -->
+      <div class="gd-toc-backdrop" id="gd-toc-backdrop"></div>
+
+      <!-- Main content -->
+      <main class="gd-main">
+
+        <!-- Intro / welcome -->
+        <section class="gd-intro">
+          <div class="gd-eyebrow"><span class="gd-dot"></span>Onboarding</div>
+          <h2 class="gd-intro-title">Everything you need to start trading Solana tokens.</h2>
+          <p class="gd-intro-text">
+            Step-by-step setup for the wallets, terminals, mobile apps, and Telegram bots used by
+            on-chain traders. No jargon, no assumed knowledge. Follow a guide top to bottom and
+            you'll be set up.
+          </p>
+          <div class="gd-intro-warn">
+            <strong>⚠️ READ THIS FIRST:</strong>
+            Crypto is unforgiving. A stolen seed phrase cannot be recovered. A wrong address means lost funds.
+            Take your time, double-check everything, and never share your seed phrase with anyone — not support,
+            not a giveaway, not Degen Desk. Nothing in these guides is financial advice.
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 1: GETTING STARTED                     -->
+        <!-- ============================================== -->
+        <div class="gd-section-header">
+          <div class="gd-section-header-eyebrow">Section 1</div>
+          <h2>Getting Started</h2>
+          <p>New to Solana and on-chain trading? Start here. Two short reads that give you the mental model before you touch any app.</p>
+        </div>
+
+        <!-- =========== GUIDE: What is Solana =========== -->
+        <article id="what-is-solana" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">◎</div>
+            <div>
+              <h3 class="gd-guide-title">What is Solana &amp; SOL?</h3>
+              <p class="gd-guide-tagline">Plain-English breakdown of the blockchain you'll be trading on.</p>
+            </div>
+          </div>
+
+          <p>
+            <strong>Solana</strong> is a blockchain — a public database of transactions that anyone can read and anyone can write to (for a small fee). It's the network where most meme coin trading happens right now because it's fast and cheap compared to Ethereum.
+          </p>
+
+          <div class="gd-subhead">The three things you actually need to know</div>
+
+          <ol class="gd-steps">
+            <li>
+              <strong>SOL is the native currency.</strong>
+              <p>Every transaction on Solana costs a tiny amount of SOL as a network fee (usually fractions of a cent). You also need SOL to buy tokens — when you "buy $BONK," you're trading your SOL for $BONK.</p>
+            </li>
+            <li>
+              <strong>Tokens are just data on the blockchain.</strong>
+              <p>A meme coin like BONK, WIF, or POPCAT is a Solana token. Each token has a unique <strong>contract address</strong> (CA) — a long string like <code>DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263</code>. The CA is how you uniquely identify a token. Two different tokens can have the same ticker ($BONK) but only one real CA.</p>
+            </li>
+            <li>
+              <strong>Your wallet is your account.</strong>
+              <p>A wallet (like Phantom or Backpack) holds your SOL and your tokens. It's identified by a public address (safe to share — it's how people send you tokens) and secured by a seed phrase (<strong>never share this with anyone, ever</strong>).</p>
+            </li>
+          </ol>
+
+          <div class="gd-subhead">What are "gas fees"?</div>
+          <p>
+            Gas fees are the network fees you pay for each transaction — sending tokens, buying, selling, approving a swap. On Solana they're usually <strong>$0.0005–$0.02</strong> per transaction, which is why on-chain trading is viable here. Compare that to Ethereum, where a single swap can cost $5–$50 in gas during busy periods.
+          </p>
+          <p>
+            You pay gas in SOL, so always keep a small amount (say, 0.05–0.1 SOL) in your wallet as a gas buffer — otherwise transactions will fail.
+          </p>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Mental model</strong>
+            SOL = fuel &amp; currency. Your wallet = your bank account. A token's CA = its account number. Gas = transaction toll. Lose the seed phrase to your wallet and nobody — not Phantom, not Solana, not Degen Desk — can recover it.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Next up</span>
+            <a href="#how-to-buy-sol" class="gd-next-link">How to buy SOL →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: How to buy SOL =========== -->
+        <article id="how-to-buy-sol" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">$</div>
+            <div>
+              <h3 class="gd-guide-title">How to buy SOL</h3>
+              <p class="gd-guide-tagline">Three beginner-friendly ways to get your first SOL: Coinbase, Robinhood, and in-wallet purchase via Moonpay.</p>
+            </div>
+          </div>
+
+          <p>
+            Before you trade anything, you need SOL in a self-custody wallet (Phantom or Backpack). You have two steps:
+            <strong>(1)</strong> buy SOL on a regulated exchange or via a card processor, then <strong>(2)</strong> send it to your wallet address.
+          </p>
+
+          <div class="gd-callout gd-callout-note">
+            <strong>Important</strong>
+            Do not trade meme coins directly on Coinbase or Robinhood — they don't list them. Buy SOL there, then move it to your own wallet where you can access the full token universe.
+          </div>
+
+          <div class="gd-subhead">Option A — Coinbase (recommended for US beginners)</div>
+          <ol class="gd-steps">
+            <li>
+              Sign up at <a href="https://www.coinbase.com/" target="_blank" rel="noopener noreferrer">coinbase.com</a> and complete identity verification. This takes 1–3 business days the first time.
+            </li>
+            <li>
+              Link a bank account (cheapest, 3–5 day settlement) or a debit card (instant, but ~3.99% fee).
+            </li>
+            <li>
+              In the Coinbase app or website, search for <strong>Solana (SOL)</strong> and buy the amount you want. For your first time, $50–$100 is plenty to start with.
+            </li>
+            <li>
+              Wait for the SOL to show up in your Coinbase account (instant if you used a card, a few days if you used a bank).
+            </li>
+            <li>
+              In Coinbase, tap <code>Send</code>, choose <strong>Solana (SOL)</strong>, and paste your wallet address (the long string starting with letters/numbers that Phantom shows you — see the Phantom guide).
+            </li>
+            <li>
+              Send a small test amount first (e.g., 0.1 SOL) to confirm it arrives. Once you see it in Phantom, send the rest.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Double-check the address</strong>
+            Crypto transactions are irreversible. If you paste the wrong address, the funds are gone forever. Always compare the first 4 and last 4 characters of the address you paste vs. the address in your wallet.
+          </div>
+
+          <div class="gd-subhead">Option B — Robinhood</div>
+          <ol class="gd-steps">
+            <li>
+              In the Robinhood app, search for <strong>Solana</strong> and buy with your linked bank account.
+            </li>
+            <li>
+              Once it settles, tap <code>Transfer</code> → <code>Send Solana</code>, paste your Phantom wallet address, and send.
+            </li>
+            <li>
+              Robinhood enabled crypto withdrawals to external wallets in most regions in 2022. If you don't see the <code>Send</code> option, your account may need additional verification.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Option C — In-wallet purchase (Moonpay / Stripe / Coinbase Onramp)</div>
+          <p>
+            Phantom and Backpack both have a "Buy" button that lets you purchase SOL directly with a debit card. Fees are usually <strong>3–5%</strong> — more expensive than Coinbase — but fastest (no separate account needed, no transfer step).
+          </p>
+          <ol class="gd-steps">
+            <li>
+              Open Phantom (or Backpack) → tap <code>Buy</code>.
+            </li>
+            <li>
+              Choose SOL, enter the USD amount, and pick a payment provider (Moonpay, Stripe, Transak, or Coinbase Onramp). Compare the quoted fees — they differ by region.
+            </li>
+            <li>
+              Enter your card info, confirm, and the SOL lands in your wallet in a few minutes.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Rule of thumb</strong>
+            For amounts over $200, use Coinbase or Robinhood (lower fees). For quick small top-ups, in-wallet purchase is fine despite the higher fee because of the convenience.
+          </div>
+
+          <div class="gd-nfa">
+            Nothing here is financial advice. Amounts listed are examples only. Only commit what you can afford to lose.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Next up</span>
+            <a href="#phantom" class="gd-next-link">Set up Phantom Wallet →</a>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- SECTION 2: WALLETS                             -->
+        <!-- ============================================== -->
+        <div class="gd-section-header">
+          <div class="gd-section-header-eyebrow">Section 2</div>
+          <h2>Wallets</h2>
+          <p>Your wallet is where your SOL and tokens live, and how you sign trades on every terminal. Pick one (Phantom or Backpack), set it up carefully, then read the security guide before you do anything else.</p>
+        </div>
+
+        <!-- =========== GUIDE: Phantom =========== -->
+        <article id="phantom" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">👻</div>
+            <div>
+              <h3 class="gd-guide-title">Phantom Wallet setup</h3>
+              <p class="gd-guide-tagline">The default Solana wallet. Works on iOS, Android, and as a Chrome/Brave/Firefox extension.</p>
+            </div>
+          </div>
+
+          <a href="https://phantom.app/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>phantom.app</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Only install from phantom.app or the official App Store / Google Play / Chrome Web Store listings.</strong>
+            There are fake "Phantom" wallets that steal seed phrases. The real iOS app is by "Phantom Technologies, Inc." and has 100k+ ratings. The real Chrome extension is linked from phantom.app.
+          </div>
+
+          <div class="gd-subhead">Install Phantom</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://phantom.app/" target="_blank" rel="noopener noreferrer">phantom.app</a> and click <code>Download</code>. It will offer the correct installer for your device (iOS, Android, or browser extension).
+            </li>
+            <li>
+              <strong>On iOS/Android:</strong> install from the App Store or Google Play. Verify the developer is <strong>Phantom Technologies, Inc.</strong> before tapping install.
+              <ul>
+                <li>iOS App Store listing has over 50 million downloads and millions of reviews — if the app you see has few reviews, it's a fake.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>On desktop:</strong> Chrome / Brave / Firefox / Edge extension. Pin it to your toolbar after installing so it's easy to open.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Create your wallet</div>
+          <ol class="gd-steps">
+            <li>
+              Open Phantom and tap <code>Create a new wallet</code> (not "Import" — that's for existing wallets).
+            </li>
+            <li>
+              Choose <strong>Solana</strong> as the default network if prompted. (Phantom also supports Ethereum and Bitcoin, but your first wallet should focus on Solana.)
+            </li>
+            <li>
+              Set a password. This protects the app on your device — it's <strong>not</strong> your seed phrase. You can reset it later with the seed phrase if you forget.
+            </li>
+            <li>
+              Phantom will show you a <strong>12-word recovery phrase</strong> (also called seed phrase). <strong>Stop here.</strong> What you do in the next 3 minutes decides whether you can recover your wallet if your phone is lost, broken, or wiped.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>SEED PHRASE — READ CAREFULLY</strong>
+            This 12-word phrase IS your wallet. Anyone who sees it can drain every token you own in seconds. Never type it into any website. Never DM it. Never take a photo of it that syncs to iCloud/Google Photos. Never store it in Notes, text files, or password managers until you're more experienced.
+          </div>
+
+          <ol class="gd-steps" start="5">
+            <li>
+              <strong>Write the 12 words on paper with a pen.</strong> Write them in order. Double-check spelling. Put the paper somewhere secure — a safe, a locked drawer, a fireproof pouch. Many traders write two copies and store them in different locations.
+            </li>
+            <li>
+              Tap <code>I've saved my phrase</code> and re-confirm the words in the order Phantom asks (usually a few of them as a check). Finish setup.
+            </li>
+            <li>
+              You're in. Phantom will show your SOL balance (zero for now) and your wallet address at the top.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Find your wallet address</div>
+          <p>
+            Your <strong>public address</strong> is the long string (40+ characters) you share when someone wants to send you SOL or tokens. It's safe to share. Find it by:
+          </p>
+          <ol class="gd-steps">
+            <li>Open Phantom and tap your wallet name at the top (or the address shown there).</li>
+            <li>Tap the <code>Copy</code> icon. You'll get something like <code>DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263</code>.</li>
+            <li>This is what you paste into Coinbase / Robinhood when sending SOL in.</li>
+          </ol>
+
+          <div class="gd-subhead">Fund your wallet</div>
+          <ol class="gd-steps">
+            <li>
+              Buy SOL on Coinbase or Robinhood (see the <a href="#how-to-buy-sol">previous guide</a>), or tap Phantom's <code>Buy</code> button for an in-wallet debit-card purchase via Moonpay.
+            </li>
+            <li>
+              If you're sending from an exchange, always send a <strong>small test amount first</strong> (0.05–0.1 SOL) to confirm the address is right. Once that arrives, send the rest.
+            </li>
+            <li>
+              You'll see the SOL appear in Phantom in under a minute once the network confirms the transfer.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">What Phantom is good for</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">
+            <li>Holding SOL and tokens.</li>
+            <li>Signing transactions when you connect to a trading terminal (Axiom, Photon, etc.).</li>
+            <li>Built-in token swap (easy but not great prices — use Jupiter.ag or a terminal for better execution).</li>
+            <li>Tracking your balance and history on the go.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Pro tip</strong>
+            Create a separate "trading" wallet with a fresh seed phrase, funded with only what you're actively trading. Keep your long-term holdings in a different wallet (ideally a hardware wallet) that never connects to random terminals or sketchy sites. Compartmentalization limits damage if a session token leaks or you fall for a phishing site.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternatives</span>
+            <a href="#backpack" class="gd-next-link">Try Backpack instead →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Backpack =========== -->
+        <article id="backpack" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🎒</div>
+            <div>
+              <h3 class="gd-guide-title">Backpack Wallet setup</h3>
+              <p class="gd-guide-tagline">Phantom's main competitor. Cleaner UI, built-in exchange, xNFT support. Solid alternative.</p>
+            </div>
+          </div>
+
+          <a href="https://backpack.app/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>backpack.app</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Only install from backpack.app</strong> or the official App Store / Google Play listings (developer: <strong>Coral</strong>). Fake Backpack apps exist too.
+          </div>
+
+          <div class="gd-subhead">Install Backpack</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://backpack.app/" target="_blank" rel="noopener noreferrer">backpack.app</a> and download for your platform (iOS, Android, or browser extension).
+            </li>
+            <li>
+              Extension users: install from the Chrome Web Store via the link on backpack.app. Pin it to your toolbar.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Create your wallet</div>
+          <ol class="gd-steps">
+            <li>
+              Open Backpack and tap <code>Create a new wallet</code>.
+            </li>
+            <li>
+              Set a password (local device password, not the seed phrase).
+            </li>
+            <li>
+              Backpack shows a <strong>12-word recovery phrase</strong>. Same rules as Phantom — <strong>write it on paper</strong>, never photograph it, never paste it anywhere.
+            </li>
+            <li>
+              Confirm the phrase when Backpack asks and finish setup.
+            </li>
+            <li>
+              Backpack supports Solana, Ethereum, and other chains out of the box. For meme coin trading, you'll primarily use the Solana side.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Why pick Backpack over Phantom?</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary);">
+            <li><strong>Cleaner UI</strong> — many traders prefer the design.</li>
+            <li><strong>Built-in Backpack Exchange</strong> — you can trade on the Backpack CEX directly from the wallet.</li>
+            <li><strong>xNFT support</strong> — experimental, but notable if you're into that.</li>
+            <li><strong>Solid reputation</strong> — built by ex-FTX engineers (Coral), well-audited, no major incidents.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-note">
+            <strong>You can use both</strong>
+            Some traders run Phantom as their main and Backpack as a secondary or holding wallet. Each needs its own seed phrase written down separately.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Next up</span>
+            <a href="#wallet-security" class="gd-next-link">Wallet security basics →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Wallet security =========== -->
+        <article id="wallet-security" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🔒</div>
+            <div>
+              <h3 class="gd-guide-title">Wallet security basics</h3>
+              <p class="gd-guide-tagline">The stuff you have to know before you click anything else. Read this once. It'll save your funds.</p>
+            </div>
+          </div>
+
+          <p>
+            The single biggest way people lose crypto isn't bad trades — it's getting their wallet drained. Phishing, fake websites, signing malicious transactions, or leaking a seed phrase. None of that happens by accident. It happens because someone got rushed and ignored a warning sign.
+          </p>
+
+          <div class="gd-subhead">Rule 1 — Seed phrase hygiene</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Write it on paper.</strong> Never in Notes, iMessage, iCloud, Google Drive, Photos, or any cloud-synced app.</li>
+            <li><strong>Never type it into a website.</strong> Ever. For any reason. Phantom doesn't ask for it. Support doesn't ask for it. A "verification" page is always a scam.</li>
+            <li><strong>Never DM it.</strong> Not to a "support rep," not to a friend, not to a giveaway bot.</li>
+            <li><strong>Never photograph it.</strong> iCloud Photos syncs to the cloud automatically. A single photo in iCloud has drained wallets.</li>
+            <li>For amounts worth protecting seriously, use a <strong>hardware wallet</strong> (Ledger, Trezor). Physical device, offline key storage.</li>
+          </ul>
+
+          <div class="gd-subhead">Rule 2 — Phishing awareness</div>
+          <p>
+            Scammers run Google ads with fake Phantom / Axiom / Jupiter sites. The top sponsored result on a Google search might be a phishing clone. Always:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Type the URL directly</strong> or bookmark the official site after verifying it.</li>
+            <li><strong>Check the domain carefully.</strong> <code>phantom.app</code> is real; <code>phantom-wallet.com</code>, <code>phantom.io</code>, <code>phantom-app.io</code> are fakes.</li>
+            <li><strong>Never click links in Discord DMs</strong> claiming "airdrops" or "giveaways" — they're 99% phishing.</li>
+            <li><strong>Ignore "wallet verification" emails.</strong> Wallets don't send emails. They don't have your email.</li>
+          </ul>
+
+          <div class="gd-subhead">Rule 3 — Transaction signing</div>
+          <p>
+            When you connect your wallet to a terminal, every swap asks you to "approve" or "sign" a transaction. This is normal. What's <strong>not</strong> normal:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li>A transaction that tries to transfer your <strong>entire balance</strong> of something you didn't intend to move.</li>
+            <li>A request to approve "unlimited" access for a token you barely know.</li>
+            <li>A site asking you to sign a message you don't understand — signing can authorize token transfers without any visible cost.</li>
+          </ul>
+          <p>
+            Phantom and Backpack both show a plain-English summary before you sign. <strong>If the summary shows anything you didn't expect, reject the transaction.</strong>
+          </p>
+
+          <div class="gd-callout gd-callout-warn">
+            <strong>Free airdrops in your wallet ≠ free money</strong>
+            Random tokens may show up in your wallet ("Claim 5,000 $SCAM at scamsite.xyz!"). Never interact with them. The "claim" site is a drainer that will ask you to sign a malicious transaction. Just ignore unsolicited tokens. You can hide them via Phantom's token visibility settings.
+          </div>
+
+          <div class="gd-subhead">Rule 4 — Compartmentalize</div>
+          <p>
+            Use multiple wallets for different purposes:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Trading wallet</strong> — the one you connect to Axiom, Photon, BullX, etc. Only holds what you're actively trading. If it gets drained, you lose a session's worth, not your life savings.</li>
+            <li><strong>Holding wallet</strong> — a separate wallet that never connects to trading sites. Holds long-term positions.</li>
+            <li><strong>Cold wallet (hardware)</strong> — for serious amounts. Ledger or Trezor. Never connects to anything online.</li>
+          </ul>
+
+          <div class="gd-subhead">Rule 5 — If something looks wrong, STOP</div>
+          <p>
+            If a transaction is weirdly slow, if a site asks you to "re-verify" your wallet, if support tells you to paste your seed, if a "dev" DMs you about an opportunity — <strong>stop, close everything, and check the official source</strong>. Scams rely on urgency. Slow down and the scam falls apart.
+          </p>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Quick check before any big action</strong>
+            Is the URL exactly right? Is the wallet I'm using the right one? Does the transaction summary match what I intended? If all three are yes, proceed. If any is unclear, pause.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Next up</span>
+            <a href="#axiom" class="gd-next-link">Set up Axiom.trade →</a>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- SECTION 3: TRADING TERMINALS (BROWSER)         -->
+        <!-- ============================================== -->
+        <div class="gd-section-header">
+          <div class="gd-section-header-eyebrow">Section 3</div>
+          <h2>Trading Terminals (Browser)</h2>
+          <p>Terminals are where real trading happens — fast buy/sell buttons, live charts, wallet tracking, trending lists. Pick one to start. Many traders use two in parallel (e.g., Axiom for discovery + Photon for execution). All five here are free to sign up for, but charge small trading fees.</p>
+        </div>
+
+        <!-- =========== GUIDE: Axiom.trade =========== -->
+        <article id="axiom" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">⊿</div>
+            <div>
+              <h3 class="gd-guide-title">Axiom.trade</h3>
+              <p class="gd-guide-tagline">The most popular Solana terminal as of 2025/2026. Sign in with X, built-in wallet, Pulse discovery feed, solid mobile site.</p>
+            </div>
+          </div>
+
+          <a href="https://axiom.trade/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>axiom.trade</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Verify the URL</strong>
+            The real Axiom is <code>axiom.trade</code>. Scam clones like <code>axiom-trade.com</code>, <code>axiomdex.com</code>, or <code>axiom.io</code> have stolen millions. Always type the URL directly or bookmark from the verified <a href="https://x.com/AxiomExchange" target="_blank" rel="noopener noreferrer">@AxiomExchange</a> X profile.
+          </div>
+
+          <div class="gd-subhead">Sign up</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://axiom.trade/" target="_blank" rel="noopener noreferrer">axiom.trade</a>.
+            </li>
+            <li>
+              Click <code>Sign in</code>. Axiom authenticates via <strong>X (Twitter)</strong>. You'll be redirected to X's OAuth flow — authorize the Axiom app and you're signed in.
+            </li>
+            <li>
+              Axiom will automatically generate an <strong>embedded trading wallet</strong> tied to your account. This is separate from your Phantom/Backpack wallet — it's custodial-lite, optimized for fast trading. (You can also import an external wallet or use your Phantom to sign; more on that below.)
+            </li>
+            <li>
+              Axiom will show you a <strong>private key or seed phrase</strong> for the embedded wallet. <strong>Back this up immediately</strong> — write it on paper. If you lose access to this and haven't backed it up, you lose the funds in the embedded wallet.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-warn">
+            <strong>Embedded wallet ≠ your main wallet</strong>
+            Axiom's embedded wallet is fast and convenient but it's a hot wallet sitting on a web app. Only keep your active trading float in it (e.g., 1–5 SOL), not your whole stack.
+          </div>
+
+          <div class="gd-subhead">Fund the trading wallet</div>
+          <ol class="gd-steps">
+            <li>
+              In the Axiom interface, find your embedded wallet address (top right, usually shown under your profile or a "Deposit" button).
+            </li>
+            <li>
+              Copy the address and send SOL to it from Phantom (or from Coinbase directly, though most people use Phantom as the hub).
+            </li>
+            <li>
+              Send a small test amount first (0.05 SOL), confirm it arrives in Axiom, then send the rest.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Tour the interface</div>
+          <p>The main tabs you'll use:</p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Pulse</strong> — discovery feed showing new launches, volume movers, and trending. The main "what's hot" view.</li>
+            <li><strong>Trackers</strong> — see what wallets you follow are buying/selling in real time. Top trader wallet copy-tracking.</li>
+            <li><strong>Perpetuals</strong> — margin/leveraged trading. Skip this as a beginner.</li>
+            <li><strong>Portfolio</strong> — your positions and PnL.</li>
+            <li><strong>Rewards</strong> — Axiom's loyalty / points system.</li>
+          </ul>
+
+          <div class="gd-subhead">Your first trade</div>
+          <ol class="gd-steps">
+            <li>
+              Paste a token's <strong>contract address</strong> into Axiom's search bar (or click a token from Pulse).
+            </li>
+            <li>
+              You'll see the token page with chart, buy/sell panel, and stats (market cap, liquidity, holders, snipers, etc.).
+            </li>
+            <li>
+              In the buy panel on the right: enter the amount of SOL to spend, verify <strong>slippage</strong> (start at 5–10% for low-cap tokens; the default preset is usually fine), and click <code>Buy</code>.
+            </li>
+            <li>
+              Confirm the transaction. Axiom executes via its own routing — you'll see a confirmation and the token appears in your Positions.
+            </li>
+            <li>
+              To sell, go to Positions, click the token, enter a % to sell (25%, 50%, 100%) and click <code>Sell</code>.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Set up presets</strong>
+            Configure buy/sell presets (e.g., 0.5 SOL / 1 SOL / 2 SOL buttons, 25%/50%/100% sell buttons) in settings. It turns a 30-second trade into a 2-second trade — critical when something is moving fast.
+          </div>
+
+          <div class="gd-subhead">Useful Axiom features</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Limit orders</strong> — set a buy at a target price instead of market.</li>
+            <li><strong>Auto-sell</strong> — set TP/SL targets and Axiom will exit for you.</li>
+            <li><strong>Wallet tracking</strong> — follow specific wallets and get live alerts on their trades.</li>
+            <li><strong>Token Info panel</strong> — quick holder/sniper/bundler stats without leaving the page.</li>
+          </ul>
+
+          <div class="gd-nfa">
+            Nothing on Axiom or in this guide is financial advice. Fast trading tools make it easier to both win and lose quickly. Paper-trade or use tiny amounts while you learn.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative terminals</span>
+            <a href="#photon" class="gd-next-link">Try Photon →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Photon =========== -->
+        <article id="photon" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">⚡</div>
+            <div>
+              <h3 class="gd-guide-title">Photon</h3>
+              <p class="gd-guide-tagline">OG Solana terminal. Connect your Phantom, fast execution, been around long enough to trust. Still one of the cleanest interfaces.</p>
+            </div>
+          </div>
+
+          <a href="https://photon-sol.tinyastro.io/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>photon-sol.tinyastro.io</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Double-check the URL</strong>
+            Photon's URL is unusual (<code>photon-sol.tinyastro.io</code>) which is a phishing playground. Bookmark it after verifying from the official <a href="https://x.com/photonsol" target="_blank" rel="noopener noreferrer">@photonsol</a> X account. Do not click any "Photon" link from Google ads.
+          </div>
+
+          <div class="gd-subhead">Sign up</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://photon-sol.tinyastro.io/" target="_blank" rel="noopener noreferrer">photon-sol.tinyastro.io</a>.
+            </li>
+            <li>
+              Click <code>Sign up</code>. Photon offers two modes:
+              <ul>
+                <li><strong>Connect wallet</strong> — use your Phantom / Backpack / Solflare. You'll sign each transaction through your wallet pop-up. More secure, slightly slower per trade.</li>
+                <li><strong>Photon wallet</strong> — Photon generates a hot wallet for you (like Axiom's embedded wallet). Faster execution, but you need to back up the private key immediately.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Most beginners should connect Phantom</strong>. You retain full custody and don't have to manage an extra seed phrase.
+            </li>
+            <li>
+              Sign the authentication message in Phantom when prompted (this is a free "proof of ownership" signature — it doesn't move funds).
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Tour the interface</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Memescope</strong> — Photon's discovery page showing new pairs, trending, top volume. Similar to Axiom's Pulse.</li>
+            <li><strong>Portfolio</strong> — positions and history.</li>
+            <li><strong>Limit Orders</strong> — set buy/sell levels.</li>
+            <li><strong>Copy Trade</strong> — auto-follow wallets you choose (Pro feature).</li>
+          </ul>
+
+          <div class="gd-subhead">Your first trade</div>
+          <ol class="gd-steps">
+            <li>
+              Paste a token CA into the search bar at the top.
+            </li>
+            <li>
+              You'll see the token page with a chart and buy/sell panel on the right.
+            </li>
+            <li>
+              Enter SOL amount, set slippage (default is usually 10–15%), and click <code>Quick Buy</code> (or <code>Buy</code>).
+            </li>
+            <li>
+              A Phantom pop-up appears asking you to sign the transaction. Check the summary, then approve.
+            </li>
+            <li>
+              Token shows up in your Portfolio. Sell the same way.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">What Photon does well</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Clean, minimal UI</strong> — less overwhelming than Axiom.</li>
+            <li><strong>Solid chart</strong> — TradingView-powered, works well for reading setups.</li>
+            <li><strong>Customizable sniper</strong> — set up auto-buys for new pairs with filters.</li>
+            <li><strong>Been around since 2023</strong>, proven track record, no major security incidents.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Fee note</strong>
+            Photon charges a small fee per trade (~0.5–1% depending on tier). Axiom, BullX, and GMGN have similar fees. Compare before you pick — though honestly for beginner-size trades the fee difference is negligible vs. picking the right token.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative terminals</span>
+            <a href="#padre" class="gd-next-link">Try Padre →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Padre =========== -->
+        <article id="padre" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">𓇬</div>
+            <div>
+              <h3 class="gd-guide-title">Padre</h3>
+              <p class="gd-guide-tagline">A newer cross-chain terminal (Solana + Ethereum + Base + BNB). Strong chart UX and copy-trading features.</p>
+            </div>
+          </div>
+
+          <a href="https://padre.gg/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>padre.gg</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Verify via the official X account</strong>
+            Padre's official account is <a href="https://x.com/padre_gg" target="_blank" rel="noopener noreferrer">@padre_gg</a>. URL is <code>padre.gg</code> — anything else (<code>padre-trade.com</code>, <code>padre.io</code>) is fake.
+          </div>
+
+          <div class="gd-subhead">Sign up</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://padre.gg/" target="_blank" rel="noopener noreferrer">padre.gg</a>.
+            </li>
+            <li>
+              Sign up with <strong>X (Twitter)</strong> or <strong>email</strong>. Padre will generate embedded wallets for each chain (Solana, Ethereum, Base, etc.).
+            </li>
+            <li>
+              <strong>Export and back up the private keys</strong> for each wallet Padre generates. Without the backup, losing access to your Padre account means losing whatever's in those wallets.
+            </li>
+            <li>
+              You can also connect an existing wallet (Phantom for Solana, MetaMask for EVM chains).
+            </li>
+          </ol>
+
+          <div class="gd-subhead">What makes Padre different</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Multi-chain</strong> — trade Solana, Ethereum, Base, BNB, and more from the same UI.</li>
+            <li><strong>Strong copy-trading</strong> — follow wallets and auto-mirror their trades with your own position sizing.</li>
+            <li><strong>Good chart UI</strong> — indicators, drawing tools, multi-timeframe.</li>
+            <li><strong>Limit orders + DCA</strong> for both buying and selling.</li>
+          </ul>
+
+          <div class="gd-subhead">Fund and trade</div>
+          <ol class="gd-steps">
+            <li>
+              Open Padre, click on your profile → <code>Wallets</code> → copy the Solana wallet address.
+            </li>
+            <li>
+              Send SOL to that address from Phantom. Test small first.
+            </li>
+            <li>
+              Paste a token CA in Padre's search, set SOL amount + slippage, click <code>Buy</code>. Confirm.
+            </li>
+            <li>
+              Sell via Portfolio → pick the token → <code>Sell X%</code>.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-note">
+            <strong>When to use Padre vs. Axiom/Photon</strong>
+            Padre is worth setting up if you want to trade outside Solana too (Ethereum memecoins, Base memecoins) without juggling multiple terminals. For pure Solana trading, Axiom and Photon have more mature discovery feeds.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative terminals</span>
+            <a href="#bullx" class="gd-next-link">Try BullX →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: BullX =========== -->
+        <article id="bullx" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🐂</div>
+            <div>
+              <h3 class="gd-guide-title">BullX</h3>
+              <p class="gd-guide-tagline">Terminal with deep customization and a big power-user community. Multi-chain (Solana + EVM).</p>
+            </div>
+          </div>
+
+          <a href="https://bullx.io/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>bullx.io</code> (also <code>neo.bullx.io</code>)
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Referral codes required</strong>
+            BullX often requires an invite/referral code to sign up (changes over time). The real platform never asks for a seed phrase. Scam clones pretending to be BullX do.
+          </div>
+
+          <div class="gd-subhead">Sign up</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://bullx.io/" target="_blank" rel="noopener noreferrer">bullx.io</a>. You may be redirected to <code>neo.bullx.io</code> for the newer interface.
+            </li>
+            <li>
+              If a referral code is required, use one from a trusted source (your favorite on-chain trader's profile usually has one).
+            </li>
+            <li>
+              Sign up via <strong>Telegram</strong> or <strong>email</strong>. BullX generates embedded wallets per chain.
+            </li>
+            <li>
+              Back up the private keys BullX shows you. Settings → Wallets → Export.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Interface highlights</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Neo Vision</strong> — real-time feed of trades across wallets you track.</li>
+            <li><strong>Strategies</strong> — automated trading rules (auto-buy when a wallet buys, auto-sell on X% gain, etc.).</li>
+            <li><strong>Advanced slippage control</strong> — per-token overrides, priority fee tuning.</li>
+            <li><strong>Cross-chain portfolio</strong> view.</li>
+          </ul>
+
+          <div class="gd-subhead">First trade</div>
+          <ol class="gd-steps">
+            <li>
+              Fund your BullX Solana wallet (copy address from Wallets → deposit SOL from Phantom).
+            </li>
+            <li>
+              Search a token by CA, ticker, or Twitter handle. BullX has strong search.
+            </li>
+            <li>
+              On the token page, configure your buy (amount, slippage, priority fee), click <code>Buy</code>, confirm.
+            </li>
+            <li>
+              Positions panel for monitoring / selling.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Power-user platform</strong>
+            BullX has a steeper learning curve than Axiom or Photon — more settings, more knobs. The payoff is that experienced traders can tune BullX for speed and edge. If you're day one, start with Axiom, then level up to BullX once you know what you're optimizing for.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative terminals</span>
+            <a href="#gmgn" class="gd-next-link">Try GMGN →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: GMGN =========== -->
+        <article id="gmgn" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">G</div>
+            <div>
+              <h3 class="gd-guide-title">GMGN</h3>
+              <p class="gd-guide-tagline">Wallet-analytics-focused terminal. Exceptional for finding and tracking smart money wallets.</p>
+            </div>
+          </div>
+
+          <a href="https://gmgn.ai/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>gmgn.ai</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Check the domain</strong>
+            Real GMGN is <code>gmgn.ai</code>. Fake variants have burned people before. Bookmark from the official <a href="https://x.com/gmgnai" target="_blank" rel="noopener noreferrer">@gmgnai</a> profile.
+          </div>
+
+          <div class="gd-subhead">Sign up</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://gmgn.ai/" target="_blank" rel="noopener noreferrer">gmgn.ai</a>.
+            </li>
+            <li>
+              Connect via <strong>Telegram</strong>, <strong>wallet connect</strong> (Phantom/Backpack), or <strong>email</strong>.
+            </li>
+            <li>
+              GMGN can use your existing Phantom wallet — no need to create an embedded wallet unless you prefer speed.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">What GMGN is best for</div>
+          <p>
+            GMGN's superpower is <strong>wallet discovery</strong>. Before you trade a token, you can:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li>See <strong>who bought in early</strong> and whether they're "smart money" (high historical win rate).</li>
+            <li>See <strong>which wallets are connected</strong> (funded from the same source — potential bundling).</li>
+            <li>Filter top wallets by <strong>PnL, win rate, and recency</strong> — then follow them.</li>
+            <li>Analyze a specific wallet's <strong>full trade history</strong>: what they bought, how long they held, profit/loss per trade.</li>
+          </ul>
+
+          <div class="gd-subhead">Using GMGN for research</div>
+          <ol class="gd-steps">
+            <li>
+              Paste a token CA into GMGN's search.
+            </li>
+            <li>
+              Scroll to the <strong>Holders / Top Traders</strong> panel.
+            </li>
+            <li>
+              Check the <strong>win rate</strong> and <strong>avg return</strong> columns. Tokens where top holders have 70%+ win rates are worth a deeper look. Tokens where top holders are mostly snipers with low win rates are warning signs.
+            </li>
+            <li>
+              Click a top wallet to see their full history. If it's a known smart money wallet that just entered your token, that's signal.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Trading on GMGN</div>
+          <ol class="gd-steps">
+            <li>
+              GMGN has a built-in buy/sell panel similar to other terminals.
+            </li>
+            <li>
+              Configure SOL amount, slippage, priority fee, click <code>Buy</code>.
+            </li>
+            <li>
+              If using connected Phantom, approve the transaction in Phantom. If using GMGN's wallet (via Telegram bot), it executes immediately.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>The 1-2 combo</strong>
+            Many traders use GMGN for <strong>research</strong> (find smart wallets, track them, analyze holders) and Axiom or Photon for <strong>execution</strong> (faster, better UX for actual buys/sells). You can absolutely stack them.
+          </div>
+
+          <div class="gd-nfa">
+            Wallet analytics don't predict the future. A wallet with a great historical win rate can still lose on your trade. Use data to inform, not to guarantee.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Next up</span>
+            <a href="#pumpfun-app" class="gd-next-link">Set up the Pump.fun app →</a>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- SECTION 4: MOBILE APPS                         -->
+        <!-- ============================================== -->
+        <div class="gd-section-header">
+          <div class="gd-section-header-eyebrow">Section 4</div>
+          <h2>Mobile Apps</h2>
+          <p>If you trade on-the-go or prefer a phone-first UX, these are the mobile trading apps worth installing. All three work on iOS and Android.</p>
+        </div>
+
+        <!-- =========== GUIDE: Pump.fun app =========== -->
+        <article id="pumpfun-app" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">💊</div>
+            <div>
+              <h3 class="gd-guide-title">Pump.fun mobile app</h3>
+              <p class="gd-guide-tagline">The official app for pump.fun — the launchpad where most new Solana memecoins start. Browse, trade, and create tokens from your phone.</p>
+            </div>
+          </div>
+
+          <a href="https://pump.fun/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>pump.fun</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Install only the real app</strong>
+            On iOS, the real app is published by <strong>Pump</strong>. On Google Play, look for the app linked directly from <code>pump.fun</code> — scam clones with similar names exist. If unsure, go to pump.fun in a browser and tap the "Download app" link there.
+          </div>
+
+          <div class="gd-subhead">Install</div>
+          <ol class="gd-steps">
+            <li>
+              Open pump.fun in your phone's browser and tap <code>Get the app</code> (or go to the App Store / Play Store and search "Pump.fun").
+            </li>
+            <li>
+              Install. The icon is the pump.fun "pill" logo on a colorful background.
+            </li>
+            <li>
+              Open the app.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Sign in &amp; wallet</div>
+          <ol class="gd-steps">
+            <li>
+              Tap <code>Log in</code>. Authentication is usually via <strong>X (Twitter)</strong>, <strong>Google</strong>, <strong>email</strong>, or <strong>Apple</strong>.
+            </li>
+            <li>
+              On first sign-in, the app creates an <strong>embedded wallet</strong> — a Solana wallet managed by your account. Back up the private key when the app offers it (Settings → Wallet → Export).
+            </li>
+            <li>
+              You can also <strong>import an existing wallet</strong> (e.g., your Phantom) via Settings → Wallet → Import.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-warn">
+            <strong>The app's wallet is a hot wallet</strong>
+            It's convenient, but only keep your active trading float on it. Don't move your entire stack into the Pump.fun app wallet.
+          </div>
+
+          <div class="gd-subhead">Fund it</div>
+          <ol class="gd-steps">
+            <li>
+              In the app, tap your profile (top-right usually) → <code>Wallet</code> → <code>Deposit</code>. Copy your Solana address.
+            </li>
+            <li>
+              Send SOL from Phantom (test amount first, then the rest).
+            </li>
+            <li>
+              Many builds of the app also let you buy SOL directly with a debit card via in-app Moonpay/Stripe. Convenient, higher fee.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">The app at a glance</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Feed</strong> — scrollable list of new and trending pump.fun tokens. Tap any token for its chart + buy panel.</li>
+            <li><strong>Live stream</strong> — some creators livestream from the token page. Use extreme caution — presence of a livestream does not imply legitimacy.</li>
+            <li><strong>Create</strong> — launch your own pump.fun token directly from the app. 99% of these fail or get rugged; this is for experienced users / entertainment.</li>
+            <li><strong>Portfolio</strong> — your positions and PnL.</li>
+          </ul>
+
+          <div class="gd-subhead">Your first trade</div>
+          <ol class="gd-steps">
+            <li>Tap a token from the Feed (or paste a CA if you have one in mind).</li>
+            <li>On the token page, enter SOL amount, check slippage, tap <code>Buy</code>.</li>
+            <li>Confirm. Token appears in Portfolio.</li>
+            <li>To sell: Portfolio → token → <code>Sell X%</code>.</li>
+          </ol>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Pump.fun vs. post-bonding tokens</strong>
+            Pump.fun tokens go through a bonding curve phase before "graduating" to a real AMM pair (Raydium, Meteora). Pre-graduation tokens trade on the internal curve — fees differ, and they're not listed on every terminal. Post-graduation tokens trade on normal DEXs and show up everywhere.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative mobile</span>
+            <a href="#axiom-mobile" class="gd-next-link">Try Axiom mobile →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Axiom mobile =========== -->
+        <article id="axiom-mobile" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">⊿</div>
+            <div>
+              <h3 class="gd-guide-title">Axiom mobile</h3>
+              <p class="gd-guide-tagline">The mobile-optimized version of Axiom.trade. Full feature parity with the desktop site, just squeezed into a phone screen.</p>
+            </div>
+          </div>
+
+          <a href="https://axiom.trade/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>axiom.trade</code> (same URL — mobile-adaptive)
+          </a>
+
+          <div class="gd-subhead">Two options</div>
+          <p>
+            Axiom is a web app, so "mobile" means either:
+          </p>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Open axiom.trade in Safari/Chrome</strong> on your phone — works great, responsive layout.</li>
+            <li><strong>Add to Home Screen</strong> — in Safari, tap share → <code>Add to Home Screen</code>. This installs Axiom as a "PWA" that behaves like a native app with its own icon.</li>
+          </ul>
+          <p>
+            At time of writing there is no native iOS/Android Axiom app in the App/Play Store — if you see one, it's fake. The official experience is the PWA via axiom.trade.
+          </p>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Fake Axiom apps</strong>
+            Apps in the store with names like "Axiom Trading" or "Axiom Exchange" are not the real Axiom. Only trust axiom.trade + the PWA.
+          </div>
+
+          <div class="gd-subhead">Setup</div>
+          <ol class="gd-steps">
+            <li>
+              Open <a href="https://axiom.trade/" target="_blank" rel="noopener noreferrer">axiom.trade</a> in Safari or Chrome on your phone.
+            </li>
+            <li>
+              Sign in with X (same account you use on desktop — everything syncs).
+            </li>
+            <li>
+              In Safari, tap the share icon → <code>Add to Home Screen</code>. On Chrome (Android), tap the menu → <code>Install app</code>.
+            </li>
+            <li>
+              The icon will now launch Axiom in fullscreen, feeling essentially like a native app.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Mobile-specific tips</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Set buy/sell presets</strong> first — tapping a preset is way faster than typing SOL amounts on a phone keyboard.</li>
+            <li><strong>Enable Face ID / Touch ID</strong> for wallet confirmations (Settings → Security).</li>
+            <li>Use <strong>landscape mode</strong> when reading charts — the portrait UI is tight.</li>
+            <li>Enable <strong>push notifications</strong> for tracked wallets so you get alerts when your copy targets move.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Cross-device continuity</strong>
+            Your Axiom portfolio, tracked wallets, presets, and history all sync across desktop and mobile automatically since you're signed in with the same X account. Start a trade on desktop, monitor on your phone — works seamlessly.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative mobile</span>
+            <a href="#fomo" class="gd-next-link">Try FOMO →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: FOMO =========== -->
+        <article id="fomo" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🔥</div>
+            <div>
+              <h3 class="gd-guide-title">FOMO</h3>
+              <p class="gd-guide-tagline">Mobile-native Solana trading app built for speed. TikTok-style discovery feed and one-tap trading.</p>
+            </div>
+          </div>
+
+          <a href="https://fomo.biz/" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>fomo.biz</code>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Verify the source</strong>
+            Install FOMO only from the link at fomo.biz or from the official <a href="https://x.com/FOMOapp" target="_blank" rel="noopener noreferrer">@FOMOapp</a> X account. Names like "FOMO Trader" or "FOMO Meme" in the app stores are imitators.
+          </div>
+
+          <div class="gd-subhead">Install</div>
+          <ol class="gd-steps">
+            <li>
+              Go to <a href="https://fomo.biz/" target="_blank" rel="noopener noreferrer">fomo.biz</a> on your phone and tap the download link for your platform (iOS or Android).
+            </li>
+            <li>
+              Install and open. First launch walks you through account creation.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Create account</div>
+          <ol class="gd-steps">
+            <li>
+              Sign up via <strong>X</strong>, <strong>email</strong>, or <strong>Apple/Google</strong>.
+            </li>
+            <li>
+              FOMO creates an embedded Solana wallet. <strong>Back up the private key</strong> during onboarding (Settings → Wallet → Export). Take the 30 seconds. Don't skip.
+            </li>
+            <li>
+              Enable Face ID / Touch ID for trade confirmations.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Fund it</div>
+          <ol class="gd-steps">
+            <li>
+              Tap Wallet → <code>Deposit</code> → copy your Solana address.
+            </li>
+            <li>
+              Send SOL from Phantom. Test small first.
+            </li>
+            <li>
+              Or tap <code>Buy</code> for in-app debit card purchase (Moonpay/Stripe).
+            </li>
+          </ol>
+
+          <div class="gd-subhead">What FOMO does differently</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Swipe feed</strong> — tokens scroll like a TikTok For You page. Each card shows chart, key stats, and a one-tap buy.</li>
+            <li><strong>One-tap trades</strong> — preset buy sizes mean you can enter a position in under a second.</li>
+            <li><strong>Social feed</strong> — see what other users are buying/selling in real time.</li>
+            <li><strong>Leaderboards</strong> — top PnL traders on the platform, their portfolios visible.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-warn">
+            <strong>Frictionless trading is a double-edged sword</strong>
+            One-tap buys are great when you're decisive. They're dangerous when you're emotional. Set small preset sizes (0.1–0.5 SOL) so an impulse tap doesn't blow your week's budget. You can always tap multiple times for a bigger position.
+          </div>
+
+          <div class="gd-nfa">
+            Swipe-feed trading is designed to increase engagement — not necessarily to help you make money. Mobile trading apps make it trivially easy to overtrade. Watch your session frequency.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Next up</span>
+            <a href="#bonkbot" class="gd-next-link">Set up BONKbot →</a>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- SECTION 5: TELEGRAM BOTS                       -->
+        <!-- ============================================== -->
+        <div class="gd-section-header">
+          <div class="gd-section-header-eyebrow">Section 5</div>
+          <h2>Telegram Bots</h2>
+          <p>Telegram trading bots are messaging-based terminals — you paste a CA into a Telegram chat and buttons appear letting you buy/sell instantly. Fastest execution available, but also the category with the most scams. The three bots below are the legitimate ones.</p>
+        </div>
+
+        <!-- Cross-bot safety primer -->
+        <article class="gd-guide" style="background: linear-gradient(135deg, rgba(255, 60, 60, 0.06), rgba(255, 90, 90, 0.02)); border-color: rgba(255, 90, 90, 0.3);">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo" style="background: linear-gradient(135deg, rgba(255,90,90,0.2), rgba(255,150,70,0.1)); border-color: rgba(255,120,70,0.4); color: #ff8863;">⚠</div>
+            <div>
+              <h3 class="gd-guide-title" style="background: linear-gradient(135deg, #ffd0b8, #ff8a63); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Before you use any TG bot — read this.</h3>
+              <p class="gd-guide-tagline">Telegram is where the most sophisticated wallet-drainer scams live. These rules apply to every bot below.</p>
+            </div>
+          </div>
+
+          <ol class="gd-steps">
+            <li>
+              <strong>Only use the exact official bot handles.</strong> The real BONKbot is <code>@bonkbot_io</code>. The real Trojan is <code>@solana_trojanbot</code>. The real Bloom is <code>@BloomSolana_bot</code> (or the specific handle Bloom announces on their X). Verify from each bot's official X account before starting a chat. Fakes use similar names (<code>@bonkbotio_official</code>, etc.).
+            </li>
+            <li>
+              <strong>Never click links sent to you in a Telegram DM</strong> claiming to be "the new BONKbot" or "BONKbot 2.0." Real updates never come via DM.
+            </li>
+            <li>
+              <strong>Bots create an embedded wallet for you.</strong> Back up the private key the bot shows on first run. Lose it = lose the funds.
+            </li>
+            <li>
+              <strong>Only fund the bot wallet with your trading float</strong>, not your main stack. Bot wallets are hot wallets accessible from Telegram — if your Telegram account is compromised, the funds go with it.
+            </li>
+            <li>
+              <strong>Enable Telegram 2FA</strong> (Settings → Privacy &amp; Security → Two-Step Verification). Without 2FA, a SIM-swap attack can take over your Telegram — and every bot wallet tied to it.
+            </li>
+          </ol>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>If you skip one thing, don't skip 2FA</strong>
+            Attackers have drained bot wallets by SIM-swapping a target's phone, hijacking their Telegram, then triggering sells on every bot wallet tied to that Telegram account. Telegram 2FA breaks this chain. Turn it on right now.
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: BONKbot =========== -->
+        <article id="bonkbot" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🐶</div>
+            <div>
+              <h3 class="gd-guide-title">BONKbot</h3>
+              <p class="gd-guide-tagline">The original and most popular Solana Telegram bot. Simple, fast, built by the BONK community.</p>
+            </div>
+          </div>
+
+          <a href="https://t.me/bonkbot_io" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>t.me/bonkbot_io</code> &middot; X: <a href="https://x.com/bonkbot_io" target="_blank" rel="noopener noreferrer" style="color:inherit;">@bonkbot_io</a>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Only this handle is real</strong>
+            <code>@bonkbot_io</code> is the real one. Variants like <code>@bonkbot</code>, <code>@bonk_bot_io</code>, <code>@bonkbot_official</code>, <code>@bonkbotsolana</code> etc. are scams. Always start from the link on BONKbot's official X.
+          </div>
+
+          <div class="gd-subhead">Start the bot</div>
+          <ol class="gd-steps">
+            <li>
+              In Telegram, tap the link <a href="https://t.me/bonkbot_io" target="_blank" rel="noopener noreferrer">t.me/bonkbot_io</a> (or search for the exact handle <code>@bonkbot_io</code>).
+            </li>
+            <li>
+              Tap <code>Start</code>. The bot will generate Solana wallets for you automatically (usually 1–5 slots).
+            </li>
+            <li>
+              The bot will display your <strong>wallet addresses</strong> and offer to show the <strong>private keys</strong>. Tap to reveal and immediately save them somewhere safe (paper, encrypted password manager). If you lose these, losing Telegram access = losing the funds.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Fund your bot wallet</div>
+          <ol class="gd-steps">
+            <li>
+              Copy the Solana wallet address BONKbot showed you.
+            </li>
+            <li>
+              Send SOL from Phantom to that address. Test small first.
+            </li>
+            <li>
+              Tap <code>/start</code> or the home button in the bot to refresh — your SOL balance should show under the wallet.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">How to trade</div>
+          <ol class="gd-steps">
+            <li>
+              <strong>Paste a token's contract address</strong> directly into the chat with BONKbot. No <code>/buy</code> command needed — the bot auto-detects a CA.
+            </li>
+            <li>
+              Within seconds, a message appears showing the token's chart link, stats, and buttons: <code>Buy 0.5 SOL</code>, <code>Buy 1 SOL</code>, <code>Buy 5 SOL</code>, etc. (Sizes are configurable.)
+            </li>
+            <li>
+              Tap the button with your size. BONKbot executes the trade immediately and replies with a confirmation, showing your position, entry price, PnL.
+            </li>
+            <li>
+              The position message has <code>Sell 25%</code> / <code>Sell 50%</code> / <code>Sell 100%</code> buttons. Tap one to exit. Confirmation appears.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Useful commands</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><code>/start</code> — home screen with balances and quick actions.</li>
+            <li><code>/positions</code> — list open positions with current PnL.</li>
+            <li><code>/settings</code> — configure default slippage, priority fee, buy sizes, auto-sell, etc.</li>
+            <li><code>/wallets</code> — manage your wallet slots, import/export.</li>
+            <li><code>/help</code> — full command reference.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Set slippage right</strong>
+            In Settings, default slippage for new pump.fun tokens should be 10–20%; for established Raydium pairs, 3–8% is fine. Too-low slippage = failed transactions in volatile moves. Too-high = you get a worse fill.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative TG bots</span>
+            <a href="#trojan" class="gd-next-link">Try Trojan →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Trojan =========== -->
+        <article id="trojan" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🏛</div>
+            <div>
+              <h3 class="gd-guide-title">Trojan</h3>
+              <p class="gd-guide-tagline">Feature-rich Telegram bot with strong copy-trading, limit orders, and a polished UI. Popular alternative to BONKbot.</p>
+            </div>
+          </div>
+
+          <a href="https://t.me/solana_trojanbot" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>t.me/solana_trojanbot</code> &middot; X: <a href="https://x.com/TrojanOnSolana" target="_blank" rel="noopener noreferrer" style="color:inherit;">@TrojanOnSolana</a>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Verify the handle</strong>
+            The real Trojan bot is <code>@solana_trojanbot</code>. Imitators use <code>@trojanbot</code>, <code>@trojan_sol</code>, <code>@trojansolbot</code>, etc. Start from the link on the official <a href="https://x.com/TrojanOnSolana" target="_blank" rel="noopener noreferrer">@TrojanOnSolana</a> X.
+          </div>
+
+          <div class="gd-subhead">Start</div>
+          <ol class="gd-steps">
+            <li>
+              Open Telegram, tap <a href="https://t.me/solana_trojanbot" target="_blank" rel="noopener noreferrer">t.me/solana_trojanbot</a>.
+            </li>
+            <li>
+              Tap <code>Start</code>. Trojan may ask for a referral code on first use — you can skip it or enter one from a trader you follow.
+            </li>
+            <li>
+              Trojan generates your wallet(s). <strong>Export and back up the private keys</strong> immediately: Settings → Wallets → Export.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Fund</div>
+          <ol class="gd-steps">
+            <li>
+              Copy the bot's Solana wallet address from the home screen.
+            </li>
+            <li>
+              Send SOL from Phantom (test small first).
+            </li>
+            <li>
+              Trojan's home screen refreshes automatically and shows the balance.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Trade</div>
+          <ol class="gd-steps">
+            <li>
+              Paste a CA into the chat. The bot replies with a token card and buy buttons.
+            </li>
+            <li>
+              Tap a preset SOL amount to buy. The trade executes.
+            </li>
+            <li>
+              Position messages have sell buttons. Tap to exit.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">What Trojan does better than BONKbot</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Limit orders</strong> — set a buy at a target price and walk away.</li>
+            <li><strong>DCA (dollar-cost averaging)</strong> — scheduled auto-buys over time.</li>
+            <li><strong>Copy trading</strong> — mirror specific wallets' entries and exits automatically, with your own position sizing.</li>
+            <li><strong>Auto-sell / TP &amp; SL</strong> — set take-profit and stop-loss levels that execute without you watching.</li>
+            <li><strong>Anti-MEV protection</strong> — route transactions through Jito bundles for better execution on fast-moving trades.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Copy-trade carefully</strong>
+            Pick wallets with long histories and consistent win rates. Blindly copying a wallet because they had one 100x trade is a recipe for getting left holding the bag when they exit early. Use GMGN to vet a wallet before copy-trading it in Trojan.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">Alternative TG bots</span>
+            <a href="#bloom" class="gd-next-link">Try Bloom →</a>
+          </div>
+        </article>
+
+        <!-- =========== GUIDE: Bloom =========== -->
+        <article id="bloom" class="gd-guide">
+          <div class="gd-guide-head">
+            <div class="gd-guide-logo">🌸</div>
+            <div>
+              <h3 class="gd-guide-title">Bloom</h3>
+              <p class="gd-guide-tagline">Fast, clean Telegram bot focused on speed and reliability. Popular among traders who want low-latency execution.</p>
+            </div>
+          </div>
+
+          <a href="https://t.me/BloomSolana_bot" target="_blank" rel="noopener noreferrer" class="gd-official">
+            🔗 Official: <code>t.me/BloomSolana_bot</code> &middot; X: <a href="https://x.com/BloomBotApp" target="_blank" rel="noopener noreferrer" style="color:inherit;">@BloomBotApp</a>
+          </a>
+
+          <div class="gd-callout gd-callout-critical">
+            <strong>Confirm the handle from the official X</strong>
+            Bloom's handle occasionally rotates (the team has spun up new bots after Telegram bans). Always verify the current official bot handle from <a href="https://x.com/BloomBotApp" target="_blank" rel="noopener noreferrer">@BloomBotApp</a> on X before starting. Fakes imitate the Bloom branding heavily.
+          </div>
+
+          <div class="gd-subhead">Start</div>
+          <ol class="gd-steps">
+            <li>
+              Open the current official handle from Bloom's X (or <a href="https://t.me/BloomSolana_bot" target="_blank" rel="noopener noreferrer">t.me/BloomSolana_bot</a> at time of writing).
+            </li>
+            <li>
+              Tap <code>Start</code>. Bloom generates your wallet and shows the home screen.
+            </li>
+            <li>
+              <strong>Export the private key</strong>: Wallets → Export. Save on paper.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Fund</div>
+          <ol class="gd-steps">
+            <li>
+              Copy Bloom's Solana wallet address (shown on home screen).
+            </li>
+            <li>
+              Send SOL from Phantom. Test small first.
+            </li>
+            <li>
+              Refresh the bot's home screen — balance appears.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Trade</div>
+          <ol class="gd-steps">
+            <li>
+              Paste a CA into the Bloom chat. The bot responds with token info and buttons.
+            </li>
+            <li>
+              Tap a preset buy amount. Trade executes.
+            </li>
+            <li>
+              Position cards come with TP/SL buttons and quick sell percentages.
+            </li>
+          </ol>
+
+          <div class="gd-subhead">Bloom's strengths</div>
+          <ul style="margin: 10px 0 14px 22px; padding: 0; font-size: 13.5px; line-height: 1.65; color: var(--text-secondary);">
+            <li><strong>Low-latency execution</strong> — optimized routing and priority fee tuning for fast fills.</li>
+            <li><strong>Sniper mode</strong> — auto-buy tokens the moment a wallet deploys them or a watched account buys.</li>
+            <li><strong>Wallet tracker with push alerts</strong> — get pinged when a tracked wallet transacts.</li>
+            <li><strong>Clean portfolio view</strong> — entries, unrealized PnL, and P/L-locked gains at a glance.</li>
+          </ul>
+
+          <div class="gd-callout gd-callout-tip">
+            <strong>Your first 48 hours</strong>
+            Set up one bot (BONKbot is the simplest) and one terminal (Axiom or Photon). Paper-trade or use tiny amounts (0.1 SOL per trade) for the first few sessions. Feel the UX, see which one clicks with how you think. Then commit. Don't juggle five tools as a beginner.
+          </div>
+
+          <div class="gd-nfa">
+            Telegram bots are execution tools, not strategy. They make it easier to enter and exit positions but won't improve your token selection. Nothing here is financial advice.
+          </div>
+
+          <div class="gd-next">
+            <span class="gd-next-label">You're set up</span>
+            <a href="/" class="gd-next-link">Back to Degen Desk chat →</a>
+          </div>
+        </article>
+
+        <!-- Final footer -->
+        <div style="margin-top: 48px; padding: 24px; background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), rgba(0, 212, 255, 0.03)); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 16px; text-align: center;">
+          <div style="font-size: 14px; font-weight: 700; color: #00ff88; margin-bottom: 8px; letter-spacing: 0.4px; text-transform: uppercase;">You made it to the end</div>
+          <p style="font-size: 14px; color: var(--text-primary); margin: 0 0 12px; line-height: 1.6;">
+            That's the full setup toolkit. Wallets, terminals, mobile apps, and Telegram bots — everything an on-chain trader actually uses.
+          </p>
+          <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 16px; line-height: 1.6;">
+            Got questions about any of this? Open the Degen Desk chat and ask — the AI has context on every tool covered here and can help you pick the right combo for your goals.
+          </p>
+          <a href="/" class="gd-next-link" style="display:inline-flex;">Open Degen Desk chat →</a>
+          <div style="margin-top: 18px; font-size: 11.5px; color: var(--text-muted); line-height: 1.55;">
+            Nothing in these guides is financial advice. Crypto trading involves substantial risk of loss. Always do your own research and never invest more than you can afford to lose.
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      // Mobile TOC toggle
+      var toggle = document.getElementById("gd-toc-toggle");
+      var toc = document.getElementById("gd-toc");
+      var backdrop = document.getElementById("gd-toc-backdrop");
+
+      function openToc() {
+        toc.classList.add("is-open");
+        backdrop.classList.add("is-visible");
+        document.body.style.overflow = "hidden";
+      }
+      function closeToc() {
+        toc.classList.remove("is-open");
+        backdrop.classList.remove("is-visible");
+        document.body.style.overflow = "";
+      }
+
+      if (toggle) toggle.addEventListener("click", openToc);
+      if (backdrop) backdrop.addEventListener("click", closeToc);
+
+      // Close TOC after clicking a link on mobile
+      document.querySelectorAll(".gd-toc-link, .gd-toc-footer-link").forEach(function (a) {
+        a.addEventListener("click", function () {
+          if (window.innerWidth < 980) closeToc();
+        });
+      });
+
+      // Highlight active TOC link while scrolling
+      var sections = Array.from(document.querySelectorAll(".gd-guide[id]"));
+      var tocLinks = {};
+      document.querySelectorAll(".gd-toc-link").forEach(function (a) {
+        var id = a.getAttribute("href").replace("#", "");
+        tocLinks[id] = a;
+      });
+
+      function onScroll() {
+        var y = window.scrollY + 120;
+        var active = null;
+        for (var i = 0; i < sections.length; i++) {
+          if (sections[i].offsetTop <= y) active = sections[i].id;
+        }
+        Object.keys(tocLinks).forEach(function (id) {
+          tocLinks[id].classList.toggle("is-active", id === active);
+        });
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      // Smooth-scroll with header offset when clicking an anchor
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          var id = a.getAttribute("href").slice(1);
+          var target = document.getElementById(id);
+          if (!target) return;
+          e.preventDefault();
+          var top = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: top, behavior: "smooth" });
+          history.replaceState(null, "", "#" + id);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
