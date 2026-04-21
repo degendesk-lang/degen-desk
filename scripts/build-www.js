@@ -26,14 +26,18 @@ const filesToCopy = [
   "auth-callback.html",
   "token-analysis.html",
   "guides.html",
+  "blog.html",
   "styles.css",
   "auth.js",
   "iap.js",
   "agent.js",
   "knowledge-base.js",
   "token-analysis.js",
+  "sentry.js",
   "favicon.png",
   "og-image.png",
+  "robots.txt",
+  "sitemap.xml",
 ];
 
 for (const file of filesToCopy) {
@@ -48,21 +52,24 @@ for (const file of filesToCopy) {
 }
 
 // Copy guides/logos/ directory recursively for the Setup Guides logos
-function copyDir(src, dest) {
+function copyDir(src, dest, exts) {
   if (!fs.existsSync(src)) return;
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
-      copyDir(srcPath, destPath);
-    } else if (entry.name.endsWith(".png") || entry.name.endsWith(".jpg") || entry.name.endsWith(".svg")) {
+      copyDir(srcPath, destPath, exts);
+    } else if (!exts || exts.some((e) => entry.name.endsWith(e))) {
       fs.copyFileSync(srcPath, destPath);
       console.log(`  Copied: ${path.relative(ROOT, destPath)}`);
     }
   }
 }
-copyDir(path.join(ROOT, "guides", "logos"), path.join(WWW, "guides", "logos"));
+copyDir(path.join(ROOT, "guides", "logos"), path.join(WWW, "guides", "logos"), [".png", ".jpg", ".svg"]);
+
+// Copy blog/ directory recursively (individual post pages)
+copyDir(path.join(ROOT, "blog"), path.join(WWW, "blog"), [".html"]);
 
 // Modify index.html for the native app
 // - Add Capacitor bridge script

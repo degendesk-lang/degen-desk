@@ -319,12 +319,89 @@ window.DegenToast = (function () {
                   </span>
                 </button>
               </div>
+
+              <div id="ios-waitlist" class="ios-waitlist">
+                <div class="ios-waitlist-head">
+                  <span class="ios-waitlist-icon">&#127909;</span>
+                  <div>
+                    <strong>iOS app coming soon</strong>
+                    <span>Get notified the day it drops on the App Store.</span>
+                  </div>
+                </div>
+                <form id="ios-waitlist-form" class="ios-waitlist-form" autocomplete="off">
+                  <input type="email" id="ios-waitlist-email" placeholder="you@example.com" required aria-label="Email address" />
+                  <button type="submit" id="ios-waitlist-submit">Notify me</button>
+                </form>
+                <div id="ios-waitlist-msg" class="ios-waitlist-msg" hidden></div>
+              </div>
             </div>
           </div>
         </div>
       `;
       messagesContainer.innerHTML = welcomeHTML;
+      attachWaitlistHandler();
     }
+  }
+
+  // Waitlist is re-created on every welcome render, so handler must re-bind too
+  function attachWaitlistHandler() {
+    const form = document.getElementById("ios-waitlist-form");
+    const emailInput = document.getElementById("ios-waitlist-email");
+    const submitBtn = document.getElementById("ios-waitlist-submit");
+    const msgEl = document.getElementById("ios-waitlist-msg");
+    if (!form || !emailInput || !submitBtn || !msgEl) return;
+    if (form.dataset.bound === "1") return; // already bound
+    form.dataset.bound = "1";
+
+    function showMsg(text, type) {
+      msgEl.textContent = text;
+      msgEl.className = "ios-waitlist-msg " + (type || "");
+      msgEl.hidden = false;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = (emailInput.value || "").trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMsg("Please enter a valid email address.", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Saving…";
+      msgEl.hidden = true;
+
+      try {
+        if (window.DegenAuth && typeof window.DegenAuth.logEvent === "function") {
+          window.DegenAuth.logEvent("ios_waitlist_signup", { email_domain: email.split("@")[1] || "" });
+        }
+
+        const db = firebase.firestore();
+        await db
+          .collection("ios_waitlist")
+          .doc(email)
+          .set(
+            {
+              email: email,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              source: "homepage_welcome",
+              userAgent: navigator.userAgent || null,
+              referralCode:
+                (window.DegenAuth && window.DegenAuth.getReferralCode && window.DegenAuth.getReferralCode()) || null,
+            },
+            { merge: true }
+          );
+
+        showMsg("You're on the list! We'll email you the moment the iOS app drops.", "success");
+        emailInput.value = "";
+        submitBtn.textContent = "Added";
+      } catch (err) {
+        console.error("[Waitlist] save failed:", err);
+        showMsg("Something went wrong. Try again in a moment.", "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Notify me";
+      }
+    });
   }
 
   function clearChatUI() {
@@ -945,4 +1022,7 @@ window.DegenToast = (function () {
   if (window.innerWidth > 768) {
     userInput.focus();
   }
+
+  // Wire up the static-HTML waitlist on initial page load (before any re-render)
+  attachWaitlistHandler();
 })();

@@ -17,6 +17,30 @@ window.DegenAuth = (function () {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  // Firebase Analytics (GA4) — uses the measurementId already in config.
+  // Tracks page views, page time, referral sources, device/OS, and lets us
+  // log custom events like 'token_analyzed', 'pro_upgrade_clicked', etc.
+  // All traffic data is visible in Firebase Console → Analytics.
+  let analytics = null;
+  try {
+    if (typeof firebase.analytics === "function") {
+      analytics = firebase.analytics();
+    }
+  } catch (err) {
+    // Analytics is optional — a failure here shouldn't break the app.
+    console.warn("[Analytics] init skipped:", err && err.message);
+  }
+
+  function logEvent(name, params) {
+    try {
+      if (analytics && typeof analytics.logEvent === "function") {
+        analytics.logEvent(name, params || {});
+      }
+    } catch (err) {
+      // Silent — analytics errors should never impact UX
+    }
+  }
+
   let currentUser = null;
   let currentConversationId = null;
   let authChangeCallbacks = [];
@@ -442,5 +466,6 @@ window.DegenAuth = (function () {
     loadUserTier,
     getReferralCode,
     clearReferralCode,
+    logEvent,
   };
 })();

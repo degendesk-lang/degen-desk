@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" class="blog-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Solana memecoin Token Analysis reports are dense. This walks through every signal — holder concentration, bundling, dev wallet history, liquidity ratios — and what each one actually means for your entry decision." />
+  <title>How to read a Token Analysis report &middot; Degen Desk Blog</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/blog/read-token-analysis-report.html" />
+  <meta property="og:title" content="How to read a Token Analysis report" />
+  <meta property="og:description" content="What every signal actually means. Holder concentration, bundling, dev wallets, liquidity ratios — the mental model for reading Token Analysis like a trader." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=2" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=2" />
+
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link rel="apple-touch-icon" href="../favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+    }
+  </style>
+  <link rel="stylesheet" href="../styles.css?v=35" />
+</head>
+<body class="blog-body" style="background:#060610;">
+  <div class="blog-app">
+
+    <header class="blog-header">
+      <a href="../blog.html" class="blog-back-link" aria-label="Back to blog">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="blog-header-title">
+        <div class="blog-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Blog</h1>
+          <span class="blog-subtitle">On-chain research &amp; trader education</span>
+        </div>
+      </div>
+      <div class="blog-header-spacer"></div>
+    </header>
+
+    <article class="blog-article">
+
+      <div class="blog-article-meta">
+        <span class="blog-post-category">Token Analysis</span>
+        <span class="blog-post-dot">&middot;</span>
+        <span>6 min read</span>
+      </div>
+
+      <h2 class="blog-article-title">How to read a Token Analysis report — what every signal actually means</h2>
+
+      <p class="blog-article-lede">
+        You paste a contract address into Degen Desk, the report comes back, and you're staring at risk levels, holder percentages, bundling verdicts, dev wallet notes, comparables. Which signals matter most? Which are noise? Here's the mental model for reading one like a trader who's seen 10,000 of them.
+      </p>
+
+      <h3>First: the risk verdict isn't the whole story</h3>
+
+      <p>
+        Every report leads with a risk level (low / medium / high / critical) and a short label. That's the headline — but it's the combination of underlying signals that actually matters. A "medium risk" token with thin liquidity and no socials can be far more dangerous than a "high risk" token that's just a newer meta with concentrated early buyers.
+      </p>
+      <p>
+        <strong>Read the risk level last</strong>, after you've processed the individual signals. If you find yourself nodding at the verdict without understanding why, you're trading on vibes.
+      </p>
+
+      <h3>The six signals that matter most</h3>
+
+      <p>In rough order of "this signal most often decides whether a trade works or fails":</p>
+
+      <h4>1. Top non-LP wallet concentration</h4>
+      <p>
+        The report separates liquidity pool reserves from individual wallets. You care about the <strong>non-LP top holder</strong>. Rules of thumb:
+      </p>
+      <ul>
+        <li><strong>Under 3%</strong> — organic distribution. Thousands of tiny buyers. Healthy for a meme.</li>
+        <li><strong>3–8%</strong> — concentrated but not red-flag. Often one or two early believers or a promoter wallet. Acceptable for meta plays.</li>
+        <li><strong>8–20%</strong> — concentrated. One wallet can tank the chart. Size smaller, exit faster.</li>
+        <li><strong>20%+</strong> — dangerous. That wallet effectively controls the price. Either avoid or size down hard.</li>
+      </ul>
+      <p>
+        Context matters. A token 10 minutes after launch with a 15% top holder is "everyone's still in" — normal. The same token 48 hours in with a 15% top holder means one wallet hasn't sold into any green candle — it's waiting for your entry.
+      </p>
+
+      <h4>2. Liquidity-to-market-cap ratio</h4>
+      <p>
+        If liquidity is under 10% of market cap, the market cap is <em>paper</em>. Here's what that means in practice: a token at $1M MC with $70K liquidity means a single $5K sell moves the price by 7%+. You can't actually exit at "market cap" — you exit at whatever the pool returns after your sell eats it.
+      </p>
+      <p>
+        Healthy ratio is <strong>15–30%</strong>. Below 10% means the chart is fragile and a single whale exit destroys your entry. Above 30% usually means the token has real flow (or someone locked a ton of liquidity, which is positive but uncommon).
+      </p>
+
+      <h4>3. "Bundled" does not mean what you think it means</h4>
+      <p>
+        Bundling detection flags tokens where the deployer bought multiple large positions across many wallets in the same transaction (or within seconds of launch). But <strong>automated detection has real limits</strong> — sophisticated deployers can stagger buys across many blocks, use mixers, or deploy from wallets that look unrelated but are.
+      </p>
+      <p>
+        So when a report says "No obvious bundling patterns detected," treat that as "the automated scan didn't find anything," not "this token is not bundled." If the chart is an only-up line with no organic catalysts, low holder count, and thin liquidity, it's almost certainly bundled even if the scanner doesn't see it.
+      </p>
+
+      <h4>4. Dev wallet age + transaction history</h4>
+      <p>
+        Two main things to check:
+      </p>
+      <ul>
+        <li><strong>Transaction count.</strong> A dev wallet with 3–10 transactions and a few days of age is usually a fresh burner. That's not inherently bad — most legit devs use fresh wallets for privacy. But it does mean you can't verify their history.</li>
+        <li><strong>Funding source.</strong> The wallet that funded the dev wallet is interesting. If it's a CEX hot wallet (Binance, MEXC, Coinbase), they're just a normal person. If it's a mixer, or another fresh wallet funded by another mixer, someone's trying to hide a trail.</li>
+      </ul>
+      <p>
+        Red flag combo: dev wallet is 2 days old, funded through 3 fresh intermediary wallets, and the token's market cap is already $500K+. Someone with a past they don't want traced is cashing out.
+      </p>
+
+      <h4>5. Social presence vs. market cap</h4>
+      <p>
+        This one's easy: if a token is at $200K+ market cap with <strong>no Twitter, no Telegram, no website</strong>, something is weird. Organic tokens build community on the way up. Tokens at that MC without community are being traded in a vacuum — usually KOL rotations or bundled plays or botted volume.
+      </p>
+      <p>
+        The exception: tokens under 30 minutes old. New launches haven't had time to build anything yet. But at 6+ hours old with no socials and $200K+ MC, be very skeptical.
+      </p>
+
+      <h4>6. Holder count vs. market cap</h4>
+      <p>
+        Rough calibration for Solana memes:
+      </p>
+      <ul>
+        <li>$100K MC should have <strong>400–800 holders</strong></li>
+        <li>$500K MC should have <strong>1,500–3,000 holders</strong></li>
+        <li>$1M MC should have <strong>3,000–6,000 holders</strong></li>
+      </ul>
+      <p>
+        If holder count is way under those ranges for the MC, the token is being traded by a small group — usually coordinated. If it's way over, you might be late (the meme already spread widely, making explosive gains harder).
+      </p>
+
+      <h3>Signals that matter <em>less</em> than you'd think</h3>
+
+      <ul>
+        <li><strong>The score number itself</strong> (out of 100). Use it as a rough filter, not a decision. A 60/100 with thin liquidity is worse than a 45/100 with strong distribution.</li>
+        <li><strong>"Insider networks"</strong> — these flag clusters of wallets funded from the same source. Useful context but most tokens have <em>some</em> insider network (friends, promoters, team). The question is size: 1–3% of supply in an insider cluster is normal, 15%+ is alarming.</li>
+        <li><strong>Price change percentages</strong>. 200% in 24h means nothing without context. 200% on a token with growing holders + organic volume + narrative = healthy. 200% on a token with flat holders + no socials + thin liquidity = someone's chart-painting to attract retail.</li>
+      </ul>
+
+      <h3>The decision framework</h3>
+
+      <p>
+        Given all of the above, the decision tree I use on a Token Analysis report:
+      </p>
+
+      <ol>
+        <li><strong>Are there 3+ red flags?</strong> (e.g., top holder > 15%, liquidity under 10% of MC, no socials at $200K+, dev wallet 2 days old, holder count way under range, bundled flag.) If yes — skip. No position worth taking.</li>
+        <li><strong>Is there 1 significant red flag plus the rest green?</strong> Depends on risk tolerance. I'll sometimes take a smaller-than-usual position in these, with a tight stop. The red flag is the scenario I'm stopping out into.</li>
+        <li><strong>All signals clean and the token has a narrative/catalyst?</strong> Trade it at normal size with normal risk management. Clean Token Analysis doesn't mean the token wins — it just means the basic manipulation patterns aren't there. You still need the trade thesis to work.</li>
+      </ol>
+
+      <h3>One more thing: the report is a snapshot</h3>
+
+      <p>
+        Every analysis reflects the on-chain state at the moment you requested it. A token that scores clean at launch can become bundled within an hour as insiders quietly accumulate. A token that looks concentrated at hour 1 can spread out cleanly by hour 6 as the community grows.
+      </p>
+      <p>
+        <strong>Re-run the analysis before adding to a position.</strong> Especially if the thesis or metrics have shifted materially. Old reports lie.
+      </p>
+
+      <div class="blog-cta">
+        <div class="blog-cta-title">Try it yourself</div>
+        <p>Paste any Solana contract address into Degen Desk's Token Analysis Center. ~15 seconds for a full AI-synthesized report.</p>
+        <a href="/token-analysis.html" class="blog-cta-btn">Open Token Analysis →</a>
+      </div>
+
+      <p class="blog-nfa">
+        Nothing in this post is financial advice. The frameworks here are heuristics — tools for thinking, not recipes for profit. Every signal has exceptions. Markets change faster than heuristics. Do your own research, use position sizing that survives being wrong, and treat any single analysis as one input among many.
+      </p>
+
+    </article>
+
+    <footer class="blog-footer">
+      <div class="blog-footer-inner">
+        <div>
+          <strong>Degen Desk</strong>
+          <span>Research smarter. Trade safer.</span>
+        </div>
+        <div class="blog-footer-links">
+          <a href="/">Chat</a>
+          <a href="/token-analysis.html">Token Analysis</a>
+          <a href="/guides.html">Guides</a>
+          <a href="/blog.html">All posts</a>
+          <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer">X</a>
+        </div>
+      </div>
+      <div class="blog-footer-legal">
+        Nothing on this site is financial advice. Crypto trading involves substantial risk of loss. DYOR.
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

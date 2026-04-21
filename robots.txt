@@ -1,0 +1,30 @@
+# Degen Desk — robots.txt
+# Full policy at https://degendesk.xyz/privacy.html
+
+User-agent: *
+Allow: /
+Disallow: /admin-partners.html
+Disallow: /api/
+Disallow: /auth-callback.html
+
+# Explicit allow for major public pages
+Allow: /index.html
+Allow: /token-analysis.html
+Allow: /guides.html
+Allow: /pricing.html
+Allow: /referrals.html
+Allow: /blog.html
+Allow: /privacy.html
+Allow: /terms.html
+
+# Allow crawlers to access logos and static assets
+Allow: /favicon.png
+Allow: /og-image.png
+Allow: /guides/logos/
+
+# Sitemap reference
+Sitemap: https://degendesk.xyz/sitemap.xml
+
+# Polite crawl-delay for lesser-known crawlers
+User-agent: ia_archiver
+Crawl-delay: 10
