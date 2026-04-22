@@ -352,7 +352,10 @@ OUTPUT FORMAT (JSON, no markdown wrapping):
 REMEMBER: The user is paying for Pro. They expect REAL trader-level analysis, not a polite data summary. If something looks like a coordinated pump, SAY IT (observationally). If the chart screams manipulation, DON'T give it "medium risk" and move on. Be the experienced trader friend who tells it straight — in legally safe, observational language.`;
 
 async function synthesizeWithGPT(rawData, apiKey) {
-  const userMessage = `Analyze this Solana token based on the following raw data:\n\n${JSON.stringify(rawData, null, 2)}\n\nReturn the structured JSON report as specified.`;
+  // Inject today's date so the model can reason correctly about "recent"
+  // launch ages, wallet age vs now, and any other time-sensitive signals.
+  const today = new Date().toISOString().split("T")[0];
+  const userMessage = `TODAY IS: ${today}. Use this for any "age" or "recency" calculations (e.g. token launch age, dev wallet age).\n\nAnalyze this Solana token based on the following raw data:\n\n${JSON.stringify(rawData, null, 2)}\n\nReturn the structured JSON report as specified.`;
 
   const res = await fetchWithTimeout(
     "https://api.openai.com/v1/chat/completions",
@@ -363,7 +366,8 @@ async function synthesizeWithGPT(rawData, apiKey) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        // gpt-5 — flagship reasoning, best nuance on manipulation signals
+        model: "gpt-5",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userMessage },
