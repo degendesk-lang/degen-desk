@@ -1004,9 +1004,42 @@ IMPORTANT RULES:
     }
   }
 
-  // Check if user is asking about top traders, KOLs, or smart money
+  // Check if user is asking about top traders, KOLs, or smart money.
+  // Pattern is broad on purpose — better to inject live data and have the
+  // model ignore it than to miss the intent and let the model hallucinate.
   let kolContext = "";
-  const kolPattern = /\b(?:top trader|best trader|top kol|kol|kolscan|smart money|who is trading|who.?s trading|biggest trader|most profitable|leaderboard|top wallet|best wallet|trader of the|trader this|top solana trader|memecoin trader|meme coin trader|leading trader|winning trader|highest pnl|highest profit|who.?s making money|who.?s winning|degen trader)\b/i;
+  const kolPattern = new RegExp(
+    [
+      // Direct mentions
+      "\\bkol(?:s|scan)?\\b",
+      "\\bsmart\\s*money\\b",
+      "\\bleaderboard\\b",
+      "\\bdegen\\s*trader\\b",
+
+      // Qualifier + (trader|wallet|kol) — covers most natural phrasings
+      "(?:top|best|leading|winning|biggest|highest|most\\s*profitable|most\\s*successful|number\\s*(?:one|1)|no\\.?\\s*1|#\\s*1|first|rank(?:ed|ing)?\\s*\\#?\\s*1)\\s+(?:[a-z]+\\s+){0,3}(trader|kol|wallet)",
+
+      // "Top N" lists
+      "top\\s*\\d{1,3}\\s*(?:trader|kol|wallet)",
+
+      // Time-anchored variants ("trader of the day", "top this week")
+      "(?:trader|kol|wallet)\\s*(?:of|this|today|right now|currently)",
+      "(?:top|best|leading)\\s*(?:trader|wallet|kol)?\\s*(?:today|this\\s*(?:week|month)|right\\s*now|currently|now)",
+
+      // Action phrasings — be liberal with words between "who" and the verb
+      // ("who's making money", "who is making the most money", "who's winning", etc.)
+      "who.{0,40}(?:trading|making.{0,20}money|winning|profiting|earning|crushing|making.{0,20}gains|killing.{0,20}it|biggest.{0,20}gains?)",
+
+      // PnL / profit phrasings
+      "highest\\s*(?:pnl|profit|gains?|return)",
+      "biggest\\s*(?:pnl|profit|gains?|winners?)",
+
+      // Solana-specific
+      "(?:top|best|leading)\\s*solana\\s*trader",
+      "(?:memecoin|meme\\s*coin)\\s*trader",
+    ].join("|"),
+    "i"
+  );
   const timeframePattern = /\b(?:daily|today|this week|weekly|this month|monthly|all.?time)\b/i;
 
   if (kolPattern.test(message)) {
