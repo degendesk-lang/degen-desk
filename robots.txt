@@ -14,6 +14,8 @@ Allow: /guides.html
 Allow: /pricing.html
 Allow: /referrals.html
 Allow: /blog.html
+Allow: /welcome.html
+Allow: /creators.html
 Allow: /privacy.html
 Allow: /terms.html
 

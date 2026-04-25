@@ -13,6 +13,20 @@
     </image:image>
   </url>
 
+  <!-- Marketing landing page (entry point for ads/creators/SEO) -->
+  <url>
+    <loc>https://degendesk.xyz/welcome.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Creator/partner application page -->
+  <url>
+    <loc>https://degendesk.xyz/creators.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Token Analysis Center -->
   <url>
     <loc>https://degendesk.xyz/token-analysis.html</loc>

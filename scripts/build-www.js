@@ -27,6 +27,8 @@ const filesToCopy = [
   "token-analysis.html",
   "guides.html",
   "blog.html",
+  "welcome.html",
+  "creators.html",
   "styles.css",
   "auth.js",
   "iap.js",
