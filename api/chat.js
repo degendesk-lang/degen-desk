@@ -1,5 +1,12 @@
 const admin = require("firebase-admin");
 
+// Direct in-process import of the kolscan scraper. Calling it as a function
+// is more reliable inside Vercel's serverless runtime than self-fetching
+// via fetch(`https://${req.headers.host}/api/kolscan`) — avoids hostname
+// resolution issues, cold-start cascade timeouts, and any Vercel-internal
+// networking quirks.
+const { scrapeLeaderboard } = require("./kolscan.js");
+
 // Initialize Firebase Admin (only once)
 if (!admin.apps.length) {
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -1062,7 +1069,10 @@ IMPORTANT RULES:
   );
   const timeframePattern = /\b(?:daily|today|this week|weekly|this month|monthly|all.?time)\b/i;
 
-  if (kolPattern.test(message)) {
+  const kolMatched = kolPattern.test(message);
+  console.log(`[chat] kolPattern matched? ${kolMatched} for message="${(message || "").slice(0, 100)}"`);
+
+  if (kolMatched) {
     try {
       // Detect requested timeframe
       let timeframe = "weekly"; // default
@@ -1072,39 +1082,47 @@ IMPORTANT RULES:
         if (tf === "daily" || tf === "today") timeframe = "daily";
         else if (tf === "monthly" || tf === "this month") timeframe = "monthly";
       }
+      console.log(`[chat] Calling scrapeLeaderboard("${timeframe}") directly...`);
 
-      const kolRes = await fetch(
-        `https://${req.headers.host}/api/kolscan?timeframe=${timeframe}`,
-        {
-          headers: { "Origin": req.headers.origin || "https://degendesk.xyz" },
-        }
-      );
+      // Direct in-process call instead of self-fetching via HTTP. This is more
+      // reliable in Vercel's serverless runtime — avoids the case where a
+      // function self-fetch silently fails (hostname / cold start / Vercel
+      // internal networking) and leaves kolContext empty.
+      const traders = await scrapeLeaderboard(timeframe);
+      const kolData = {
+        timeframe,
+        traders: traders || [],
+        count: (traders || []).length,
+        source: "kolscan.io",
+        updatedAt: new Date().toISOString(),
+      };
+      console.log(`[chat] scrapeLeaderboard returned ${kolData.traders.length} traders`);
 
-      if (kolRes.ok) {
-        const kolData = await kolRes.json();
-        if (kolData.traders && kolData.traders.length > 0) {
-          let kolStr = `\n\n[LIVE KOLSCAN DATA - TOP SOLANA MEME COIN TRADERS (${timeframe.toUpperCase()})]\n`;
-          kolStr += `Source: kolscan.io | Updated: ${kolData.updatedAt}\n\n`;
+      if (kolData.traders.length > 0) {
+        let kolStr = `\n\n[LIVE KOLSCAN DATA - TOP SOLANA MEME COIN TRADERS (${timeframe.toUpperCase()})]\n`;
+        kolStr += `Source: kolscan.io | Updated: ${kolData.updatedAt}\n\n`;
 
-          kolData.traders.forEach((trader) => {
-            const pnl = trader.pnl_sol ? `${trader.pnl_sol} SOL` : "";
-            const pnlUsd = trader.pnl_usd ? ` ($${trader.pnl_usd})` : "";
-            const wr = trader.win_rate ? ` | Win rate: ${trader.win_rate}` : "";
-            const wl = trader.wins && trader.losses ? ` | W/L: ${trader.wins}/${trader.losses}` : "";
-            const tw = trader.twitter ? ` | Twitter: ${trader.twitter}` : "";
-            kolStr += `#${trader.rank} ${trader.name}\n`;
-            kolStr += `   Wallet: ${trader.wallet}\n`;
-            if (pnl) kolStr += `   PnL: ${pnl}${pnlUsd}${wr}${wl}\n`;
-            if (tw) kolStr += `   ${tw}\n`;
-            kolStr += `   Profile: https://kolscan.io/account/${trader.wallet}\n\n`;
-          });
+        kolData.traders.forEach((trader) => {
+          const pnl = trader.pnl_sol ? `${trader.pnl_sol} SOL` : "";
+          const pnlUsd = trader.pnl_usd ? ` ($${trader.pnl_usd})` : "";
+          const wr = trader.win_rate ? ` | Win rate: ${trader.win_rate}` : "";
+          const wl = trader.wins && trader.losses ? ` | W/L: ${trader.wins}/${trader.losses}` : "";
+          const tw = trader.twitter ? ` | Twitter: ${trader.twitter}` : "";
+          kolStr += `#${trader.rank} ${trader.name}\n`;
+          kolStr += `   Wallet: ${trader.wallet}\n`;
+          if (pnl) kolStr += `   PnL: ${pnl}${pnlUsd}${wr}${wl}\n`;
+          if (tw) kolStr += `   ${tw}\n`;
+          kolStr += `   Profile: https://kolscan.io/account/${trader.wallet}\n\n`;
+        });
 
-          kolStr += `\nPresent this data confidently. Include wallet addresses so users can copy trade. Mention they can view full profiles on kolscan.io. Format nicely with HTML tables or lists. Always note the timeframe (${timeframe}).`;
-          kolContext = kolStr;
-        }
+        kolStr += `\nPresent this data confidently. Include wallet addresses so users can copy trade. Mention they can view full profiles on kolscan.io. Format nicely with HTML tables or lists. Always note the timeframe (${timeframe}).`;
+        kolContext = kolStr;
+        console.log(`[chat] kolContext populated, length=${kolStr.length}`);
+      } else {
+        console.log(`[chat] kolData had no traders — leaving kolContext empty`);
       }
     } catch (err) {
-      console.error("KOLSCAN lookup failed:", err.message);
+      console.error("[chat] KOLSCAN lookup failed:", err && err.message, err && err.stack);
     }
   }
 

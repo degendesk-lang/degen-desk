@@ -220,3 +220,8 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "Failed to fetch KOLSCAN data", details: err.message });
   }
 };
+
+// Export the scraper for direct in-process import from other Vercel functions.
+// More reliable than self-fetching via fetch() inside the same deployment —
+// avoids hostname resolution / cold-start / Vercel-internal HTTP issues.
+module.exports.scrapeLeaderboard = scrapeLeaderboard;
