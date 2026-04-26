@@ -193,8 +193,10 @@ module.exports = async function handler(req, res) {
 
   // Select model based on tier
   // Free: gpt-4.1-mini — strict upgrade over gpt-4o-mini (newer cutoff, cheaper, smarter)
-  // Pro:  gpt-5          — flagship reasoning, nuance, best-in-class for trading analysis
-  const model = tier === "pro" ? "gpt-5" : "gpt-4.1-mini";
+  // Pro:  gpt-4.1      — strong default. Once OpenAI org is verified, swap this to "gpt-5"
+  //                       for flagship reasoning. gpt-5 requires org verification at
+  //                       https://platform.openai.com/settings/organization/general
+  const model = tier === "pro" ? "gpt-4.1" : "gpt-4.1-mini";
 
   // Inject today's date and a temporal-awareness framing so the model
   // correctly hedges on anything outside its training window and leans

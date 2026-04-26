@@ -366,8 +366,11 @@ async function synthesizeWithGPT(rawData, apiKey) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        // gpt-5 — flagship reasoning, best nuance on manipulation signals
-        model: "gpt-5",
+        // gpt-4.1 — strong default available without org verification.
+        // Once OpenAI org is verified, swap to "gpt-5" for flagship reasoning
+        // and best nuance on manipulation signals. Verify at:
+        // https://platform.openai.com/settings/organization/general
+        model: "gpt-4.1",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userMessage },
