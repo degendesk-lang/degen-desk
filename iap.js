@@ -37,8 +37,8 @@
  * =========================================================================
  *
  * Product IDs (App Store Connect):
- *   degendesk_pro_monthly  → $18.99/mo
- *   degendesk_pro_yearly   → $189.99/yr with 3-day free trial
+ *   degendesk_pro_monthly  → $17.99/mo
+ *   degendesk_pro_yearly   → $179.99/yr with 3-day free trial
  *
  * Platform behavior:
  *   - On web or non-native: all methods are no-ops that throw/return false.
