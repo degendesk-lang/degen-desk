@@ -34,6 +34,13 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Blog post: Multi-wallet schemes -->
+  <url>
+    <loc>https://degendesk.xyz/blog/spot-multi-wallet-schemes.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Token Analysis Center -->
   <url>
     <loc>https://degendesk.xyz/token-analysis.html</loc>

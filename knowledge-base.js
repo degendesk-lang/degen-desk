@@ -1963,6 +1963,140 @@ const KNOWLEDGE_BASE = [
         <strong>&#128161; Pro Tip:</strong> Even if you're only trading meme coins, understanding the broader crypto cycle tells you <em>when</em> to be aggressive and when to sit in stables. The best meme coin gains happen in late-cycle altseason — being positioned correctly for the macro matters more than picking the "right" token.
       </div>
     `
+  },
+
+  // =============================================
+  // TRADING STYLES
+  // =============================================
+  {
+    id: "scalping",
+    keywords: ["scalping", "scalp", "quick profit", "quick trades", "fast trades", "scalp trading", "in and out", "rapid trading", "fast in and out"],
+    aliases: ["scalp", "scalper"],
+    response: `
+      <h3>Scalping — Quick In, Quick Out</h3>
+      <p><strong>Scalping</strong> is a high-frequency trading style where you take small profits per trade — typically 5–25% — and exit fast. You're not holding for narratives or "the next 100x." You're executing dozens of small wins (and small losses) per session.</p>
+
+      <h3>When Scalping Works</h3>
+      <ul>
+        <li><strong>High-volume, trending pairs.</strong> Hot meme coins with steady volume create predictable retracements you can ride.</li>
+        <li><strong>Liquid markets ($100K+ liquidity).</strong> Thin liquidity destroys your fills — slippage compounds.</li>
+        <li><strong>Active sessions.</strong> US daytime + Asia overlap. Dead hours kill scalp setups.</li>
+        <li><strong>Disciplined trader.</strong> Scalping requires fast decision-making, no emotional attachment, and a hard stop on every trade. If you tilt, you're done.</li>
+      </ul>
+
+      <h3>When Scalping Fails</h3>
+      <ul>
+        <li><strong>Slow markets.</strong> No volume = no scalping setups. Sit out.</li>
+        <li><strong>Thin liquidity tokens.</strong> 5% slippage in + 5% slippage out = your "small profit" is already eaten.</li>
+        <li><strong>Fee-heavy chains.</strong> Solana fees are negligible; on Ethereum mainnet you'd lose to gas alone.</li>
+        <li><strong>Revenge-trading after a loss.</strong> The #1 way scalpers blow up. One missed stop turns into 5 emotional trades.</li>
+      </ul>
+
+      <h3>Practical Setup</h3>
+      <ul>
+        <li><strong>Use a fast terminal.</strong> Axiom, Photon, or BullX with preset buy/sell sizes. Telegram bots like BONKbot or Trojan are also good for tap-and-go execution.</li>
+        <li><strong>Pre-decide your sizing.</strong> Same position size every trade. Don't double down on a loser.</li>
+        <li><strong>Tight stops.</strong> -10 to -15% per trade max. Cut and re-enter if the setup re-forms.</li>
+        <li><strong>Track your win rate.</strong> If you're <55% over 50 trades, you're losing money. Stop and review.</li>
+      </ul>
+
+      <div class="warning-box">
+        <strong>&#9888; Reality check:</strong> Most scalpers lose money. The setup is psychologically punishing — you have to stay calm through dozens of micro-decisions per day. Most retail traders perform better with longer hold times because they trade their feelings less often.
+      </div>
+
+      <div class="tip-box">
+        <strong>&#128161; Pro Tip:</strong> Don't scalp tokens you have a "narrative thesis" on. Scalping is mechanical — you're trading the chart, not the story. If you want to ride a narrative, hold. If you want to scalp, pick a liquid pair you have zero emotional attachment to.
+      </div>
+    `
+  },
+
+  {
+    id: "sizing",
+    keywords: ["sizing", "position sizing", "size up", "sizing up", "how much to buy", "position size", "bet size", "how much should i invest", "how much should i risk", "risk size"],
+    aliases: ["size", "sizing strategy"],
+    response: `
+      <h3>Position Sizing — How Much to Risk Per Trade</h3>
+      <p><strong>Sizing</strong> in meme coin trading means choosing how much capital to commit to a position based on conviction, liquidity, and the token's profile. The size of your bet matters more than picking the "right" coin — bad sizing on a winner still wrecks your account.</p>
+
+      <h3>The Three Tiers (Rule of Thumb)</h3>
+      <ul>
+        <li><strong>Speculative (1–3% of bankroll):</strong> Brand-new pump.fun launches, low-cap punts, gambles. Most go to zero. Size assumes total loss is fine.</li>
+        <li><strong>Conviction (5–10% of bankroll):</strong> Established meta plays with real liquidity, growing holders, narrative tailwind. Mid-cap ($1–10M MC) tokens you've researched.</li>
+        <li><strong>High-conviction (10–20% of bankroll):</strong> Higher-cap ($10M+) tokens with strong fundamentals, deep liquidity, and a clear catalyst. You're sizing up because the asymmetry justifies it.</li>
+      </ul>
+
+      <h3>Why Mid–High Cap Sizing Works</h3>
+      <p>The user-named "sizing up" strategy: putting bigger capital into more established tokens. The math is counterintuitive but real:</p>
+      <ul>
+        <li><strong>Smaller % gains, bigger absolute gains.</strong> A 50% move on a $10,000 position is $5,000. A 1,000% move on a $200 punt is $2,000. Bigger conviction sizing on solid plays often beats lottery tickets on degenerate ones.</li>
+        <li><strong>Lower risk of total loss.</strong> A $10M+ MC token with locked liquidity, active holders, and real volume rarely goes to zero overnight. Your downside is a manageable drawdown, not a vaporized position.</li>
+        <li><strong>Better fills, lower slippage.</strong> Deep liquidity means you can actually exit at price.</li>
+      </ul>
+
+      <h3>When NOT to Size Up</h3>
+      <ul>
+        <li><strong>Low conviction.</strong> If you're "kind of bullish" on something, don't size into it. Bigger size = bigger psychological pressure = worse decisions.</li>
+        <li><strong>Late in a narrative.</strong> Sizing into the top is how big losses happen. If everyone on X is already calling it, the move is in the rear-view.</li>
+        <li><strong>Thin liquidity.</strong> Sizing into a $200K-liquidity pool means a moderate sell crashes the price. Your "exit" becomes a slow bleed.</li>
+        <li><strong>Tight stops aren't possible.</strong> If the chart structure doesn't give you a clear invalidation level, don't commit big size — there's no rational stop.</li>
+      </ul>
+
+      <div class="warning-box">
+        <strong>&#9888; Critical:</strong> Never size into a position you can't sleep on. Position sizing is an emotional decision as much as a math one. If you're checking the chart every 5 minutes, you're oversized — cut some.
+      </div>
+
+      <div class="tip-box">
+        <strong>&#128161; Pro Tip:</strong> Track your largest position size relative to your bankroll over the past 30 trades. If your average winner is sized 2% but your average loser is sized 8%, your bankroll dies even with a 60% win rate. The sizing pattern matters more than win rate.
+      </div>
+    `
+  },
+
+  {
+    id: "multi-wallet-detection",
+    keywords: ["multi wallet", "multiple wallets", "split wallets", "wallet schemes", "bundling detection", "spot bundlers", "detect bundling", "hidden bundling", "fake distribution", "manipulated holders", "fake holders", "wash holding", "manipulated supply", "stealth bundling"],
+    aliases: ["multi-wallet", "multi-wallets", "wallet bundling", "stealth bundle"],
+    response: `
+      <h3>Multi-Wallet Schemes — How to Spot Them</h3>
+      <p>The most sophisticated form of bundling. Insiders or the dev split a large supply across many wallets — sometimes hundreds — so the on-chain holder distribution <em>looks</em> healthy but is actually one person controlling everything. Standard scanners miss it because each individual wallet looks small.</p>
+
+      <p>Degen Desk's <a href="/token-analysis.html"><strong>Token Analysis Pro</strong></a> is built specifically to catch these patterns. This guide explains what to look for so you can verify any token you're considering, even outside our tool.</p>
+
+      <h3>Why Multi-Wallet Schemes Exist</h3>
+      <p>The goal is to <strong>look organic to retail buyers</strong>. A token where one wallet holds 40% is an obvious red flag — automated scanners flag it instantly, smart traders skip it. But if that same supply is split across 100 wallets each holding 0.4%, the surface metrics look distributed and trustworthy. The deployer can then dump methodically while retail thinks they're holding alongside a wide community.</p>
+
+      <h3>Patterns to Look For</h3>
+      <ul>
+        <li><strong>Synchronised buying.</strong> Multiple wallets buying within the same block (or within seconds) at launch. Real organic interest never lines up that perfectly.</li>
+        <li><strong>Common funding source.</strong> Trace each holder's funding back through Solscan or Helius. If 30+ "different" wallets all received their initial SOL from the same wallet (or a chain of mixers ending at the same source), it's the same actor.</li>
+        <li><strong>Suspicious uniformity.</strong> Holders with eerily similar buy amounts (every wallet bought exactly 0.5 SOL) suggest scripted purchases, not real demand.</li>
+        <li><strong>Coordinated selling.</strong> Watch the chart on a green candle. If a cluster of small wallets sells in the same 2-minute window, they're coordinated.</li>
+        <li><strong>"Fresh" wallets.</strong> Holders that were created hours before the token launch and have no other activity = burner wallets used for the scheme.</li>
+        <li><strong>Holder count vs. market cap mismatch.</strong> A $1M MC token with only 200 holders, where the top 50 are all small wallets funded from the same source, is almost certainly bundled even though no individual holder looks dominant.</li>
+      </ul>
+
+      <h3>How to Verify (Step-by-Step)</h3>
+      <ol>
+        <li>Run the contract address through Degen Desk Token Analysis — it auto-flags multi-wallet patterns and surfaces the funding traces.</li>
+        <li>Cross-check the top 20 holders on Solscan. Click each wallet's "Funded by" and see if multiple trace back to the same source.</li>
+        <li>Look at the holder distribution chart on DEX Screener. Healthy tokens have a long tail of unrelated wallets; bundled tokens have suspiciously similar wallet sizes.</li>
+        <li>Check holder activity history. Real organic holders also trade other tokens. Wallets created the day of launch with only this one token are burners.</li>
+      </ol>
+
+      <h3>What to Do If You Spot It</h3>
+      <ul>
+        <li><strong>Don't enter.</strong> Multi-wallet schemes always end with coordinated dumping. You're the exit liquidity.</li>
+        <li><strong>If you're already in, exit on the next pump.</strong> Don't try to "bag-hold through it" — these collapse fast once the deployer starts distributing.</li>
+        <li><strong>Don't try to "front-run" the dump.</strong> The deployer has perfect information and you don't. You will lose.</li>
+      </ul>
+
+      <div class="warning-box">
+        <strong>&#9888; Why we're explicit about this:</strong> Multi-wallet schemes are <strong>predatory</strong>. They prey on retail investors who don't know what to look for. Degen Desk exists to flatten that information asymmetry. Knowing how the scheme works is the only defense.
+      </div>
+
+      <div class="tip-box">
+        <strong>&#128161; Pro Tip:</strong> If you can't quickly identify why a token's holder distribution looks the way it does, treat it as bundled until proven otherwise. The default assumption on a low-cap launch should be "this is manipulated" — exceptions need real evidence.
+      </div>
+    `
   }
 ];
 

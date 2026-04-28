@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" class="blog-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Multi-wallet bundling schemes split a single insider's supply across many wallets to fake organic distribution. This walks through every pattern — synchronized buys, common funding sources, suspicious uniformity — and how to verify any token in 60 seconds." />
+  <title>How to spot multi-wallet schemes · Degen Desk Blog</title>
+
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/blog/spot-multi-wallet-schemes.html" />
+  <meta property="og:title" content="How to spot multi-wallet schemes" />
+  <meta property="og:description" content="The most sophisticated bundling pattern — and how to catch it in 60 seconds with on-chain data anyone can read." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=2" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=2" />
+
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link rel="apple-touch-icon" href="../favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+    }
+  </style>
+  <link rel="stylesheet" href="../styles.css?v=37" />
+</head>
+<body class="blog-body" style="background:#060610;">
+  <div class="blog-app">
+
+    <header class="blog-header">
+      <a href="../blog.html" class="blog-back-link" aria-label="Back to blog">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="blog-header-title">
+        <div class="blog-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Blog</h1>
+          <span class="blog-subtitle">On-chain research &amp; trader education</span>
+        </div>
+      </div>
+      <div class="blog-header-spacer"></div>
+    </header>
+
+    <article class="blog-article">
+
+      <div class="blog-article-meta">
+        <span class="blog-post-category">On-chain analysis</span>
+        <span class="blog-post-dot">&middot;</span>
+        <span>8 min read</span>
+      </div>
+
+      <h2 class="blog-article-title">How to spot multi-wallet schemes — the bundling pattern scanners miss</h2>
+
+      <p class="blog-article-lede">
+        A token's top holder is 0.4%. The next is 0.4%. The next is 0.4%. Every automated scanner says "distributed supply, looks healthy." You ape in. The chart goes vertical, then dies in a single 90-second candle. You exit at -70%. That's not bad luck. That's a multi-wallet scheme — the most sophisticated bundling pattern in the game right now, and the one most retail buyers can't see.
+      </p>
+
+      <h3>Why this scheme even exists</h3>
+
+      <p>
+        Bundling — where a deployer or insider buys a large chunk of supply at launch — used to be obvious. One wallet would hold 30%, another 15%, another 10%. RugCheck and similar scanners would flag the token red. Smart traders would skip. The scheme didn't work for long.
+      </p>
+      <p>
+        So sophisticated actors started splitting that same 30%–40% across <em>hundreds</em> of wallets. Now each individual wallet holds 0.2–0.5%, scanners see "distributed supply," retail thinks they're holding alongside a wide community of small believers, and the deployer can dump methodically without ever showing a single dominant holder.
+      </p>
+      <p>
+        <strong>The retail buyer is the exit liquidity.</strong> They just don't know it because the on-chain surface metrics lie.
+      </p>
+
+      <h3>The six tells</h3>
+
+      <p>
+        Multi-wallet schemes leave fingerprints. Once you know what to look for, you can verify any token in about 60 seconds. Here are the six patterns that show up almost every time, in rough order of how reliable each one is:
+      </p>
+
+      <h4>1. Synchronized buying at launch</h4>
+      <p>
+        Multiple wallets buying within the same block — or within a few seconds — at token launch. Real organic interest is messy. Different people see the token at different times, hesitate different amounts, decide differently. They don't buy in a coordinated 3-second window across 50 wallets.
+      </p>
+      <p>
+        On Solana, blocks are sub-second. If 30+ wallets executed buys in the first 2 blocks of a token's life, it's not 30 different excited humans — it's a script.
+      </p>
+
+      <h4>2. Common funding source</h4>
+      <p>
+        This is the one that catches almost every scheme. Real holders fund their wallets from CEXs (Coinbase, Binance, MEXC), other wallets they've been using for months, or other tokens they sold. Bundlers fund their wallets from a <em>single</em> source — either the deployer's main wallet directly, or a chain of intermediary wallets that all trace back to one.
+      </p>
+      <p>
+        How to check: open Solscan, click any holder wallet, look at "Funded by." If 30+ "different" holders received their initial SOL from the same wallet (or a series of mixers ending at the same source), you're not looking at a community. You're looking at one person and their burner army.
+      </p>
+
+      <h4>3. Suspicious uniformity</h4>
+      <p>
+        Real buyers buy weird amounts. Someone enters with 0.347 SOL because that's what they had left. Someone else does 1.2 SOL because that's their standard size. Another buys 0.05 SOL just to "see what happens." The distribution of buy sizes is naturally random.
+      </p>
+      <p>
+        Bundlers script their buys. So you'll see 50 wallets all buying exactly 0.5 SOL, or every wallet hitting a clean 1.0 SOL purchase. Uniformity isn't always bundling — but uniformity combined with #1 (synchronized buys) and #2 (common funding) is bundling 99% of the time.
+      </p>
+
+      <h4>4. Coordinated selling</h4>
+      <p>
+        This is the dump phase, and it's the most actionable signal because by the time you see it, the trade is dying. Watch the holder activity in the first few green candles after a token starts pumping. If a cluster of small wallets sells in the same 60–120-second window, those wallets are coordinated — same actor distributing through them.
+      </p>
+      <p>
+        DEX Screener's transaction tab shows this clearly. If you see 8 small sells from "different" wallets all hitting in a tight time band, exit. The deployer is taking profits and your bag is about to get heavier.
+      </p>
+
+      <h4>5. Fresh wallets with no history</h4>
+      <p>
+        Real holders have lives on-chain. They've traded other tokens. They've held SOL for months. They've moved between wallets. Their address has activity going back further than the token in question.
+      </p>
+      <p>
+        Burner wallets used in bundles are usually created hours before launch, fund themselves once, buy the token once, and have no other activity ever. If you click 10 different "holders" on Solscan and 8 of them were created the day of the launch and have done nothing else, it's the same actor.
+      </p>
+
+      <h4>6. Holder count vs. market cap mismatch</h4>
+      <p>
+        The macro version of all the patterns above. A healthy organic token at $1M market cap typically has 3,000–6,000 holders, distributed across a long tail of tiny wallets all funded from random sources, with varying activity histories.
+      </p>
+      <p>
+        A bundled $1M MC token might have only 200 "holders" — and the top 50 of those are all small, similar-sized wallets funded from the same source, all created the day of launch. The MC and the holder profile don't match. That mismatch <em>is</em> the bundle.
+      </p>
+
+      <h3>The 60-second verification</h3>
+
+      <p>
+        Here's the workflow that catches 90% of multi-wallet schemes in under a minute:
+      </p>
+
+      <ol>
+        <li>
+          <strong>Run the contract through <a href="/token-analysis.html">Degen Desk Token Analysis</a>.</strong> It auto-checks for synchronized buys, common funding patterns, and the holder/MC mismatch. Most cases are settled here.
+        </li>
+        <li>
+          <strong>If Token Analysis flags suspicion, cross-check on Solscan.</strong> Open the top 20 holders. Click the first 5–10. Look at "Funded by." If multiple trace back to the same source, it's confirmed.
+        </li>
+        <li>
+          <strong>If still unsure, check holder activity history.</strong> Wallets created the day of launch with nothing but this one token = burners. Real holders have on-chain history that predates the token.
+        </li>
+        <li>
+          <strong>Look at the chart's first green candle.</strong> If a cluster of small wallets sold in the same 60-second window during the first run-up, the dump phase is already starting.
+        </li>
+      </ol>
+
+      <h3>What to do when you spot one</h3>
+
+      <p>
+        Three answers depending on where you are:
+      </p>
+
+      <ul>
+        <li>
+          <strong>You haven't entered yet:</strong> Don't. Skip the trade. There's always another setup. The math on bundled tokens is rigged against you — the deployer has perfect information about supply distribution and you don't. You can't out-trade asymmetric information.
+        </li>
+        <li>
+          <strong>You're already in and the token's pumping:</strong> Take profit aggressively on the next green candle. Don't try to ride it for 5x — bundled tokens collapse fast once the dump starts, and you won't get out at the top. A 30% gain you actually exit with beats an "imagined" 200% gain that turns into -60%.
+        </li>
+        <li>
+          <strong>You're already in and the chart is sideways:</strong> Set a tight stop and let it close. Don't try to "front-run the dump" — the deployer will always be faster than you. Just accept the loss is in motion and exit cleanly when your stop hits.
+        </li>
+      </ul>
+
+      <h3>The honest part: scanners can be fooled</h3>
+
+      <p>
+        Sophisticated bundlers know what scanners look for, and they engineer their schemes to evade detection. Mixing services, time-staggered funding (where intermediary wallets sit dormant for weeks before being used), and complex chains of ownership across multiple identities can defeat any single tool — including ours.
+      </p>
+      <p>
+        That's why the manual checks above still matter. Token Analysis catches 80–90% of schemes automatically because most bundlers are lazy. The ones that escape automated detection usually still have <em>one</em> tell visible in the holder distribution or activity history if you look. The default assumption on any low-cap launch should be "this is bundled until proven otherwise" — exceptions need real evidence, not hope.
+      </p>
+
+      <h3>Why we publish this</h3>
+
+      <p>
+        Multi-wallet schemes are predatory. They prey on retail buyers who don't know what to look for. The asymmetry between the bundler (who has perfect information about the token's supply) and the buyer (who has only the on-chain surface) is the entire reason these schemes work. Flatten that asymmetry and the scheme stops working.
+      </p>
+      <p>
+        Degen Desk's whole product premise is making this kind of analysis accessible to people who'd otherwise be exit liquidity. Token Analysis Pro automates 90% of these checks. The remaining 10% — the manual verification on Solscan, the chart-reading discipline, the willingness to skip a "hot" trade because something looks off — those are skills that come from understanding what bundlers actually do.
+      </p>
+      <p>
+        Now you do.
+      </p>
+
+      <div class="blog-cta">
+        <div class="blog-cta-title">Run any token through Token Analysis</div>
+        <p>Paste any Solana CA. AI-synthesized risk verdict in 15 seconds — including auto-detection of multi-wallet patterns, common funding sources, and the holder/MC mismatch flagged here.</p>
+        <a href="/token-analysis.html" class="blog-cta-btn">Open Token Analysis →</a>
+      </div>
+
+      <p class="blog-nfa">
+        Nothing in this post is financial advice. The frameworks above are heuristics for identifying common manipulation patterns — they don't catch every scheme, and a "clean" verification doesn't guarantee a good trade. Sophisticated actors evolve faster than any single tool. Always combine on-chain analysis with chart structure, narrative quality, and your own risk management. Never invest more than you can afford to lose.
+      </p>
+
+    </article>
+
+    <footer class="blog-footer">
+      <div class="blog-footer-inner">
+        <div>
+          <strong>Degen Desk</strong>
+          <span>Research smarter. Trade safer.</span>
+        </div>
+        <div class="blog-footer-links">
+          <a href="/">Chat</a>
+          <a href="/token-analysis.html">Token Analysis</a>
+          <a href="/guides.html">Guides</a>
+          <a href="/blog.html">All posts</a>
+          <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer">X</a>
+        </div>
+      </div>
+      <div class="blog-footer-legal">
+        Nothing on this site is financial advice. Crypto trading involves substantial risk of loss. DYOR.
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>
