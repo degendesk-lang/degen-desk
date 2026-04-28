@@ -27,6 +27,7 @@ const filesToCopy = [
   "token-analysis.html",
   "guides.html",
   "blog.html",
+  "leaderboard.html",
   "welcome.html",
   "creators.html",
   "styles.css",

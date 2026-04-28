@@ -1025,4 +1025,29 @@ window.DegenToast = (function () {
 
   // Wire up the static-HTML waitlist on initial page load (before any re-render)
   attachWaitlistHandler();
+
+  // Sidebar leaderboard widget — populate from /api/leaderboard if there's a #1.
+  // Stays hidden if the leaderboard is empty or the request fails (no broken UI).
+  (function loadSidebarLeaderboardWidget() {
+    const widget = document.getElementById("sidebar-leaderboard-widget");
+    if (!widget) return;
+    const nameEl = document.getElementById("sidebar-leaderboard-name");
+    const statEl = document.getElementById("sidebar-leaderboard-stat");
+
+    fetch("/api/leaderboard", { headers: { Accept: "application/json" } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data || !Array.isArray(data.leaderboard) || data.leaderboard.length === 0) return;
+        const top = data.leaderboard[0];
+        if (!top || !top.displayName) return;
+
+        nameEl.textContent = top.displayName;
+        const refs = (top.totalReferrals || 0).toLocaleString();
+        statEl.innerHTML = `<strong>${refs}</strong> referrals`;
+        widget.hidden = false;
+      })
+      .catch(() => {
+        // Silent — widget stays hidden, no broken UI
+      });
+  })();
 })();

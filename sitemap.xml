@@ -27,6 +27,13 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Public top-referrer leaderboard -->
+  <url>
+    <loc>https://degendesk.xyz/leaderboard.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Token Analysis Center -->
   <url>
     <loc>https://degendesk.xyz/token-analysis.html</loc>

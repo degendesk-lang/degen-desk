@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" class="lb-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk Top Referrers Leaderboard — top 5 partners ranked by total referrals. Become a partner and earn recurring commission on every Pro signup." />
+  <title>Top Referrers · Degen Desk</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/leaderboard.html" />
+  <meta property="og:title" content="Top Referrers · Degen Desk" />
+  <meta property="og:description" content="The top 5 Degen Desk partners ranked by total referrals. Apply to join and get featured." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=2" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=2" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=37" />
+</head>
+<body class="lb-body" style="background:#060610;">
+  <div class="lb-app">
+
+    <!-- Header -->
+    <header class="lb-header">
+      <a href="/" class="lb-back-link" aria-label="Back to chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="lb-header-title">
+        <div class="lb-header-icon">🏆</div>
+        <div>
+          <h1>Top Referrers</h1>
+          <span class="lb-subtitle">Top 5 Degen Desk partners — updated every minute</span>
+        </div>
+      </div>
+      <div class="lb-header-spacer"></div>
+    </header>
+
+    <main class="lb-main">
+
+      <!-- Intro -->
+      <section class="lb-intro">
+        <div class="lb-eyebrow"><span class="lb-dot"></span>Public Leaderboard</div>
+        <h2 class="lb-intro-title">Built by partners. Tracked publicly.</h2>
+        <p class="lb-intro-text">
+          The top 5 partners growing Degen Desk. Recurring commission on every Pro signup, lifetime — plus a permanent spot on this page once you make it. Want in? <a href="/creators.html">Apply to partner</a>.
+        </p>
+      </section>
+
+      <!-- Loading state -->
+      <div id="lb-loading" class="lb-loading">
+        <div class="lb-spinner"></div>
+        <div class="lb-loading-text">Loading leaderboard&hellip;</div>
+      </div>
+
+      <!-- Leaderboard rows -->
+      <div id="lb-list" class="lb-list" hidden></div>
+
+      <!-- Error state -->
+      <div id="lb-error" class="lb-error" hidden>
+        Couldn't load leaderboard right now. Refresh in a moment.
+      </div>
+
+      <!-- CTA strip -->
+      <section class="lb-cta">
+        <div class="lb-cta-eyebrow">Want a spot?</div>
+        <h3 class="lb-cta-title">35% commission · recurring · public credit.</h3>
+        <p class="lb-cta-text">
+          Refer Pro users to Degen Desk. Get paid every month they stay subscribed. Top 5 referrers get featured here with their socials linked. No hype, no gimmicks — just a real partner program for creators who'd actually use the product.
+        </p>
+        <div class="lb-cta-actions">
+          <a href="/creators.html" class="lb-cta-btn">Apply to partner →</a>
+          <a href="/" class="lb-cta-btn-ghost">Try Degen Desk</a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="lb-footer">
+      <div class="lb-footer-inner">
+        <div>
+          <strong>Degen Desk</strong>
+          <span>Research smarter. Trade safer.</span>
+        </div>
+        <div class="lb-footer-links">
+          <a href="/">Chat</a>
+          <a href="/token-analysis.html">Token Analysis</a>
+          <a href="/guides.html">Guides</a>
+          <a href="/blog.html">Blog</a>
+          <a href="/creators.html">Partners</a>
+          <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer">X</a>
+        </div>
+      </div>
+      <div class="lb-footer-legal">
+        Nothing on this site is financial advice. Crypto trading involves substantial risk of loss. DYOR.
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    (function () {
+      const loadingEl = document.getElementById("lb-loading");
+      const listEl = document.getElementById("lb-list");
+      const errorEl = document.getElementById("lb-error");
+
+      const PLATFORM_LABELS = {
+        x: { name: "X", icon: "𝕏" },
+        tiktok: { name: "TikTok", icon: "🎵" },
+        youtube: { name: "YouTube", icon: "▶" },
+        instagram: { name: "Instagram", icon: "📷" },
+        discord: { name: "Discord", icon: "💬" },
+        telegram: { name: "Telegram", icon: "✈" },
+        twitch: { name: "Twitch", icon: "🎮" },
+      };
+
+      const TIER_LABELS = {
+        standard: "Standard",
+        elite: "Elite",
+        custom: "Custom",
+      };
+
+      function escapeHtml(s) {
+        return String(s || "").replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      function rankBadge(rank) {
+        if (rank === 1) return "🥇";
+        if (rank === 2) return "🥈";
+        if (rank === 3) return "🥉";
+        return "#" + rank;
+      }
+
+      function renderRow(entry, rank) {
+        if (!entry) {
+          // Empty placeholder
+          return `
+            <div class="lb-row lb-row-empty">
+              <div class="lb-row-rank">${rankBadge(rank)}</div>
+              <div class="lb-row-body">
+                <div class="lb-row-name">Spot #${rank} available</div>
+                <div class="lb-row-meta">Be one of the first 5 partners on the board.</div>
+              </div>
+              <a href="/creators.html" class="lb-row-cta">Apply →</a>
+            </div>
+          `;
+        }
+
+        const socialsHtml = (entry.socials || [])
+          .map(function (s) {
+            const meta = PLATFORM_LABELS[s.platform] || { name: s.platform, icon: "🔗" };
+            return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" class="lb-social" title="${escapeHtml(meta.name)}">
+              <span class="lb-social-icon">${meta.icon}</span>
+              <span class="lb-social-name">${escapeHtml(meta.name)}</span>
+            </a>`;
+          })
+          .join("");
+
+        const tier = TIER_LABELS[entry.tier] || "Standard";
+        const tierBadge = entry.tier === "elite" ? `<span class="lb-tier-badge lb-tier-elite">${tier}</span>` : "";
+
+        return `
+          <div class="lb-row">
+            <div class="lb-row-rank">${rankBadge(entry.rank)}</div>
+            <div class="lb-row-body">
+              <div class="lb-row-name">
+                ${escapeHtml(entry.displayName)}
+                ${tierBadge}
+              </div>
+              <div class="lb-row-meta">
+                <span class="lb-stat">
+                  <span class="lb-stat-num">${entry.totalReferrals.toLocaleString()}</span>
+                  <span class="lb-stat-label">referrals</span>
+                </span>
+                ${entry.partnerCode ? `<span class="lb-row-code">code: <code>${escapeHtml(entry.partnerCode)}</code></span>` : ""}
+              </div>
+              ${socialsHtml ? `<div class="lb-row-socials">${socialsHtml}</div>` : ""}
+            </div>
+          </div>
+        `;
+      }
+
+      async function load() {
+        try {
+          const res = await fetch("/api/leaderboard", { headers: { Accept: "application/json" } });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          const top = Array.isArray(data.leaderboard) ? data.leaderboard : [];
+          const max = data.maxSlots || 5;
+
+          let html = "";
+          for (let i = 0; i < max; i++) {
+            html += renderRow(top[i], i + 1);
+          }
+          listEl.innerHTML = html;
+          loadingEl.hidden = true;
+          listEl.hidden = false;
+        } catch (err) {
+          console.error("[leaderboard] load failed:", err);
+          loadingEl.hidden = true;
+          errorEl.hidden = false;
+        }
+      }
+
+      load();
+    })();
+  </script>
+</body>
+</html>

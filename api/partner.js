@@ -174,6 +174,11 @@ module.exports = async function handler(req, res) {
           totalEarnedThisMonth: parseFloat(totalEarnedThisMonth.toFixed(2)),
           totalReferrals: userData.totalPartnerReferrals || 0,
         },
+        leaderboard: {
+          optIn: !!userData.leaderboardOptIn,
+          displayName: userData.leaderboardDisplayName || "",
+          socials: Array.isArray(userData.leaderboardSocials) ? userData.leaderboardSocials : [],
+        },
         linkedCreators,
         commissions,
         nextTier:
@@ -191,6 +196,88 @@ module.exports = async function handler(req, res) {
       const action = body.action;
 
       if (!action) return res.status(400).json({ error: "action required" });
+
+      // ------------- updateLeaderboard (self-service, NOT admin-gated) -------------
+      // Lets a partner update their own public leaderboard preferences:
+      //   - opt-in / opt-out
+      //   - display name shown on the leaderboard
+      //   - up to 3 social links (from the approved platform list)
+      //
+      // Auth via Firebase ID token, NOT admin key. The token's uid must
+      // match the user being modified, and that user must already be a
+      // partner (isPartner === true). Validation matches /api/leaderboard.
+      if (action === "updateLeaderboard") {
+        const authHeader = req.headers.authorization || "";
+        const tokenMatch = authHeader.match(/^Bearer\s+(.+)$/i);
+        if (!tokenMatch) {
+          return res.status(401).json({ error: "Missing Authorization Bearer token" });
+        }
+
+        let decoded;
+        try {
+          decoded = await admin.auth().verifyIdToken(tokenMatch[1]);
+        } catch (err) {
+          return res.status(401).json({ error: "Invalid token" });
+        }
+        const uid = decoded.uid;
+
+        // Confirm the caller is a partner.
+        const userRef = db.collection("users").doc(uid);
+        const userSnap = await userRef.get();
+        if (!userSnap.exists || !userSnap.data().isPartner) {
+          return res.status(403).json({ error: "Only partners can edit leaderboard preferences" });
+        }
+
+        // Validate inputs.
+        const optIn = !!body.leaderboardOptIn;
+
+        let displayName = String(body.leaderboardDisplayName || "").trim();
+        if (displayName.length > 50) {
+          return res.status(400).json({ error: "Display name must be 50 characters or fewer" });
+        }
+        if (!displayName) displayName = userSnap.data().partnerCode || "";
+
+        const ALLOWED_PLATFORMS = new Set([
+          "x", "tiktok", "youtube", "instagram", "discord", "telegram", "twitch",
+        ]);
+        const rawSocials = Array.isArray(body.leaderboardSocials) ? body.leaderboardSocials : [];
+        const socials = [];
+        for (const s of rawSocials) {
+          if (!s || typeof s !== "object") continue;
+          const platform = String(s.platform || "").toLowerCase().trim();
+          const url = String(s.url || "").trim();
+          if (!ALLOWED_PLATFORMS.has(platform)) continue;
+          if (!/^https?:\/\//i.test(url)) {
+            return res.status(400).json({
+              error: `Invalid URL for ${platform} — must start with https://`,
+            });
+          }
+          if (url.length > 300) {
+            return res.status(400).json({ error: "URLs must be 300 characters or fewer" });
+          }
+          socials.push({ platform, url });
+          if (socials.length >= 3) break;
+        }
+
+        await userRef.set(
+          {
+            leaderboardOptIn: optIn,
+            leaderboardDisplayName: displayName,
+            leaderboardSocials: socials,
+            leaderboardUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        return res.status(200).json({
+          success: true,
+          action: "updateLeaderboard",
+          uid,
+          leaderboardOptIn: optIn,
+          leaderboardDisplayName: displayName,
+          leaderboardSocials: socials,
+        });
+      }
 
       // All POST actions below are admin-gated.
       const adminKey = body.adminKey;

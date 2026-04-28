@@ -38,7 +38,7 @@
       position: static !important;
     }
   </style>
-  <link rel="stylesheet" href="styles.css?v=36" />
+  <link rel="stylesheet" href="styles.css?v=37" />
 </head>
 <body class="mk-body" style="background:#060610;">
   <div class="mk-app">
@@ -164,6 +164,77 @@
         <p class="mk-math-note">Real-world payouts will be a mix — most audiences land somewhere in between depending on how many sign up via your link on web vs through the iOS app. Most creators with 10k+ followers hit 50–200 active subs within their first 60 days, and the recurring nature means revenue compounds over time.</p>
       </div>
     </section>
+
+    <!-- Leaderboard preview -->
+    <section class="mk-section mk-leaderboard-section" id="leaderboard-preview">
+      <div class="mk-section-eyebrow">🏆 Top referrers right now</div>
+      <h2 class="mk-section-title">Earn a spot on the public leaderboard.</h2>
+      <p class="mk-section-tagline">Top 5 partners get featured on degendesk.xyz/leaderboard.html with their socials linked. Permanent free promo to every Degen Desk visitor.</p>
+
+      <div class="mk-leaderboard-preview" id="mk-leaderboard-preview">
+        <!-- populated by JS, fallback shows placeholders -->
+        <div class="mk-leaderboard-preview-row">
+          <div class="mk-lb-rank">#1</div>
+          <div class="mk-lb-name">Be the first.</div>
+          <div class="mk-lb-stat">Spot open</div>
+        </div>
+        <div class="mk-leaderboard-preview-row">
+          <div class="mk-lb-rank">#2</div>
+          <div class="mk-lb-name">Spot available</div>
+          <div class="mk-lb-stat">Apply below</div>
+        </div>
+        <div class="mk-leaderboard-preview-row">
+          <div class="mk-lb-rank">#3</div>
+          <div class="mk-lb-name">Spot available</div>
+          <div class="mk-lb-stat">Apply below</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <a href="/leaderboard.html" class="mk-leaderboard-link">See full leaderboard →</a>
+      </div>
+    </section>
+
+    <script>
+      // Populate the top-3 preview from /api/leaderboard
+      (function () {
+        const wrap = document.getElementById("mk-leaderboard-preview");
+        if (!wrap) return;
+        function escapeHtml(s) {
+          return String(s || "").replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+        fetch("/api/leaderboard")
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            if (!data || !Array.isArray(data.leaderboard) || data.leaderboard.length === 0) return;
+            let html = "";
+            for (let i = 0; i < 3; i++) {
+              const e = data.leaderboard[i];
+              if (e) {
+                html += `
+                  <div class="mk-leaderboard-preview-row">
+                    <div class="mk-lb-rank">#${e.rank}</div>
+                    <div class="mk-lb-name">${escapeHtml(e.displayName)}</div>
+                    <div class="mk-lb-stat"><strong>${(e.totalReferrals || 0).toLocaleString()}</strong> referrals</div>
+                  </div>
+                `;
+              } else {
+                html += `
+                  <div class="mk-leaderboard-preview-row">
+                    <div class="mk-lb-rank">#${i + 1}</div>
+                    <div class="mk-lb-name">Spot available</div>
+                    <div class="mk-lb-stat">Apply below</div>
+                  </div>
+                `;
+              }
+            }
+            wrap.innerHTML = html;
+          })
+          .catch(function () { /* keep placeholder rows on error */ });
+      })();
+    </script>
 
     <!-- Application form -->
     <section class="mk-section" id="apply">

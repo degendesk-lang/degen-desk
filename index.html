@@ -39,7 +39,7 @@
     html, body { background: #060610 !important; color: #f0f0f8; }
     #app { background: #060610; }
   </style>
-  <link rel="stylesheet" href="styles.css?v=36" />
+  <link rel="stylesheet" href="styles.css?v=37" />
 </head>
 <body style="background:#060610;">
   <div id="app">
@@ -86,6 +86,13 @@
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
         </svg>
         Blog
+      </a>
+
+      <!-- Top referrer widget — populated by JS from /api/leaderboard -->
+      <a href="/leaderboard.html" id="sidebar-leaderboard-widget" class="sidebar-leaderboard-widget" hidden>
+        <div class="sidebar-leaderboard-widget-label">🏆 Top referrer</div>
+        <div class="sidebar-leaderboard-widget-name" id="sidebar-leaderboard-name">—</div>
+        <div class="sidebar-leaderboard-widget-stat" id="sidebar-leaderboard-stat">—</div>
       </a>
 
       <a href="/welcome.html" class="token-analysis-btn new-here-btn">
