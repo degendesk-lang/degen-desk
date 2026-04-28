@@ -159,15 +159,17 @@
 
       function renderRow(entry, rank) {
         if (!entry) {
-          // Empty placeholder
+          // Empty placeholder — emphasises the *referral* mechanic, not the
+          // application mechanic, so visitors don't think applying alone
+          // earns them a spot.
           return `
             <div class="lb-row lb-row-empty">
               <div class="lb-row-rank">${rankBadge(rank)}</div>
               <div class="lb-row-body">
-                <div class="lb-row-name">Spot #${rank} available</div>
-                <div class="lb-row-meta">Be one of the first 5 partners on the board.</div>
+                <div class="lb-row-name">Rank #${rank} — unclaimed</div>
+                <div class="lb-row-meta">Top 5 partners by total referrals get featured here. Refer more, climb the board.</div>
               </div>
-              <a href="/creators.html" class="lb-row-cta">Apply →</a>
+              <a href="/creators.html" class="lb-row-cta">How it works →</a>
             </div>
           `;
         }
