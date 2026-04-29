@@ -149,16 +149,17 @@
     }
 
     .bk-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      overflow: hidden;
-      transition: border-color 0.15s, transform 0.15s;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      overflow: visible;
+      transition: transform 0.15s;
     }
-    .bk-card:hover { border-color: rgba(0, 255, 136, 0.3); transform: translateY(-1px); }
+    .bk-card:hover { transform: translateY(-1px); }
     .bk-card-preview {
       aspect-ratio: 1 / 1;
-      background: #060610;
+      background: transparent;
+      border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
       position: relative;
@@ -185,7 +186,7 @@
       aspect-ratio: 1200 / 630;
     }
     .bk-card-meta {
-      padding: 14px 16px;
+      padding: 12px 4px 4px;
       display: flex; flex-direction: column; gap: 8px;
     }
     .bk-card-name {
