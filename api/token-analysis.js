@@ -223,6 +223,155 @@ async function fetchPumpFun(mint) {
   }
 }
 
+// Domain Age via RDAP (free, no auth, works for most TLDs).
+// Pulls the registration date for the token's primary website.
+function extractPrimaryDomain(websites) {
+  if (!Array.isArray(websites) || websites.length === 0) return null;
+  for (const w of websites) {
+    const url = typeof w === "string" ? w : (w?.url || w?.label || "");
+    if (!url) continue;
+    try {
+      const u = new URL(url.startsWith("http") ? url : `https://${url}`);
+      const host = u.hostname.toLowerCase().replace(/^www\./, "");
+      // Skip github / x / twitter / t.me / discord / telegram URLs — those are socials, not project sites
+      if (/(github\.com|twitter\.com|x\.com|t\.me|telegram\.org|discord\.gg|discord\.com|medium\.com|linktr\.ee)/.test(host)) {
+        continue;
+      }
+      return host;
+    } catch (_) {
+      continue;
+    }
+  }
+  return null;
+}
+
+async function fetchDomainAge(websites) {
+  const domain = extractPrimaryDomain(websites);
+  if (!domain) return null;
+  try {
+    const res = await fetchWithTimeout(
+      `https://rdap.org/domain/${domain}`,
+      { headers: { Accept: "application/rdap+json" } },
+      6000
+    );
+    if (!res.ok) {
+      // RDAP often returns 404 for niche TLDs — record gracefully
+      return { domain, lookupSucceeded: false, reason: `RDAP ${res.status}` };
+    }
+    const data = await res.json();
+    const events = Array.isArray(data?.events) ? data.events : [];
+    const reg = events.find((e) => e.eventAction === "registration");
+    const exp = events.find((e) => e.eventAction === "expiration");
+    const upd = events.find((e) => e.eventAction === "last changed" || e.eventAction === "last update of RDAP database");
+    const registrationDate = reg?.eventDate || null;
+    const ageDays = registrationDate
+      ? Math.floor((Date.now() - new Date(registrationDate).getTime()) / 86400000)
+      : null;
+    return {
+      domain,
+      lookupSucceeded: true,
+      registrationDate,
+      expirationDate: exp?.eventDate || null,
+      lastUpdated: upd?.eventDate || null,
+      ageDays,
+      registrar:
+        Array.isArray(data?.entities)
+          ? data.entities.find((e) => Array.isArray(e.roles) && e.roles.includes("registrar"))?.vcardArray?.[1]?.find?.((v) => v[0] === "fn")?.[3] || null
+          : null,
+    };
+  } catch (err) {
+    console.error("RDAP fetch failed:", err.message);
+    return { domain, lookupSucceeded: false, reason: err.message };
+  }
+}
+
+// GitHub repo analysis: real project or a hollow shell?
+function extractGitHubRepo(websites, socials) {
+  const candidates = [];
+  for (const w of websites || []) {
+    const url = typeof w === "string" ? w : (w?.url || "");
+    if (url) candidates.push(url);
+  }
+  for (const s of socials || []) {
+    const url = typeof s === "string" ? s : (s?.url || "");
+    if (url) candidates.push(url);
+  }
+  for (const url of candidates) {
+    try {
+      const u = new URL(url.startsWith("http") ? url : `https://${url}`);
+      if (u.hostname.toLowerCase().replace(/^www\./, "") === "github.com") {
+        const parts = u.pathname.split("/").filter(Boolean);
+        if (parts.length >= 2) {
+          return { owner: parts[0], repo: parts[1].replace(/\.git$/, "") };
+        }
+      }
+    } catch (_) {
+      continue;
+    }
+  }
+  return null;
+}
+
+async function fetchGitHubAnalysis(websites, socials) {
+  const ref = extractGitHubRepo(websites, socials);
+  if (!ref) return null;
+  const headers = { Accept: "application/vnd.github+json", "User-Agent": "DegenDesk/1.0" };
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  try {
+    const [repoRes, contribRes, commitsRes] = await Promise.all([
+      fetchWithTimeout(`https://api.github.com/repos/${ref.owner}/${ref.repo}`, { headers }, 6000),
+      fetchWithTimeout(`https://api.github.com/repos/${ref.owner}/${ref.repo}/contributors?per_page=10&anon=1`, { headers }, 6000),
+      fetchWithTimeout(`https://api.github.com/repos/${ref.owner}/${ref.repo}/commits?per_page=20`, { headers }, 6000),
+    ]);
+    if (!repoRes.ok) {
+      return {
+        owner: ref.owner,
+        repo: ref.repo,
+        lookupSucceeded: false,
+        reason: `GitHub ${repoRes.status}${repoRes.status === 404 ? " (repo missing or private)" : ""}`,
+      };
+    }
+    const repo = await repoRes.json();
+    const contributors = contribRes.ok ? await contribRes.json() : [];
+    const commits = commitsRes.ok ? await commitsRes.json() : [];
+    const created = repo.created_at;
+    const pushed = repo.pushed_at;
+    const ageDays = created ? Math.floor((Date.now() - new Date(created).getTime()) / 86400000) : null;
+    const daysSinceLastPush = pushed ? Math.floor((Date.now() - new Date(pushed).getTime()) / 86400000) : null;
+    return {
+      owner: ref.owner,
+      repo: ref.repo,
+      url: repo.html_url,
+      lookupSucceeded: true,
+      description: repo.description || null,
+      createdAt: created,
+      lastPushedAt: pushed,
+      ageDays,
+      daysSinceLastPush,
+      stars: repo.stargazers_count ?? 0,
+      forks: repo.forks_count ?? 0,
+      watchers: repo.subscribers_count ?? 0,
+      openIssues: repo.open_issues_count ?? 0,
+      archived: !!repo.archived,
+      disabled: !!repo.disabled,
+      isFork: !!repo.fork,
+      language: repo.language || null,
+      license: repo.license?.spdx_id || null,
+      contributorCount: Array.isArray(contributors) ? contributors.length : 0,
+      topContributors: Array.isArray(contributors)
+        ? contributors.slice(0, 5).map((c) => ({ login: c.login || null, contributions: c.contributions || 0 }))
+        : [],
+      recentCommitCount: Array.isArray(commits) ? commits.length : 0,
+      recentCommitMessages: Array.isArray(commits)
+        ? commits.slice(0, 5).map((c) => c.commit?.message?.split("\n")[0]?.slice(0, 120) || null).filter(Boolean)
+        : [],
+    };
+  } catch (err) {
+    console.error("GitHub fetch failed:", err.message);
+    return { owner: ref.owner, repo: ref.repo, lookupSucceeded: false, reason: err.message };
+  }
+}
+
 // Helius — funding source trace for the dev wallet.
 // Uses the user's existing HELIUS_API_KEY env var.
 async function fetchHeliusDevTrace(creatorAddress) {
@@ -322,8 +471,27 @@ F) HOLDER COUNT vs MARKET CAP:
    - A token at $1M+ MC with <1000 holders is extremely suspicious. Organic tokens at that MC usually have 3,000-10,000+ holders.
    - Flag low holder-to-MC ratio explicitly.
 
-G) RISK LEVEL ESCALATION RULES:
-   - If 3+ of the above red flags (A through F) are present simultaneously, riskLevel MUST be "high" or "critical" — never "medium" or "low."
+G) DOMAIN AGE SIGNALS (from domainAge):
+   - If a project website was registered very recently (<14 days) but the token claims to be an "established" project or has high MC (>$500K), this is a major red flag — likely a fresh domain spun up to look legitimate.
+   - If domain age is 1-3 days old, treat it as critical: "The project's domain was registered [N] days ago, suggesting the entire web presence was created immediately around the token launch."
+   - If domain age is 30+ days, that's a mild positive signal (not a guarantee, but better than a 2-day-old site).
+   - If domainAge is null, the project has no website — already covered by signal (D).
+   - If lookupSucceeded is false, do not speculate — say "Domain registration history could not be retrieved for this TLD."
+
+H) GITHUB SIGNALS (from githubAnalysis):
+   - If the token links a GitHub repo, scrutinize it. A real project repo will have: multiple contributors (>1), more than ~20 recent commits, stars proportional to claimed user base, descriptive commit messages, age >30 days, recent activity (lastPushedAt within 30 days).
+   - RED FLAGS to call out aggressively:
+     * archived: true OR disabled: true → repo is dead, project abandoned
+     * createdAt very recent (<14 days) when token claims established protocol → "shell repo" created to look legitimate
+     * recentCommitCount very low (<5) with no description → empty or placeholder repo
+     * isFork: true with no original commits → forked someone else's code, no original work
+     * contributorCount === 1 AND stars === 0 AND commits are generic ("init", "first commit") → solo dev with no traction or signal of legitimacy
+     * daysSinceLastPush > 90 → project inactive, dev abandoned
+   - POSITIVE signals: 5+ contributors, 100+ stars, regular commits over 6+ months, descriptive commit messages, proper license.
+   - If lookupSucceeded is false (e.g. 404), the GitHub link is broken/private — flag it: "The project's linked GitHub repository could not be accessed (private or removed). Public-facing projects typically maintain a publicly visible repo."
+
+I) RISK LEVEL ESCALATION RULES:
+   - If 3+ of the above red flags (A through H) are present simultaneously, riskLevel MUST be "high" or "critical" — never "medium" or "low."
    - A single pattern from (A) — only-up chart + no socials + low holders — alone warrants at minimum "high."
    - DO NOT give a token "medium" risk if it has an extreme price spike, no community, thin liquidity, and low holders. That combination is "high" at minimum.
 
@@ -345,6 +513,8 @@ OUTPUT FORMAT (JSON, no markdown wrapping):
   "holderAnalysis": "2-3 sentences about WALLET concentration using ONLY topHoldersNonLp. Cite the top non-LP wallet percentage. Mention LP/AMM reserves separately (using lpShareTotalPct if present). Cross-reference holder count against market cap — if the ratio is suspicious, say so. Mention insider network flags from RugCheck if present.",
   "bundleAnalysis": "2-3 sentences about bundling. If RugCheck flagged bundled supply or insider networks, mention it. IMPORTANT: If RugCheck shows 0% bundlers but other signals suggest manipulation (only-up chart, no socials, low holders, thin liquidity), DO NOT say 'No bundling detected' as if that's reassuring. Instead note the limitation of automated detection and flag the suspicious patterns.",
   "devWalletAnalysis": "3-4 sentences about the dev/creator wallet. Mention funding source if known, transaction count, age. If the wallet has very few transactions, flag it as potentially a fresh/burner wallet. Never say 'the dev is a scammer' — say 'the dev wallet shows [observable patterns]'.",
+  "domainAnalysis": "1-2 sentences. ONLY include this field if domainAge data is present. State the domain, its age in days/months (translate ageDays — e.g. 4 days = 'registered 4 days ago', 540 days = 'registered ~1.5 years ago'), and what that age implies in context with the token's MC and apparent maturity. If lookupSucceeded is false, say 'Domain registration history could not be retrieved.' If no domainAge data, OMIT this field entirely.",
+  "githubAnalysis": "2-3 sentences. ONLY include this field if githubAnalysis data is present. Cite the repo (owner/repo), age, contributor count, recent activity, stars. Be direct: if the repo looks like a shell (1 contributor, 0 stars, generic commits, archived, or freshly created) call it out. If the repo looks legitimate (multiple contributors, regular commits, real description), say so observationally. If lookupSucceeded is false, note that the linked repo is inaccessible. If no githubAnalysis data, OMIT this field entirely.",
   "comparables": "For established meta tokens (dog, cat, frog, political, AI, etc.), mention 1-3 similar tokens and their historical peak MC as factual reference points. For suspicious/manipulated-looking tokens, DO NOT give comparables — instead say: 'No comparables provided — this token exhibits patterns that warrant caution before considering any market context. NFA. DYOR.' For legitimate unique/new tokens: mention it shows potential characteristics worth monitoring.",
   "finalNote": "1-2 sentence final observational note that honestly reflects the overall risk picture. If the token looks dangerous, say so clearly (in observational language). Always end with: 'This is not financial advice. Do your own research.'"
 }
@@ -513,8 +683,12 @@ module.exports = async function handler(req, res) {
   const creatorAddress =
     rugFull?.creator || pumpfun?.creator || null;
 
-  // Helius funding trace (only if we have a creator address + key)
-  const devTrace = creatorAddress ? await fetchHeliusDevTrace(creatorAddress) : null;
+  // Helius funding trace + domain age + GitHub analysis (parallel)
+  const [devTrace, domain, github] = await Promise.all([
+    creatorAddress ? fetchHeliusDevTrace(creatorAddress) : Promise.resolve(null),
+    fetchDomainAge(dex?.websites),
+    fetchGitHubAnalysis(dex?.websites, dex?.socials),
+  ]);
 
   // If DexScreener returned nothing AND RugCheck returned nothing AND pump.fun returned nothing,
   // we probably have a bad address or an unknown token — bail early.
@@ -541,6 +715,8 @@ module.exports = async function handler(req, res) {
     rugCheckFull: rugFull,
     pumpFun: pumpfun,
     devWalletTrace: devTrace,
+    domainAge: domain,
+    githubAnalysis: github,
   };
 
   // =========================================
@@ -608,6 +784,8 @@ module.exports = async function handler(req, res) {
       rugCheck: !!(rugSummary || rugFull),
       pumpFun: !!pumpfun,
       helius: !!devTrace,
+      domainAge: !!domain,
+      github: !!github,
     },
     analysesUsedToday: currentCount + 1,
     analysesDailyCap: DAILY_CAP,

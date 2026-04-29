@@ -396,6 +396,26 @@
             : ""
         }
 
+        <!-- Domain Age -->
+        ${
+          r.domainAnalysis
+            ? `<div class="ta-card">
+                <h3 class="ta-section-title">🌐 Domain Age</h3>
+                <p>${escapeHtml(r.domainAnalysis)}</p>
+              </div>`
+            : ""
+        }
+
+        <!-- GitHub Analyzer -->
+        ${
+          r.githubAnalysis
+            ? `<div class="ta-card">
+                <h3 class="ta-section-title">💻 GitHub Repo</h3>
+                <p>${escapeHtml(r.githubAnalysis)}</p>
+              </div>`
+            : ""
+        }
+
         <!-- Comparables / Projected -->
         ${
           r.comparables
@@ -423,6 +443,8 @@
           ${sources.rugCheck ? '<span class="ta-source-pill">RugCheck</span>' : ""}
           ${sources.pumpFun ? '<span class="ta-source-pill">pump.fun</span>' : ""}
           ${sources.helius ? '<span class="ta-source-pill">Helius</span>' : ""}
+          ${sources.domainAge ? '<span class="ta-source-pill">RDAP / WHOIS</span>' : ""}
+          ${sources.github ? '<span class="ta-source-pill">GitHub</span>' : ""}
         </div>
 
         <!-- NFA reminder inside the report -->
