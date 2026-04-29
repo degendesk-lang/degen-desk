@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" class="blog-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Two new red-flag signals in Degen Desk Token Analysis: domain registration age and GitHub repo health. Both catch a category of fake-legitimacy plays that holder-only scanners miss." />
+  <title>New Pro signals: Domain Age + GitHub Analyzer &middot; Degen Desk Blog</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/blog/domain-age-github-signals.html" />
+  <meta property="og:title" content="New Pro signals: Domain Age + GitHub Analyzer" />
+  <meta property="og:description" content="Catch the fake-legitimacy plays that holder-only scanners miss. Domain Age (RDAP) and GitHub repo health are now part of every Token Analysis report." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=5" />
+
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link rel="apple-touch-icon" href="../favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+    }
+  </style>
+  <link rel="stylesheet" href="../styles.css?v=37" />
+</head>
+<body class="blog-body" style="background:#060610;">
+  <div class="blog-app">
+
+    <header class="blog-header">
+      <a href="../blog.html" class="blog-back-link" aria-label="Back to blog">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="blog-header-title">
+        <div class="blog-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Blog</h1>
+          <span class="blog-subtitle">On-chain research &amp; trader education</span>
+        </div>
+      </div>
+      <div class="blog-header-spacer"></div>
+    </header>
+
+    <article class="blog-article">
+
+      <div class="blog-article-meta">
+        <span class="blog-post-category">Product update</span>
+        <span class="blog-post-dot">&middot;</span>
+        <span>5 min read</span>
+      </div>
+
+      <h2 class="blog-article-title">New Pro signals: Domain Age + GitHub Analyzer</h2>
+
+      <p class="blog-article-lede">
+        Token Analysis just got two new signals. Both target a specific category of scam that holder-only scanners completely miss: the fake-legitimacy play. A token launches with a polished website, a GitHub repo, a Telegram, a roadmap — all of it spun up in the last 72 hours. Holders look distributed. Liquidity looks fine. Until you check the dates.
+      </p>
+
+      <h3>The blind spot most tools have</h3>
+
+      <p>
+        Almost every Solana risk scanner focuses on one layer: the on-chain layer. Holder concentration, bundling, dev wallet history, liquidity ratios. That layer is critical — but it's not the whole picture, especially as scammers get better.
+      </p>
+      <p>
+        The next-tier scam isn't a fresh pump.fun launch with 12 wallets bundling supply. It's a project that <em>looks like a real protocol</em>. There's a homepage. There's a whitepaper. There's a GitHub. Real-looking team photos. The on-chain data even checks out at the surface — distribution looks reasonable, liquidity is locked. The catch: the entire web presence was created the week of the token launch.
+      </p>
+      <p>
+        That's the gap these two new signals close.
+      </p>
+
+      <h3>1. Domain Age (RDAP / WHOIS)</h3>
+
+      <p>
+        Every Token Analysis report now runs a RDAP lookup against the project's primary website. RDAP is the modern successor to WHOIS — it returns structured registration data: when the domain was registered, when it expires, who the registrar is.
+      </p>
+
+      <p>
+        What it catches:
+      </p>
+
+      <ul>
+        <li><strong>Brand-new domain + mature-looking project.</strong> A token claims to be an "established DeFi protocol" but its domain was registered 4 days ago. That's not a coincidence — that's the entire web presence created to support the token launch.</li>
+        <li><strong>1–3 day old domains.</strong> Treated as a critical signal. Almost no legitimate project has a website registered within hours of token deploy. Real projects build the web presence first, then launch.</li>
+        <li><strong>Domain mismatch with claimed history.</strong> Project says "we've been working on this for 6 months" but the domain is 11 days old? Now you have evidence to push back.</li>
+      </ul>
+
+      <p>
+        Mild positive signal: domains 30+ days old at launch. Not a guarantee, but it's harder to fake — it means someone bothered to register the domain weeks before the launch hype began. Most rug operators don't think that far ahead.
+      </p>
+
+      <h4>What you'll see in the report</h4>
+
+      <p>
+        A new <strong>🌐 Domain Age</strong> card with plain-English context. Example output:
+      </p>
+
+      <blockquote class="blog-quote">
+        The project's primary domain was registered 4 days ago. For a token claiming to be an established protocol with a $480K market cap, this timing strongly suggests the entire web presence was spun up around the launch — a pattern commonly associated with manufactured-legitimacy plays.
+      </blockquote>
+
+      <h3>2. GitHub Repo Analyzer</h3>
+
+      <p>
+        If the token's metadata links a GitHub repository, the analyzer fetches it. Three calls in parallel: repo metadata, top contributors, recent commits. The AI then evaluates whether the repo looks like a real project or a hollow shell created to look legitimate.
+      </p>
+
+      <p>
+        What it catches:
+      </p>
+
+      <ul>
+        <li><strong>Shell repos.</strong> One contributor, zero stars, three generic commits like "init" and "first commit", created last week. Nobody's actually building anything — the repo exists to make the project look technical.</li>
+        <li><strong>Forked code with no original work.</strong> The "team" forked someone else's protocol, changed the README, and shipped it as their own. Common scam pattern.</li>
+        <li><strong>Archived or disabled repos.</strong> Project was abandoned. They're shipping a token off a dead codebase.</li>
+        <li><strong>Inactive >90 days.</strong> Last commit was three months ago, but the token is launching now. The dev moved on but is still trying to monetize the brand.</li>
+        <li><strong>Inaccessible repos.</strong> 404 on the linked GitHub. The team listed a repo that's been deleted or set to private. That's not a "they're being careful with their code" — that's "they don't want you to see what's actually there."</li>
+      </ul>
+
+      <p>
+        Positive signals: 5+ contributors, regular commits across multiple months, descriptive commit messages (not just "update"), proper open-source license, active issue tracker. Real projects look like real projects.
+      </p>
+
+      <h4>What you'll see in the report</h4>
+
+      <p>
+        A new <strong>💻 GitHub Repo</strong> card. Example output for a shell repo:
+      </p>
+
+      <blockquote class="blog-quote">
+        The linked repository (acme-org/acme-protocol) was created 9 days ago by a single contributor with 2 stars and 3 commits, all using generic placeholder messages. There is no substantive code history that supports the project's claim of an in-development protocol. The repo's metadata exhibits characteristics consistent with a placeholder created to lend credibility around a token launch.
+      </blockquote>
+
+      <h3>How to use these signals together</h3>
+
+      <p>
+        These signals are most powerful in combination — both with each other and with the existing on-chain checks.
+      </p>
+
+      <p>The classic fake-legitimacy stack looks like this:</p>
+
+      <ul>
+        <li>Domain registered <strong>5 days ago</strong></li>
+        <li>GitHub repo created <strong>4 days ago</strong>, 1 contributor, 0 stars, 3 generic commits</li>
+        <li>Twitter/Telegram opened in the last week</li>
+        <li>Holder distribution looks "okay" because the bundle is staggered across 50+ wallets</li>
+        <li>Token launches at $300K MC with a polished pitch</li>
+      </ul>
+
+      <p>
+        Without the new signals, holder-only analysis might pass this token as "medium risk." With them, the pattern is unambiguous: every part of the project's claimed identity was manufactured in a single week. That's not a project — it's a costume.
+      </p>
+
+      <h3>What this doesn't catch</h3>
+
+      <p>
+        Honest about limits. These signals don't help with:
+      </p>
+
+      <ul>
+        <li><strong>Pure memecoins with no claimed legitimacy.</strong> A pump.fun launch that's just a frog meme isn't pretending to be a protocol — it doesn't have a domain or GitHub to check. For those, the existing on-chain signals (holders, bundling, liquidity, dev wallet) are still the right lens.</li>
+        <li><strong>Sophisticated long-game scams.</strong> Some operators register the domain and prep the GitHub a year in advance. Domain Age doesn't catch that. The on-chain dev-wallet trace is more important for catching seasoned operators.</li>
+        <li><strong>Niche TLDs.</strong> RDAP coverage is excellent for the common ones (.com, .xyz, .io, .net, .org, country TLDs) but spotty for unusual extensions. Reports note when the lookup didn't succeed instead of guessing.</li>
+      </ul>
+
+      <h3>Available now for Pro</h3>
+
+      <p>
+        Both signals are live in every Token Analysis run as of today. No extra steps — paste a contract address and the new cards appear automatically when the data is available. They run in parallel with the existing fetches, so total report latency is unchanged.
+      </p>
+
+      <div class="blog-cta">
+        <div class="blog-cta-title">Try it on a suspicious token</div>
+        <p>If you've seen a "looks legit" token in your feed lately and felt off about it, that's exactly the kind of token these signals were built to catch.</p>
+        <a href="/token-analysis.html" class="blog-cta-btn">Open Token Analysis →</a>
+      </div>
+
+      <p class="blog-nfa">
+        Nothing in this post is financial advice. Domain Age and GitHub Analyzer are observational tools — they surface patterns, not verdicts. Real research means using them together with on-chain checks, narrative analysis, and your own judgment. Markets are full of tokens that look great and lose, and tokens that look dangerous and pump. DYOR.
+      </p>
+
+    </article>
+
+    <footer class="blog-footer">
+      <div class="blog-footer-inner">
+        <div>
+          <strong>Degen Desk</strong>
+          <span>Research smarter. Trade safer.</span>
+        </div>
+        <div class="blog-footer-links">
+          <a href="/">Chat</a>
+          <a href="/token-analysis.html">Token Analysis</a>
+          <a href="/guides.html">Guides</a>
+          <a href="/blog.html">All posts</a>
+          <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer">X</a>
+        </div>
+      </div>
+      <div class="blog-footer-legal">
+        Nothing on this site is financial advice. Crypto trading involves substantial risk of loss. DYOR.
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>
