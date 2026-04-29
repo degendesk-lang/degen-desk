@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" class="bk-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk brand kit — logos, wordmarks, brand colors, and the OG social banner. Free for partners and creators promoting the product." />
+  <title>Brand Kit · Degen Desk</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/brand-kit.html" />
+  <meta property="og:title" content="Degen Desk · Brand Kit" />
+  <meta property="og:description" content="Logos, wordmarks, brand colors, and social assets for Degen Desk partners and creators." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=2" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=2" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=38" />
+  <style>
+    /* Brand-kit page-specific styles */
+    .bk-app { min-height: 100vh; background: #060610; color: #f0f0f8; display: flex; flex-direction: column; }
+    .bk-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(8, 8, 16, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .bk-back-link {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary); text-decoration: none;
+      flex-shrink: 0; transition: all 0.2s;
+    }
+    .bk-back-link:hover { border-color: rgba(0, 255, 136, 0.4); background: rgba(0, 255, 136, 0.08); }
+    .bk-header-title { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .bk-header-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 212, 255, 0.06));
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 19px;
+    }
+    .bk-header-title h1 { font-size: 17px; font-weight: 700; margin: 0; }
+    .bk-subtitle { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+
+    .bk-main {
+      flex: 1; max-width: 1100px; width: 100%;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .bk-intro { text-align: center; margin-bottom: 36px; }
+    .bk-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.22);
+      color: #00ff88;
+      font-size: 10.5px; font-weight: 700; letter-spacing: 1.6px;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .bk-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 10px rgba(0, 255, 136, 0.8); }
+    .bk-intro h2 {
+      font-size: 32px; font-weight: 900; line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 14px;
+      background: linear-gradient(135deg, #ffffff 0%, #00ff88 60%, #00d4ff 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .bk-intro p { font-size: 15px; line-height: 1.65; color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+
+    .bk-download-row {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+      margin: 28px 0 48px;
+    }
+    .bk-download-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px;
+      background: linear-gradient(135deg, #00ff88, #00d9a8);
+      color: #060610 !important;
+      font-size: 14px; font-weight: 800;
+      text-decoration: none !important;
+      border-radius: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.2px;
+    }
+    .bk-download-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0, 255, 136, 0.3); }
+    .bk-download-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 14px; font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      transition: all 0.15s;
+    }
+    .bk-download-ghost:hover { border-color: rgba(0, 255, 136, 0.4); background: rgba(0, 255, 136, 0.05); }
+
+    .bk-section { margin-bottom: 44px; }
+    .bk-section-head {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .bk-section-head h3 {
+      font-size: 19px; font-weight: 800; letter-spacing: -0.01em;
+      margin: 0; color: var(--text-primary);
+    }
+    .bk-section-head span {
+      font-size: 12px; color: var(--text-muted); font-weight: 500;
+    }
+
+    .bk-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .bk-grid-wide {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 16px;
+    }
+
+    .bk-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .bk-card:hover { border-color: rgba(0, 255, 136, 0.3); transform: translateY(-1px); }
+    .bk-card-preview {
+      aspect-ratio: 1 / 1;
+      background: #060610;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .bk-card-preview.bk-light { background: #ffffff; }
+    .bk-card-preview.bk-checker {
+      background-image:
+        linear-gradient(45deg, #1a1a2e 25%, transparent 25%),
+        linear-gradient(-45deg, #1a1a2e 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1a1a2e 75%),
+        linear-gradient(-45deg, transparent 75%, #1a1a2e 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, 10px 0px;
+      background-color: #0c0c1c;
+    }
+    .bk-card-preview img {
+      max-width: 80%; max-height: 80%;
+      object-fit: contain;
+    }
+    .bk-card-preview.bk-wide {
+      aspect-ratio: 16 / 4;
+    }
+    .bk-card-preview.bk-banner {
+      aspect-ratio: 1200 / 630;
+    }
+    .bk-card-meta {
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .bk-card-name {
+      font-size: 13px; font-weight: 700; color: var(--text-primary);
+    }
+    .bk-card-spec {
+      font-size: 11.5px; color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .bk-card-actions {
+      display: flex; gap: 8px; margin-top: 4px;
+    }
+    .bk-card-action {
+      flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 7px 10px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      color: var(--text-primary); text-decoration: none;
+      font-size: 11.5px; font-weight: 600;
+      transition: all 0.15s;
+    }
+    .bk-card-action:hover { border-color: rgba(0, 255, 136, 0.3); background: rgba(0, 255, 136, 0.05); color: #00ff88; }
+
+    /* Brand colors block */
+    .bk-colors {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .bk-color-swatch {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .bk-color-fill {
+      height: 100px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .bk-color-meta { padding: 12px 14px; }
+    .bk-color-name {
+      font-size: 13px; font-weight: 700; color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+    .bk-color-hex {
+      font-size: 12px; color: var(--text-secondary);
+      font-family: var(--font-mono);
+      cursor: pointer;
+      user-select: all;
+    }
+
+    /* Tagline / wordmark facts block */
+    .bk-facts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .bk-fact {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .bk-fact-label {
+      font-size: 11px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .bk-fact-value {
+      font-size: 15px; font-weight: 700; color: var(--text-primary);
+    }
+    .bk-fact-value.bk-mono { font-family: var(--font-mono); font-size: 13px; }
+
+    .bk-help {
+      margin-top: 36px;
+      padding: 22px 24px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.06), rgba(0, 212, 255, 0.03));
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      border-radius: 14px;
+    }
+    .bk-help h4 { margin: 0 0 6px; font-size: 14px; font-weight: 800; color: #00ff88; text-transform: uppercase; letter-spacing: 0.6px; }
+    .bk-help p { margin: 0; font-size: 13.5px; color: var(--text-primary); line-height: 1.55; }
+    .bk-help a { color: #00d4ff; text-decoration: underline; text-underline-offset: 3px; }
+
+    .bk-footer {
+      border-top: 1px solid var(--border-color);
+      padding: 28px 24px 36px;
+      max-width: 960px; width: 100%; margin: 0 auto;
+      text-align: center;
+      font-size: 12px; color: var(--text-muted); line-height: 1.5;
+    }
+
+    @media (max-width: 640px) {
+      .bk-main { padding: 24px 16px 60px; }
+      .bk-intro h2 { font-size: 24px; }
+      .bk-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .bk-grid-wide { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="bk-body" style="background:#060610;">
+  <div class="bk-app">
+
+    <header class="bk-header">
+      <a href="/" class="bk-back-link" aria-label="Back to chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="bk-header-title">
+        <div class="bk-header-icon">🎨</div>
+        <div>
+          <h1>Brand Kit</h1>
+          <span class="bk-subtitle">Logos · wordmarks · colors · social assets</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="bk-main">
+
+      <section class="bk-intro">
+        <div class="bk-eyebrow"><span class="bk-eyebrow-dot"></span>For partners</div>
+        <h2>Everything your gfx team needs.</h2>
+        <p>
+          Logos, wordmarks, the social banner, brand colors, tagline. All free to use for partners and creators promoting Degen Desk. Don't see what you need? <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer" style="color:#00ff88; text-decoration: underline;">DM us on X</a> and we'll send a custom export same-day.
+        </p>
+
+        <div class="bk-download-row">
+          <a href="/brand-kit/degen-desk-brand-kit.zip" class="bk-download-btn" download>
+            ⬇  Download full kit (.zip)
+          </a>
+          <a href="/brand-kit/README.txt" class="bk-download-ghost" target="_blank" rel="noopener noreferrer">
+            View README
+          </a>
+        </div>
+      </section>
+
+      <!-- Brand facts -->
+      <section class="bk-section">
+        <div class="bk-section-head">
+          <h3>Brand identity</h3>
+          <span>The basics</span>
+        </div>
+        <div class="bk-facts">
+          <div class="bk-fact">
+            <div class="bk-fact-label">Wordmark</div>
+            <div class="bk-fact-value">Degen Desk</div>
+          </div>
+          <div class="bk-fact">
+            <div class="bk-fact-label">Tagline</div>
+            <div class="bk-fact-value">Research smarter. Trade safer.</div>
+          </div>
+          <div class="bk-fact">
+            <div class="bk-fact-label">Web</div>
+            <div class="bk-fact-value bk-mono">degendesk.xyz</div>
+          </div>
+          <div class="bk-fact">
+            <div class="bk-fact-label">X / Twitter</div>
+            <div class="bk-fact-value bk-mono">@DegenDeskXYZ</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Brand colors -->
+      <section class="bk-section">
+        <div class="bk-section-head">
+          <h3>Brand colors</h3>
+          <span>Click any hex to copy</span>
+        </div>
+        <div class="bk-colors">
+          <div class="bk-color-swatch">
+            <div class="bk-color-fill" style="background:#060610;"></div>
+            <div class="bk-color-meta">
+              <div class="bk-color-name">Background</div>
+              <div class="bk-color-hex">#060610</div>
+            </div>
+          </div>
+          <div class="bk-color-swatch">
+            <div class="bk-color-fill" style="background:#00ff88;"></div>
+            <div class="bk-color-meta">
+              <div class="bk-color-name">Primary green</div>
+              <div class="bk-color-hex">#00ff88</div>
+            </div>
+          </div>
+          <div class="bk-color-swatch">
+            <div class="bk-color-fill" style="background:#00d4ff;"></div>
+            <div class="bk-color-meta">
+              <div class="bk-color-name">Accent cyan</div>
+              <div class="bk-color-hex">#00d4ff</div>
+            </div>
+          </div>
+          <div class="bk-color-swatch">
+            <div class="bk-color-fill" style="background:#f0f0f8;"></div>
+            <div class="bk-color-meta">
+              <div class="bk-color-name">Text primary</div>
+              <div class="bk-color-hex">#f0f0f8</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Logo: dark -->
+      <section class="bk-section">
+        <div class="bk-section-head">
+          <h3>Logo · on dark</h3>
+          <span>Primary use — most contexts</span>
+        </div>
+        <div class="bk-grid">
+          <div class="bk-card">
+            <div class="bk-card-preview"><img src="/brand-kit/logo-dark-1024.png" alt="Logo on dark, 1024px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-dark-1024.png</div>
+              <div class="bk-card-spec">PNG · 1024×1024</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-dark-1024.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-dark-1024.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview"><img src="/brand-kit/logo-dark-512.png" alt="Logo on dark, 512px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-dark-512.png</div>
+              <div class="bk-card-spec">PNG · 512×512</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-dark-512.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-dark-512.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview"><img src="/brand-kit/logo-dark-256.png" alt="Logo on dark, 256px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-dark-256.png</div>
+              <div class="bk-card-spec">PNG · 256×256</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-dark-256.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-dark-256.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Logo: light -->
+      <section class="bk-section">
+        <div class="bk-section-head">
+          <h3>Logo · on light</h3>
+          <span>For print or light layouts</span>
+        </div>
+        <div class="bk-grid">
+          <div class="bk-card">
+            <div class="bk-card-preview bk-light"><img src="/brand-kit/logo-light-1024.png" alt="Logo on light, 1024px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-light-1024.png</div>
+              <div class="bk-card-spec">PNG · 1024×1024</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-light-1024.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-light-1024.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview bk-light"><img src="/brand-kit/logo-light-512.png" alt="Logo on light, 512px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-light-512.png</div>
+              <div class="bk-card-spec">PNG · 512×512</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-light-512.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-light-512.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview bk-light"><img src="/brand-kit/logo-light-256.png" alt="Logo on light, 256px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-light-256.png</div>
+              <div class="bk-card-spec">PNG · 256×256</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-light-256.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-light-256.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Logo: transparent -->
+      <section class="bk-section">
+        <div class="bk-section-head">
+          <h3>Logo · transparent</h3>
+          <span>Place on any background. Includes safe-area padding.</span>
+        </div>
+        <div class="bk-grid">
+          <div class="bk-card">
+            <div class="bk-card-preview bk-checker"><img src="/brand-kit/logo-transparent-1024.png" alt="Logo transparent, 1024px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-transparent-1024.png</div>
+              <div class="bk-card-spec">PNG · 1024×1024 · alpha</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-transparent-1024.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-transparent-1024.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview bk-checker"><img src="/brand-kit/logo-transparent-512.png" alt="Logo transparent, 512px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-transparent-512.png</div>
+              <div class="bk-card-spec">PNG · 512×512 · alpha</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-transparent-512.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-transparent-512.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview bk-checker"><img src="/brand-kit/logo-transparent-256.png" alt="Logo transparent, 256px" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">logo-transparent-256.png</div>
+              <div class="bk-card-spec">PNG · 256×256 · alpha</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/logo-transparent-256.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/logo-transparent-256.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Wordmark + logo -->
+      <section class="bk-section">
+        <div class="bk-section-head">
+          <h3>Wordmark</h3>
+          <span>Logo + "Degen Desk" lockup</span>
+        </div>
+        <div class="bk-grid-wide">
+          <div class="bk-card">
+            <div class="bk-card-preview bk-wide"><img src="/brand-kit/wordmark-dark-1600x400.png" alt="Wordmark dark 1600x400" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">wordmark-dark-1600x400.png</div>
+              <div class="bk-card-spec">PNG · 1600×400 · primary</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/wordmark-dark-1600x400.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/wordmark-dark-1600x400.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview bk-wide bk-light"><img src="/brand-kit/wordmark-light-1600x400.png" alt="Wordmark light 1600x400" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">wordmark-light-1600x400.png</div>
+              <div class="bk-card-spec">PNG · 1600×400 · for light backgrounds</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/wordmark-light-1600x400.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/wordmark-light-1600x400.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview bk-wide"><img src="/brand-kit/wordmark-dark-800x200.png" alt="Wordmark dark 800x200" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">wordmark-dark-800x200.png</div>
+              <div class="bk-card-spec">PNG · 800×200 · smaller use</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/wordmark-dark-800x200.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/wordmark-dark-800x200.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+          <div class="bk-card">
+            <div class="bk-card-preview bk-wide bk-light"><img src="/brand-kit/wordmark-light-800x200.png" alt="Wordmark light 800x200" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">wordmark-light-800x200.png</div>
+              <div class="bk-card-spec">PNG · 800×200</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/wordmark-light-800x200.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/wordmark-light-800x200.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Social banner -->
+      <section class="bk-section">
+        <div class="bk-section-head">
+          <h3>Social banner</h3>
+          <span>Open Graph card · X · IG · LinkedIn</span>
+        </div>
+        <div class="bk-grid-wide">
+          <div class="bk-card">
+            <div class="bk-card-preview bk-banner"><img src="/brand-kit/social-banner-1200x630.png" alt="Social banner 1200x630" /></div>
+            <div class="bk-card-meta">
+              <div class="bk-card-name">social-banner-1200x630.png</div>
+              <div class="bk-card-spec">PNG · 1200×630 · OG card</div>
+              <div class="bk-card-actions">
+                <a href="/brand-kit/social-banner-1200x630.png" class="bk-card-action" target="_blank" rel="noopener noreferrer">View</a>
+                <a href="/brand-kit/social-banner-1200x630.png" class="bk-card-action" download>Download</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="bk-help">
+        <h4>Need a custom export?</h4>
+        <p>SVG, EPS, transparent overlay strips, custom sizes for stream panels or giveaway graphics — DM <a href="https://x.com/DegenDeskXYZ" target="_blank" rel="noopener noreferrer">@DegenDeskXYZ</a> on X with the spec and we'll have it back to you the same day.</p>
+      </div>
+
+    </main>
+
+    <footer class="bk-footer">
+      <div>Degen Desk · Research smarter. Trade safer.</div>
+      <div style="margin-top: 6px;">
+        <a href="/" style="color: var(--text-secondary); text-decoration: none; margin: 0 8px;">Chat</a>·
+        <a href="/creators.html" style="color: var(--text-secondary); text-decoration: none; margin: 0 8px;">Creators</a>·
+        <a href="/leaderboard.html" style="color: var(--text-secondary); text-decoration: none; margin: 0 8px;">Leaderboard</a>·
+        <a href="/blog.html" style="color: var(--text-secondary); text-decoration: none; margin: 0 8px;">Blog</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Click-to-copy on hex codes
+    document.querySelectorAll(".bk-color-hex").forEach(function (el) {
+      el.addEventListener("click", function () {
+        const text = el.textContent.trim();
+        navigator.clipboard.writeText(text).then(function () {
+          const orig = el.textContent;
+          el.textContent = "Copied ✓";
+          el.style.color = "#00ff88";
+          setTimeout(function () {
+            el.textContent = orig;
+            el.style.color = "";
+          }, 1200);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

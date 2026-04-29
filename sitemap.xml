@@ -34,6 +34,13 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Brand kit (for partners + creators) -->
+  <url>
+    <loc>https://degendesk.xyz/brand-kit.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
   <!-- Blog post: Multi-wallet schemes -->
   <url>
     <loc>https://degendesk.xyz/blog/spot-multi-wallet-schemes.html</loc>

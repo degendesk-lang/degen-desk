@@ -17,6 +17,7 @@ Allow: /blog.html
 Allow: /welcome.html
 Allow: /creators.html
 Allow: /leaderboard.html
+Allow: /brand-kit.html
 Allow: /privacy.html
 Allow: /terms.html
 
@@ -24,6 +25,7 @@ Allow: /terms.html
 Allow: /favicon.png
 Allow: /og-image.png
 Allow: /guides/logos/
+Allow: /brand-kit/
 
 # Sitemap reference
 Sitemap: https://degendesk.xyz/sitemap.xml

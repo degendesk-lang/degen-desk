@@ -28,6 +28,7 @@ const filesToCopy = [
   "guides.html",
   "blog.html",
   "leaderboard.html",
+  "brand-kit.html",
   "welcome.html",
   "creators.html",
   "styles.css",
@@ -73,6 +74,9 @@ copyDir(path.join(ROOT, "guides", "logos"), path.join(WWW, "guides", "logos"), [
 
 // Copy blog/ directory recursively (individual post pages)
 copyDir(path.join(ROOT, "blog"), path.join(WWW, "blog"), [".html"]);
+
+// Copy brand-kit/ directory recursively (logos, wordmarks, zip, README)
+copyDir(path.join(ROOT, "brand-kit"), path.join(WWW, "brand-kit"), [".png", ".zip", ".txt", ".svg"]);
 
 // Modify index.html for the native app
 // - Add Capacitor bridge script
