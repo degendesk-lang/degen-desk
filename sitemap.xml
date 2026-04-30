@@ -48,6 +48,20 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Blog post: How to read a Token Analysis report -->
+  <url>
+    <loc>https://degendesk.xyz/blog/read-token-analysis-report.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog post: Domain Age + GitHub Analyzer launch -->
+  <url>
+    <loc>https://degendesk.xyz/blog/domain-age-github-signals.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Token Analysis Center -->
   <url>
     <loc>https://degendesk.xyz/token-analysis.html</loc>
