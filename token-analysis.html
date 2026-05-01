@@ -57,7 +57,7 @@
     /* Make sure the hidden attribute wins over class-based display:flex */
     #ta-app [hidden] { display: none !important; }
   </style>
-  <link rel="stylesheet" href="styles.css?v=39" />
+  <link rel="stylesheet" href="styles.css?v=40" />
 </head>
 <body class="ta-body" style="background:#060610;">
   <div id="ta-app" class="ta-app">
@@ -102,7 +102,7 @@
         <div class="ta-gate-card">
           <div class="ta-gate-icon">🔒</div>
           <h2 id="ta-gate-title">Pro Feature</h2>
-          <p id="ta-gate-message">Token Analysis is a Pro-only feature. Upgrade to unlock deep on-chain intelligence on any Solana token.</p>
+          <p id="ta-gate-message">Token Analysis is a Pro-only feature. Upgrade to unlock deep on-chain intelligence on Solana, Ethereum, and Base tokens.</p>
           <div class="ta-gate-features">
             <div class="ta-gate-feature">✓ Holder distribution analysis</div>
             <div class="ta-gate-feature">✓ Bundled supply detection</div>
@@ -122,7 +122,21 @@
       <!-- ANALYZER (shown to Pro users) -->
       <section id="ta-analyzer" class="ta-analyzer" hidden>
         <div class="ta-input-card">
-          <label for="ta-ca-input" class="ta-input-label">Solana Contract Address</label>
+          <label for="ta-ca-input" class="ta-input-label">Contract Address</label>
+          <div class="ta-chain-tabs" role="tablist" aria-label="Select chain">
+            <button class="ta-chain-tab active" data-chain="solana" type="button" role="tab" aria-selected="true">
+              <span class="ta-chain-dot ta-chain-dot-solana"></span>
+              Solana
+            </button>
+            <button class="ta-chain-tab" data-chain="ethereum" type="button" role="tab" aria-selected="false">
+              <span class="ta-chain-dot ta-chain-dot-ethereum"></span>
+              Ethereum
+            </button>
+            <button class="ta-chain-tab" data-chain="base" type="button" role="tab" aria-selected="false">
+              <span class="ta-chain-dot ta-chain-dot-base"></span>
+              Base
+            </button>
+          </div>
           <div class="ta-input-row">
             <input
               id="ta-ca-input"
@@ -154,8 +168,8 @@
           <div class="ta-loading-text">Analyzing token&hellip;</div>
           <div class="ta-loading-steps">
             <div class="ta-loading-step" data-step="dex">Fetching market data (DexScreener)</div>
-            <div class="ta-loading-step" data-step="rug">Scanning holders &amp; bundles (RugCheck)</div>
-            <div class="ta-loading-step" data-step="helius">Tracing dev wallet (Helius)</div>
+            <div class="ta-loading-step" data-step="rug">Scanning contract &amp; holders (RugCheck / GoPlus)</div>
+            <div class="ta-loading-step" data-step="helius">Tracing dev wallet (Helius / Etherscan)</div>
             <div class="ta-loading-step" data-step="domain">Checking domain age (RDAP)</div>
             <div class="ta-loading-step" data-step="github">Analyzing GitHub repo</div>
             <div class="ta-loading-step" data-step="ai">Synthesizing report (GPT-4o)</div>
@@ -186,6 +200,6 @@
   <script src="sentry.js"></script>
   <script src="auth.js?v=14"></script>
   <script src="share-card.js?v=1"></script>
-  <script src="token-analysis.js?v=5"></script>
+  <script src="token-analysis.js?v=6"></script>
 </body>
 </html>

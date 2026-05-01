@@ -2467,6 +2467,93 @@ html.ta-html .ta-report {
   .ta-gauge-eyebrow { font-size: 8px; }
 }
 
+/* MULTI-CHAIN PICKER TABS */
+.ta-chain-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.ta-chain-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+}
+
+.ta-chain-tab:hover {
+  color: var(--text-primary, #f0f0f8);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ta-chain-tab.active {
+  background: rgba(167, 139, 250, 0.12);
+  color: #fff;
+  border-color: rgba(167, 139, 250, 0.4);
+  box-shadow: 0 1px 8px rgba(167, 139, 250, 0.15);
+}
+
+.ta-chain-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.ta-chain-dot-solana {
+  background: linear-gradient(135deg, #14f195, #9945ff);
+}
+.ta-chain-dot-ethereum {
+  background: linear-gradient(135deg, #627eea, #8a92b2);
+}
+.ta-chain-dot-base {
+  background: linear-gradient(135deg, #0052ff, #3a8dff);
+}
+
+/* Chain badge in token header */
+.ta-chain-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  margin-left: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.ta-chain-badge-solana { border-color: rgba(20, 241, 149, 0.3); color: #14f195; }
+.ta-chain-badge-ethereum { border-color: rgba(98, 126, 234, 0.3); color: #8a92ff; }
+.ta-chain-badge-base { border-color: rgba(0, 82, 255, 0.3); color: #5a9bff; }
+
+@media (max-width: 600px) {
+  .ta-chain-tab { padding: 8px 6px; font-size: 12px; }
+  .ta-chain-badge { font-size: 9.5px; padding: 2px 8px; }
+}
+
 /* SHARE CARD ROW */
 .ta-share-row {
   margin-top: 16px;

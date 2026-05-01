@@ -38,8 +38,55 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-// Solana address validation (base58, 32-44 chars)
+// =============================================
+// MULTI-CHAIN CONFIG
+// =============================================
 const SOLANA_ADDR_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const EVM_ADDR_RE = /^0x[a-fA-F0-9]{40}$/;
+
+// chainKey → DexScreener chainId, GoPlus chain id, explorer base, label
+const CHAINS = {
+  solana: {
+    label: "Solana",
+    dexId: "solana",
+    addrType: "solana",
+    explorer: "https://solscan.io/token/",
+    goPlusId: null, // GoPlus has Solana but with a different endpoint shape
+  },
+  ethereum: {
+    label: "Ethereum",
+    dexId: "ethereum",
+    addrType: "evm",
+    explorer: "https://etherscan.io/token/",
+    goPlusId: "1",
+    explorerApi: "https://api.etherscan.io/v2/api",
+    explorerChainId: 1,
+  },
+  base: {
+    label: "Base",
+    dexId: "base",
+    addrType: "evm",
+    explorer: "https://basescan.org/token/",
+    goPlusId: "8453",
+    explorerApi: "https://api.etherscan.io/v2/api",
+    explorerChainId: 8453,
+  },
+};
+
+// Detect chain from address shape, with explicit override.
+function resolveChain(address, override) {
+  if (override && CHAINS[override]) return override;
+  if (EVM_ADDR_RE.test(address)) return "ethereum"; // default EVM to mainnet; client can override to base
+  if (SOLANA_ADDR_RE.test(address)) return "solana";
+  return null;
+}
+
+function isValidForChain(address, chainKey) {
+  const c = CHAINS[chainKey];
+  if (!c) return false;
+  if (c.addrType === "evm") return EVM_ADDR_RE.test(address);
+  return SOLANA_ADDR_RE.test(address);
+}
 
 // =============================================
 // DATA SOURCES
@@ -57,8 +104,10 @@ async function fetchWithTimeout(url, opts = {}, ms = 8000) {
 }
 
 // DexScreener — primary source for price, MC, liquidity, pair data.
-// Covers 100% of Solana tokens including pump.fun launches.
-async function fetchDexScreener(mint) {
+// Works across Solana, Ethereum, Base, and every other chain DexScreener indexes.
+async function fetchDexScreener(mint, chainKey) {
+  const targetDexId = CHAINS[chainKey]?.dexId;
+  if (!targetDexId) return null;
   try {
     const res = await fetchWithTimeout(
       `https://api.dexscreener.com/latest/dex/tokens/${mint}`,
@@ -68,11 +117,11 @@ async function fetchDexScreener(mint) {
     const data = await res.json();
     if (!data?.pairs || data.pairs.length === 0) return null;
 
-    // Pick the Solana pair with the highest liquidity
-    const solPairs = data.pairs.filter((p) => p.chainId === "solana");
-    if (solPairs.length === 0) return null;
-    solPairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
-    const top = solPairs[0];
+    // Pick the pair on the requested chain with the highest liquidity
+    const chainPairs = data.pairs.filter((p) => p.chainId === targetDexId);
+    if (chainPairs.length === 0) return null;
+    chainPairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
+    const top = chainPairs[0];
 
     return {
       name: top.baseToken?.name || null,
@@ -372,6 +421,146 @@ async function fetchGitHubAnalysis(websites, socials) {
   }
 }
 
+// GoPlus Security — EVM equivalent of RugCheck.
+// Free, no auth. Covers honeypot detection, buy/sell tax, ownership renouncement,
+// LP locked %, hidden owner, blacklist functions, holder concentration.
+async function fetchGoPlus(mint, chainKey) {
+  const c = CHAINS[chainKey];
+  if (!c?.goPlusId) return null;
+  try {
+    const res = await fetchWithTimeout(
+      `https://api.gopluslabs.io/api/v1/token_security/${c.goPlusId}?contract_addresses=${mint}`,
+      { headers: { Accept: "application/json", "User-Agent": "DegenDesk/1.0" } },
+      8000
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const result = data?.result?.[mint.toLowerCase()] || data?.result?.[mint] || null;
+    if (!result) return null;
+
+    // Normalize the dozens of "1" / "0" / null fields into something the AI can reason on.
+    const flag = (v) => (v === "1" ? true : v === "0" ? false : null);
+    const num = (v) => (v == null || v === "" ? null : parseFloat(v));
+
+    const holders = Array.isArray(result.holders)
+      ? result.holders.slice(0, 10).map((h) => ({
+          address: h.address || null,
+          tag: h.tag || null,
+          balance: num(h.balance),
+          percent: num(h.percent) != null ? parseFloat(h.percent) * 100 : null,
+          isLocked: flag(h.is_locked),
+          isContract: flag(h.is_contract),
+        }))
+      : [];
+
+    const lpHolders = Array.isArray(result.lp_holders)
+      ? result.lp_holders.slice(0, 5).map((h) => ({
+          address: h.address || null,
+          tag: h.tag || null,
+          percent: num(h.percent) != null ? parseFloat(h.percent) * 100 : null,
+          isLocked: flag(h.is_locked),
+        }))
+      : [];
+
+    return {
+      tokenName: result.token_name || null,
+      tokenSymbol: result.token_symbol || null,
+      totalSupply: num(result.total_supply),
+      holderCount: result.holder_count ? parseInt(result.holder_count, 10) : null,
+
+      // Honeypot signals (the most important EVM red flag)
+      isHoneypot: flag(result.is_honeypot),
+      cannotBuy: flag(result.cannot_buy),
+      cannotSellAll: flag(result.cannot_sell_all),
+      transferPausable: flag(result.transfer_pausable),
+      tradingCooldown: flag(result.trading_cooldown),
+
+      // Tax — anything over a few percent on either side hurts
+      buyTax: num(result.buy_tax) != null ? parseFloat(result.buy_tax) * 100 : null,
+      sellTax: num(result.sell_tax) != null ? parseFloat(result.sell_tax) * 100 : null,
+
+      // Ownership / control
+      ownerAddress: result.owner_address || null,
+      ownerChangeBalance: flag(result.owner_change_balance),
+      hiddenOwner: flag(result.hidden_owner),
+      canTakeBackOwnership: flag(result.can_take_back_ownership),
+      selfdestruct: flag(result.selfdestruct),
+
+      // Liquidity
+      lpTotalSupply: num(result.lp_total_supply),
+      lpHolderCount: result.lp_holder_count ? parseInt(result.lp_holder_count, 10) : null,
+
+      // Mint authority equivalent on EVM
+      isMintable: flag(result.is_mintable),
+      isProxy: flag(result.is_proxy),
+      isOpenSource: flag(result.is_open_source),
+
+      // Anti-whale / fee modifiability
+      slippageModifiable: flag(result.slippage_modifiable),
+      personalSlippageModifiable: flag(result.personal_slippage_modifiable),
+      isAntiWhale: flag(result.is_anti_whale),
+      antiWhaleModifiable: flag(result.anti_whale_modifiable),
+
+      // Lists
+      isInDex: flag(result.is_in_dex),
+      isAirdropScam: flag(result.is_airdrop_scam),
+      trustList: flag(result.trust_list),
+
+      // Top wallet + LP holders
+      topHolders: holders,
+      lpHolders,
+
+      // Creator / deployer (we'll use this as the "creator" for downstream code)
+      creatorAddress: result.creator_address || null,
+      creatorBalance: num(result.creator_balance),
+      creatorPercent: num(result.creator_percent) != null ? parseFloat(result.creator_percent) * 100 : null,
+    };
+  } catch (err) {
+    console.error("GoPlus fetch failed:", err.message);
+    return null;
+  }
+}
+
+// Etherscan v2 unified API — works across Ethereum, Base, BNB, and other EVM chains
+// with a single API key. Used to trace the deployer/creator wallet's funding history.
+async function fetchEvmDevTrace(creatorAddress, chainKey) {
+  const apiKey = process.env.ETHERSCAN_API_KEY;
+  const c = CHAINS[chainKey];
+  if (!apiKey || !c?.explorerChainId || !creatorAddress) return null;
+  try {
+    // Recent normal transactions for the creator address, oldest first.
+    const url = `${c.explorerApi}?chainid=${c.explorerChainId}&module=account&action=txlist&address=${creatorAddress}&startblock=0&endblock=99999999&page=1&offset=25&sort=asc&apikey=${apiKey}`;
+    const res = await fetchWithTimeout(url, {}, 8000);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data?.result)) return null;
+    const txs = data.result;
+
+    // Find the first incoming transfer that funded the wallet
+    let fundingSource = null;
+    let fundingTx = null;
+    for (const tx of txs) {
+      if (tx.to && tx.to.toLowerCase() === creatorAddress.toLowerCase() && parseFloat(tx.value) > 0) {
+        fundingSource = tx.from || null;
+        fundingTx = tx.hash || null;
+        break;
+      }
+    }
+
+    const oldestTs = txs.length > 0 ? parseInt(txs[0].timeStamp, 10) * 1000 : null;
+    return {
+      address: creatorAddress,
+      fundingSource,
+      fundingTx,
+      recentTxCount: txs.length,
+      oldestSeenTimestamp: oldestTs,
+    };
+  } catch (err) {
+    console.error("Etherscan v2 trace failed:", err.message);
+    return null;
+  }
+}
+
 // Helius — funding source trace for the dev wallet.
 // Uses the user's existing HELIUS_API_KEY env var.
 async function fetchHeliusDevTrace(creatorAddress) {
@@ -423,7 +612,7 @@ async function fetchHeliusDevTrace(creatorAddress) {
 // GPT-4o SYNTHESIS
 // =============================================
 
-const SYSTEM_PROMPT = `You are the Token Analysis engine for Degen Desk — a Pro-tier tool that analyzes Solana tokens using on-chain data.
+const SYSTEM_PROMPT = `You are the Token Analysis engine for Degen Desk — a Pro-tier tool that analyzes tokens across Solana, Ethereum, and Base using on-chain data. The chain is provided in the data as the "chain" field. Adapt your analysis: Solana data comes from RugCheck/pump.fun/Helius; EVM data comes from GoPlus Security and Etherscan. Some signals only apply to one chain — never invent data that wasn't provided.
 
 CRITICAL LEGAL RULES (NEVER BREAK THESE):
 1. NEVER predict prices. Never say "this will go to $X" or "this will pump" or "buy this."
@@ -435,11 +624,11 @@ CRITICAL LEGAL RULES (NEVER BREAK THESE):
 7. If data is missing or incomplete, say so clearly — don't speculate to fill gaps.
 
 CRITICAL HOLDER RULES (NEVER BREAK THESE):
-8. The rugCheckFull.topHolders array may include liquidity pool (LP / AMM) accounts. Each entry has an isLiquidityPool boolean.
-9. When stating "the top holder owns X%" or discussing wallet concentration, YOU MUST USE rugCheckFull.topHoldersNonLp — the LP-filtered list. NEVER cite an LP entry as "a top holder." LPs are trading reserves, not individual wallets.
-10. If ALL top holders are LPs (topHoldersNonLp is empty), say "Top wallet holders are below the reporting threshold — supply appears distributed across many small wallets."
+8. SOLANA: rugCheckFull.topHolders array may include liquidity pool (LP / AMM) accounts. Each entry has an isLiquidityPool boolean. Use rugCheckFull.topHoldersNonLp — the LP-filtered list — when discussing wallet concentration. Never call an LP entry a "top holder."
+9. EVM: goPlus.topHolders is the wallet list, goPlus.lpHolders is separate. Use goPlus.topHolders for wallet concentration. The "percent" field is already a percentage (e.g. 2.2 means 2.2%).
+10. If ALL top holders look like LPs/contracts (isContract=true and tag suggests pool/router), say "Top wallet holders are below the reporting threshold — supply appears distributed across many small wallets."
 11. Report LP share SEPARATELY from wallet concentration. Phrase LP as "liquidity pool reserves" or "AMM-held supply." Example: "The top non-LP wallet holds 2.2% of supply. Liquidity pool reserves account for ~22% of supply, which is normal for tradeable tokens."
-12. Always use the pct value directly from the data. It is already a percentage (e.g. 2.2 means 2.2%). NEVER multiply, divide, or transform it.
+12. Always use the percent value directly from the data — never multiply or transform it.
 
 RED FLAG HEURISTICS — THINK LIKE A DEGENERATE TRADER:
 You are not a surface-level data reporter. You must apply experienced Solana memecoin trader logic when interpreting the data. The following patterns are MAJOR red flags and MUST be flagged aggressively:
@@ -490,8 +679,20 @@ H) GITHUB SIGNALS (from githubAnalysis):
    - POSITIVE signals: 5+ contributors, 100+ stars, regular commits over 6+ months, descriptive commit messages, proper license.
    - If lookupSucceeded is false (e.g. 404), the GitHub link is broken/private — flag it: "The project's linked GitHub repository could not be accessed (private or removed). Public-facing projects typically maintain a publicly visible repo."
 
-I) RISK LEVEL ESCALATION RULES:
-   - If 3+ of the above red flags (A through H) are present simultaneously, riskLevel MUST be "high" or "critical" — never "medium" or "low."
+I) EVM-SPECIFIC SIGNALS (when chain === "ethereum" or "base", from goPlus):
+   - HONEYPOT: If isHoneypot is true, OR cannotSellAll is true, OR cannotBuy is true → riskLevel MUST be "critical." This is a hard rug — users cannot sell. State plainly: "This contract is flagged as a honeypot — buyers cannot sell. Avoid."
+   - HIGH TAX: buyTax or sellTax > 10% is a major red flag. > 25% is effectively a rug (you lose a quarter of your trade to the team). Flag explicitly with the percentages.
+   - OWNERSHIP: If hiddenOwner is true OR canTakeBackOwnership is true OR ownerChangeBalance is true → flag aggressively. The deployer can pause trading, blacklist your address, or modify your balance. Combine with low ownerAddress activity for severity.
+   - MINTABLE: isMintable=true means the deployer can print new tokens at will, diluting holders. Flag.
+   - PROXY / NOT OPEN SOURCE: isProxy=true OR isOpenSource=false means the contract logic can change or hasn't been verified. State: "This contract is [a proxy / not source-verified] — its logic [can be changed by the owner / cannot be independently audited]."
+   - LP NOT LOCKED: lpHolders mostly with isLocked=false → liquidity can be pulled at any moment. "Liquidity is unlocked. The deployer can remove the pool and take buyers' funds."
+   - SLIPPAGE MODIFIABLE: slippageModifiable=true means tax can be raised after launch — common bait-and-switch.
+   - CREATOR HOLDS LARGE % (creatorPercent > 5) — flag clearly.
+   - AIRDROP SCAM: isAirdropScam=true → state plainly that this contract has been flagged as an airdrop scam pattern.
+   - When in doubt on EVM, defer to GoPlus over your own intuition — it has the deepest contract introspection.
+
+J) RISK LEVEL ESCALATION RULES:
+   - If 3+ of the above red flags (A through I) are present simultaneously, riskLevel MUST be "high" or "critical" — never "medium" or "low."
    - A single pattern from (A) — only-up chart + no socials + low holders — alone warrants at minimum "high."
    - DO NOT give a token "medium" risk if it has an extreme price spike, no community, thin liquidity, and low holders. That combination is "high" at minimum.
 
@@ -510,9 +711,10 @@ OUTPUT FORMAT (JSON, no markdown wrapping):
     "When citing holder concentration, use topHoldersNonLp only. Never call an LP entry a 'top holder'.",
     "If multiple manipulation signals are present, the FIRST bullet should be a combined warning."
   ],
-  "holderAnalysis": "2-3 sentences about WALLET concentration using ONLY topHoldersNonLp. Cite the top non-LP wallet percentage. Mention LP/AMM reserves separately (using lpShareTotalPct if present). Cross-reference holder count against market cap — if the ratio is suspicious, say so. Mention insider network flags from RugCheck if present.",
-  "bundleAnalysis": "2-3 sentences about bundling. If RugCheck flagged bundled supply or insider networks, mention it. IMPORTANT: If RugCheck shows 0% bundlers but other signals suggest manipulation (only-up chart, no socials, low holders, thin liquidity), DO NOT say 'No bundling detected' as if that's reassuring. Instead note the limitation of automated detection and flag the suspicious patterns.",
-  "devWalletAnalysis": "3-4 sentences about the dev/creator wallet. Mention funding source if known, transaction count, age. If the wallet has very few transactions, flag it as potentially a fresh/burner wallet. Never say 'the dev is a scammer' — say 'the dev wallet shows [observable patterns]'.",
+  "holderAnalysis": "2-3 sentences about WALLET concentration. SOLANA: use rugCheckFull.topHoldersNonLp and report LP share separately via lpShareTotalPct. EVM: use goPlus.topHolders for wallets, goPlus.lpHolders for LP, mention goPlus.holderCount. Cross-reference holder count against market cap — if the ratio is suspicious, say so. Mention insider network flags or contract holders if present.",
+  "bundleAnalysis": "2-3 sentences. SOLANA: about bundling — use rugCheckSummary.risks and insiderNetworks. EVM: bundle detection isn't applicable the same way; instead summarize creator percent + ownership controls (hiddenOwner, canTakeBackOwnership, mintable). IMPORTANT: If automated detection shows clean but other signals suggest manipulation, note the limitation and flag the patterns.",
+  "devWalletAnalysis": "3-4 sentences about the dev/creator wallet. SOLANA: from devWalletTrace (funding source, recent tx count). EVM: from devWalletTrace (Etherscan v2) plus goPlus.creatorAddress / creatorPercent / ownerAddress. If the wallet has very few transactions, flag it as potentially a fresh/burner wallet. Never say 'the dev is a scammer' — say 'the dev wallet shows [observable patterns]'.",
+  "contractAnalysis": "EVM ONLY. 3-4 sentences. ONLY include this field when chain is 'ethereum' or 'base' AND goPlus data is present. State honeypot status, buy/sell tax %, ownership controls (renounced / hidden / mintable / pausable / proxy), source verification, LP lock status. Lead with the most dangerous flag. If chain is solana OR no goPlus data, OMIT this field entirely.",
   "domainAnalysis": "1-2 sentences. ONLY include this field if domainAge data is present. State the domain, its age in days/months (translate ageDays — e.g. 4 days = 'registered 4 days ago', 540 days = 'registered ~1.5 years ago'), and what that age implies in context with the token's MC and apparent maturity. If lookupSucceeded is false, say 'Domain registration history could not be retrieved.' If no domainAge data, OMIT this field entirely.",
   "githubAnalysis": "2-3 sentences. ONLY include this field if githubAnalysis data is present. Cite the repo (owner/repo), age, contributor count, recent activity, stars. Be direct: if the repo looks like a shell (1 contributor, 0 stars, generic commits, archived, or freshly created) call it out. If the repo looks legitimate (multiple contributors, regular commits, real description), say so observationally. If lookupSucceeded is false, note that the linked repo is inaccessible. If no githubAnalysis data, OMIT this field entirely.",
   "comparables": "For established meta tokens (dog, cat, frog, political, AI, etc.), mention 1-3 similar tokens and their historical peak MC as factual reference points. For suspicious/manipulated-looking tokens, DO NOT give comparables — instead say: 'No comparables provided — this token exhibits patterns that warrant caution before considering any market context. NFA. DYOR.' For legitimate unique/new tokens: mention it shows potential characteristics worth monitoring.",
@@ -604,17 +806,23 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "API key not configured" });
   }
 
-  const { contractAddress, uid } = req.body || {};
+  const { contractAddress, uid, chain: requestedChain } = req.body || {};
 
   // Basic validation
   if (!contractAddress || typeof contractAddress !== "string") {
     return res.status(400).json({ error: "Contract address is required." });
   }
   const mint = contractAddress.trim();
-  if (!SOLANA_ADDR_RE.test(mint)) {
+  const chainKey = resolveChain(mint, requestedChain);
+  if (!chainKey) {
     return res
       .status(400)
-      .json({ error: "That doesn't look like a valid Solana contract address." });
+      .json({ error: "That doesn't look like a valid Solana, Ethereum, or Base contract address." });
+  }
+  if (!isValidForChain(mint, chainKey)) {
+    return res
+      .status(400)
+      .json({ error: `That address format doesn't match ${CHAINS[chainKey].label}.` });
   }
   if (!uid) {
     return res.status(401).json({
@@ -670,32 +878,37 @@ module.exports = async function handler(req, res) {
   }
 
   // =========================================
-  // FETCH ALL DATA SOURCES IN PARALLEL
+  // FETCH DATA SOURCES (chain-aware, in parallel)
   // =========================================
-  const [dex, rugSummary, rugFull, pumpfun] = await Promise.all([
-    fetchDexScreener(mint),
-    fetchRugCheck(mint),
-    fetchRugCheckFull(mint),
-    fetchPumpFun(mint),
+  const isSolana = chainKey === "solana";
+
+  const [dex, rugSummary, rugFull, pumpfun, goPlus] = await Promise.all([
+    fetchDexScreener(mint, chainKey),
+    isSolana ? fetchRugCheck(mint) : Promise.resolve(null),
+    isSolana ? fetchRugCheckFull(mint) : Promise.resolve(null),
+    isSolana ? fetchPumpFun(mint) : Promise.resolve(null),
+    isSolana ? Promise.resolve(null) : fetchGoPlus(mint, chainKey),
   ]);
 
   // Derive the creator/dev wallet from whichever source has it
   const creatorAddress =
-    rugFull?.creator || pumpfun?.creator || null;
+    rugFull?.creator || pumpfun?.creator || goPlus?.creatorAddress || null;
 
-  // Helius funding trace + domain age + GitHub analysis (parallel)
+  // Dev wallet funding trace + domain age + GitHub analysis (parallel)
   const [devTrace, domain, github] = await Promise.all([
-    creatorAddress ? fetchHeliusDevTrace(creatorAddress) : Promise.resolve(null),
+    creatorAddress
+      ? isSolana
+        ? fetchHeliusDevTrace(creatorAddress)
+        : fetchEvmDevTrace(creatorAddress, chainKey)
+      : Promise.resolve(null),
     fetchDomainAge(dex?.websites),
     fetchGitHubAnalysis(dex?.websites, dex?.socials),
   ]);
 
-  // If DexScreener returned nothing AND RugCheck returned nothing AND pump.fun returned nothing,
-  // we probably have a bad address or an unknown token — bail early.
-  if (!dex && !rugSummary && !rugFull && !pumpfun) {
+  // If everything came back empty, bail early.
+  if (!dex && !rugSummary && !rugFull && !pumpfun && !goPlus) {
     return res.status(404).json({
-      error:
-        "Couldn't find any data for that token. Double-check the contract address is correct and the token has at least one trading pair.",
+      error: `Couldn't find any data for that ${CHAINS[chainKey].label} token. Double-check the contract address is correct and the token has at least one trading pair.`,
     });
   }
 
@@ -703,6 +916,8 @@ module.exports = async function handler(req, res) {
   // BUILD RAW DATA PACKAGE FOR GPT
   // =========================================
   const rawData = {
+    chain: chainKey,
+    chainLabel: CHAINS[chainKey].label,
     contractAddress: mint,
     dexScreener: dex,
     rugCheckSummary: rugSummary
@@ -714,6 +929,7 @@ module.exports = async function handler(req, res) {
       : null,
     rugCheckFull: rugFull,
     pumpFun: pumpfun,
+    goPlus,
     devWalletTrace: devTrace,
     domainAge: domain,
     githubAnalysis: github,
@@ -773,9 +989,17 @@ module.exports = async function handler(req, res) {
         marketCap: pumpfun.marketCap,
         bondingCurveComplete: pumpfun.bondingCurveComplete,
       }
+    : goPlus
+    ? {
+        name: goPlus.tokenName,
+        symbol: goPlus.tokenSymbol,
+      }
     : { name: null, symbol: null };
 
   return res.status(200).json({
+    chain: chainKey,
+    chainLabel: CHAINS[chainKey].label,
+    explorerUrl: `${CHAINS[chainKey].explorer}${mint}`,
     contractAddress: mint,
     metrics,
     report,
@@ -783,7 +1007,9 @@ module.exports = async function handler(req, res) {
       dexScreener: !!dex,
       rugCheck: !!(rugSummary || rugFull),
       pumpFun: !!pumpfun,
-      helius: !!devTrace,
+      goPlus: !!goPlus,
+      helius: isSolana && !!devTrace,
+      etherscan: !isSolana && !!devTrace,
       domainAge: !!domain,
       github: !!github,
     },

@@ -29,6 +29,24 @@
   // =============================================
   let isAnalyzing = false;
   const SOLANA_ADDR_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  const EVM_ADDR_RE = /^0x[a-fA-F0-9]{40}$/;
+
+  // Multi-chain state — defaults to Solana to preserve current behavior.
+  let selectedChain = "solana";
+  const CHAIN_PLACEHOLDERS = {
+    solana: "e.g. DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    ethereum: "e.g. 0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+    base: "e.g. 0x1111111111166b7FE7bd91427724B487980aFc69",
+  };
+  function isValidForChain(addr, chain) {
+    if (chain === "solana") return SOLANA_ADDR_RE.test(addr);
+    return EVM_ADDR_RE.test(addr);
+  }
+  function detectChainFromAddress(addr) {
+    if (EVM_ADDR_RE.test(addr)) return "evm"; // ambiguous between ethereum/base
+    if (SOLANA_ADDR_RE.test(addr)) return "solana";
+    return null;
+  }
 
   // =============================================
   // HELPERS
@@ -56,7 +74,7 @@
 
   function setAnalyzeButtonEnabled() {
     const ca = caInputEl.value.trim();
-    analyzeBtnEl.disabled = isAnalyzing || !SOLANA_ADDR_RE.test(ca);
+    analyzeBtnEl.disabled = isAnalyzing || !isValidForChain(ca, selectedChain);
   }
 
   function setInputError(msg) {
@@ -157,10 +175,50 @@
   });
 
   // =============================================
+  // CHAIN PICKER TABS
+  // =============================================
+  const chainTabs = document.querySelectorAll(".ta-chain-tab");
+
+  function setSelectedChain(chain, opts) {
+    if (!chain) return;
+    selectedChain = chain;
+    chainTabs.forEach((t) => {
+      const isActive = t.getAttribute("data-chain") === chain;
+      t.classList.toggle("active", isActive);
+      t.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    if (caInputEl && CHAIN_PLACEHOLDERS[chain]) {
+      caInputEl.placeholder = CHAIN_PLACEHOLDERS[chain];
+    }
+    setInputError(null);
+    setAnalyzeButtonEnabled();
+  }
+
+  chainTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      setSelectedChain(tab.getAttribute("data-chain"));
+    });
+  });
+
+  // Auto-detect chain from address shape on input — flip tabs automatically
+  // unless the user has manually selected a different EVM chain.
+  function autoDetectChainFromInput(value) {
+    const detected = detectChainFromAddress(value);
+    if (!detected) return;
+    if (detected === "solana" && selectedChain !== "solana") {
+      setSelectedChain("solana");
+    } else if (detected === "evm" && selectedChain === "solana") {
+      // Default to Ethereum on first EVM detection; user can switch to Base
+      setSelectedChain("ethereum");
+    }
+  }
+
+  // =============================================
   // INPUT VALIDATION
   // =============================================
   caInputEl.addEventListener("input", () => {
     setInputError(null);
+    autoDetectChainFromInput(caInputEl.value.trim());
     setAnalyzeButtonEnabled();
   });
 
@@ -179,8 +237,9 @@
   async function runAnalysis() {
     if (isAnalyzing) return;
     const ca = caInputEl.value.trim();
-    if (!SOLANA_ADDR_RE.test(ca)) {
-      setInputError("That doesn't look like a valid Solana contract address.");
+    if (!isValidForChain(ca, selectedChain)) {
+      const chainLabel = selectedChain === "solana" ? "Solana" : selectedChain === "base" ? "Base" : "Ethereum";
+      setInputError(`That doesn't look like a valid ${chainLabel} contract address.`);
       return;
     }
 
@@ -212,7 +271,7 @@
       const res = await fetch("/api/token-analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contractAddress: ca, uid: user.uid }),
+        body: JSON.stringify({ contractAddress: ca, uid: user.uid, chain: selectedChain }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -317,7 +376,10 @@
             }
             <div class="ta-token-info">
               <div class="ta-token-name">${escapeHtml(tokenName)}</div>
-              <div class="ta-token-symbol">$${escapeHtml(tokenSymbol)}</div>
+              <div class="ta-token-symbol">
+                <span>$${escapeHtml(tokenSymbol)}</span>
+                ${data.chainLabel ? `<span class="ta-chain-badge ta-chain-badge-${escapeHtml(data.chain || "solana")}"><span class="ta-chain-dot ta-chain-dot-${escapeHtml(data.chain || "solana")}"></span>${escapeHtml(data.chainLabel)}</span>` : ""}
+              </div>
               <div class="ta-token-ca">
                 <span>${escapeHtml(data.contractAddress.slice(0, 6))}...${escapeHtml(data.contractAddress.slice(-6))}</span>
                 <button class="ta-copy-btn" data-copy="${escapeHtml(data.contractAddress)}" aria-label="Copy contract address">
@@ -422,6 +484,16 @@
             : ""
         }
 
+        <!-- Contract Analysis (EVM only) -->
+        ${
+          r.contractAnalysis
+            ? `<div class="ta-card">
+                <h3 class="ta-section-title">📜 Contract Analysis</h3>
+                <p>${escapeHtml(r.contractAnalysis)}</p>
+              </div>`
+            : ""
+        }
+
         <!-- Domain Age -->
         ${
           r.domainAnalysis
@@ -492,7 +564,9 @@
           ${sources.dexScreener ? '<span class="ta-source-pill">DexScreener</span>' : ""}
           ${sources.rugCheck ? '<span class="ta-source-pill">RugCheck</span>' : ""}
           ${sources.pumpFun ? '<span class="ta-source-pill">pump.fun</span>' : ""}
+          ${sources.goPlus ? '<span class="ta-source-pill">GoPlus Security</span>' : ""}
           ${sources.helius ? '<span class="ta-source-pill">Helius</span>' : ""}
+          ${sources.etherscan ? '<span class="ta-source-pill">Etherscan v2</span>' : ""}
           ${sources.domainAge ? '<span class="ta-source-pill">RDAP / WHOIS</span>' : ""}
           ${sources.github ? '<span class="ta-source-pill">GitHub</span>' : ""}
         </div>
