@@ -4888,6 +4888,97 @@ a.mk-feature-card:hover {
 }
 .new-here-btn svg { color: #00d4ff; }
 
+/* Learn / Resources collapsible (Tour + Guides + Blog) */
+.sidebar-learn {
+  margin-top: 4px;
+}
+
+.learn-toggle {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.06), rgba(0, 255, 136, 0.04));
+  border: 1px solid rgba(0, 212, 255, 0.25) !important;
+  border-radius: 10px;
+  padding: 10px 12px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.learn-toggle:hover {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.08));
+  border-color: rgba(0, 212, 255, 0.5) !important;
+}
+
+.learn-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #f0f0f8);
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.learn-toggle-label svg {
+  color: #00d4ff;
+  flex-shrink: 0;
+}
+
+.learn-toggle .section-chevron {
+  font-size: 10px;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.learn-toggle.open .section-chevron {
+  transform: rotate(180deg);
+}
+
+.learn-content {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 4px 0 0 4px;
+}
+
+.learn-content.open {
+  display: flex;
+}
+
+.learn-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.learn-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #f0f0f8);
+}
+
+.learn-item svg {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.learn-item:hover svg {
+  color: #00d4ff;
+}
+
 /* ============================================= */
 /* PUBLIC LEADERBOARD (leaderboard.html)          */
 /* ============================================= */

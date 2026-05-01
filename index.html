@@ -39,7 +39,7 @@
     html, body { background: #060610 !important; color: #f0f0f8; }
     #app { background: #060610; }
   </style>
-  <link rel="stylesheet" href="styles.css?v=38" />
+  <link rel="stylesheet" href="styles.css?v=39" />
 </head>
 <body style="background:#060610;">
   <div id="app">
@@ -74,20 +74,6 @@
         <span class="pro-badge">Pro</span>
       </a>
 
-      <a href="/guides.html" class="token-analysis-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-        </svg>
-        Setup Guides
-      </a>
-
-      <a href="/blog.html" class="token-analysis-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-        </svg>
-        Blog
-      </a>
-
       <!-- Top referrer widget — populated by JS from /api/leaderboard -->
       <a href="/leaderboard.html" id="sidebar-leaderboard-widget" class="sidebar-leaderboard-widget" hidden>
         <div class="sidebar-leaderboard-widget-label">🏆 Top referrer</div>
@@ -95,12 +81,38 @@
         <div class="sidebar-leaderboard-widget-stat" id="sidebar-leaderboard-stat">—</div>
       </a>
 
-      <a href="/welcome.html" class="token-analysis-btn new-here-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
-        </svg>
-        New here? Start tour
-      </a>
+      <!-- Learn section — collapses Tour, Guides, Blog into one tidy entry -->
+      <div class="sidebar-section sidebar-learn">
+        <button class="sidebar-section-toggle learn-toggle" id="learn-toggle">
+          <span class="learn-toggle-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+            </svg>
+            New here? Learn more
+          </span>
+          <span class="section-chevron">&#9660;</span>
+        </button>
+        <div class="sidebar-section-content learn-content" id="learn-content">
+          <a href="/welcome.html" class="learn-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Start tour
+          </a>
+          <a href="/guides.html" class="learn-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            Setup Guides
+          </a>
+          <a href="/blog.html" class="learn-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            Blog
+          </a>
+        </div>
+      </div>
 
       <!-- Scrollable sidebar body -->
       <div class="sidebar-body">
@@ -408,7 +420,7 @@
   <script src="sentry.js"></script>
   <script src="auth.js?v=20"></script>
   <script src="knowledge-base.js?v=12"></script>
-  <script src="agent.js?v=22"></script>
+  <script src="agent.js?v=23"></script>
   <script>
     // Price ticker
     async function updatePriceTicker() {

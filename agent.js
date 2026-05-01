@@ -128,6 +128,18 @@ window.DegenToast = (function () {
     });
   }
 
+  // Learn accordion (Tour / Guides / Blog)
+  const learnToggle = document.getElementById("learn-toggle");
+  const learnContent = document.getElementById("learn-content");
+  let learnOpen = false;
+  if (learnToggle && learnContent) {
+    learnToggle.addEventListener("click", () => {
+      learnOpen = !learnOpen;
+      learnToggle.classList.toggle("open", learnOpen);
+      learnContent.classList.toggle("open", learnOpen);
+    });
+  }
+
   // =============================================
   // AUTH & CONVERSATION INTEGRATION
   // =============================================
