@@ -115,6 +115,32 @@
     return `<span class="ta-risk-badge ${cls}">${escapeHtml(label || level || "Unknown")}</span>`;
   }
 
+  // Animated risk gauge — SVG circle that draws in on render.
+  // Severity → fill percentage maps to perceived urgency.
+  function riskGaugeHtml(level, label) {
+    const lvl = level || "unknown";
+    const fillMap = { low: 25, medium: 55, high: 80, critical: 96, unknown: 0 };
+    const fillPct = fillMap[lvl] ?? 0;
+    const C = 263.89; // 2 * pi * 42
+    const offset = (C * (1 - fillPct / 100)).toFixed(2);
+    const displayLevel = lvl === "unknown" ? "?" : lvl.charAt(0).toUpperCase() + lvl.slice(1);
+    return `
+      <div class="ta-risk-gauge-wrap">
+        <div class="ta-risk-gauge ta-risk-${lvl}" style="--gauge-target: ${offset};">
+          <svg viewBox="0 0 100 100" class="ta-gauge-svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="42" class="ta-gauge-track" />
+            <circle cx="50" cy="50" r="42" class="ta-gauge-fill" />
+          </svg>
+          <div class="ta-gauge-content">
+            <div class="ta-gauge-level">${escapeHtml(displayLevel)}</div>
+            <div class="ta-gauge-eyebrow">RISK</div>
+          </div>
+        </div>
+        ${label ? `<div class="ta-risk-badge ta-risk-${lvl}">${escapeHtml(label)}</div>` : ""}
+      </div>
+    `;
+  }
+
   // =============================================
   // PASTE BUTTON
   // =============================================
@@ -304,7 +330,7 @@
             </div>
           </div>
           <div class="ta-token-header-right">
-            ${riskBadgeHtml(r.riskLevel, r.riskLabel)}
+            ${riskGaugeHtml(r.riskLevel, r.riskLabel)}
           </div>
         </div>
 
@@ -436,6 +462,30 @@
             : ""
         }
 
+        <!-- Share actions -->
+        <div class="ta-share-row">
+          <div class="ta-share-label">📤 Share this analysis</div>
+          <div class="ta-share-buttons">
+            <button class="ta-share-btn" data-action="download" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download PNG</span>
+            </button>
+            <button class="ta-share-btn ta-share-btn-secondary" data-action="copy" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span>Copy image</span>
+            </button>
+            <button class="ta-share-btn ta-share-btn-secondary" data-action="tweet" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span>Tweet</span>
+            </button>
+          </div>
+          <div class="ta-share-status" data-share-status hidden></div>
+        </div>
+
         <!-- Data Sources -->
         <div class="ta-sources">
           <span class="ta-sources-label">Data sources:</span>
@@ -468,6 +518,50 @@
         } catch (err) {
           console.error("Copy failed:", err);
         }
+      });
+    }
+
+    // Wire share-card buttons
+    const shareRow = reportEl.querySelector(".ta-share-row");
+    if (shareRow && window.DegenDeskShareCard) {
+      const statusEl = shareRow.querySelector("[data-share-status]");
+      const setStatus = (msg, isError) => {
+        if (!statusEl) return;
+        statusEl.textContent = msg || "";
+        statusEl.hidden = !msg;
+        statusEl.classList.toggle("ta-share-error", !!isError);
+        if (msg) setTimeout(() => { statusEl.hidden = true; }, 2800);
+      };
+      shareRow.querySelectorAll(".ta-share-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const action = btn.getAttribute("data-action");
+          btn.disabled = true;
+          try {
+            if (action === "download") {
+              await window.DegenDeskShareCard.download(data);
+              setStatus("Downloaded ✓");
+            } else if (action === "copy") {
+              await window.DegenDeskShareCard.copy(data);
+              setStatus("Copied to clipboard ✓");
+            } else if (action === "tweet") {
+              const sym = data.metrics?.symbol || "this token";
+              const lvl = data.report?.riskLevel
+                ? data.report.riskLevel.charAt(0).toUpperCase() + data.report.riskLevel.slice(1)
+                : "Unknown";
+              const text = `Just ran a Token Analysis on $${sym} with @DegenDeskXYZ\n\nRisk verdict: ${lvl}\n\nFull report: degendesk.xyz/token-analysis.html`;
+              const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+              window.open(url, "_blank", "noopener,noreferrer");
+              setStatus("Opened X — attach the downloaded image to your tweet ✓");
+              // Auto-trigger download so the user has the image ready to paste
+              setTimeout(() => window.DegenDeskShareCard.download(data).catch(() => {}), 200);
+            }
+          } catch (err) {
+            console.error("Share action failed:", err);
+            setStatus(err.message || "Something went wrong", true);
+          } finally {
+            btn.disabled = false;
+          }
+        });
       });
     }
 
