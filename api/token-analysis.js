@@ -71,6 +71,15 @@ const CHAINS = {
     explorerApi: "https://api.etherscan.io/v2/api",
     explorerChainId: 8453,
   },
+  bsc: {
+    label: "BNB Chain",
+    dexId: "bsc",
+    addrType: "evm",
+    explorer: "https://bscscan.com/token/",
+    goPlusId: "56",
+    explorerApi: "https://api.etherscan.io/v2/api",
+    explorerChainId: 56,
+  },
 };
 
 // Detect chain from address shape, with explicit override.
@@ -612,7 +621,7 @@ async function fetchHeliusDevTrace(creatorAddress) {
 // GPT-4o SYNTHESIS
 // =============================================
 
-const SYSTEM_PROMPT = `You are the Token Analysis engine for Degen Desk — a Pro-tier tool that analyzes tokens across Solana, Ethereum, and Base using on-chain data. The chain is provided in the data as the "chain" field. Adapt your analysis: Solana data comes from RugCheck/pump.fun/Helius; EVM data comes from GoPlus Security and Etherscan. Some signals only apply to one chain — never invent data that wasn't provided.
+const SYSTEM_PROMPT = `You are the Token Analysis engine for Degen Desk — a Pro-tier tool that analyzes tokens across Solana, Ethereum, Base, and BNB Chain (BSC) using on-chain data. The chain is provided in the data as the "chain" field. Adapt your analysis: Solana data comes from RugCheck/pump.fun/Helius; EVM data (ethereum, base, bsc) comes from GoPlus Security and Etherscan v2. Some signals only apply to one chain — never invent data that wasn't provided.
 
 CRITICAL LEGAL RULES (NEVER BREAK THESE):
 1. NEVER predict prices. Never say "this will go to $X" or "this will pump" or "buy this."
@@ -679,7 +688,8 @@ H) GITHUB SIGNALS (from githubAnalysis):
    - POSITIVE signals: 5+ contributors, 100+ stars, regular commits over 6+ months, descriptive commit messages, proper license.
    - If lookupSucceeded is false (e.g. 404), the GitHub link is broken/private — flag it: "The project's linked GitHub repository could not be accessed (private or removed). Public-facing projects typically maintain a publicly visible repo."
 
-I) EVM-SPECIFIC SIGNALS (when chain === "ethereum" or "base", from goPlus):
+I) EVM-SPECIFIC SIGNALS (when chain is "ethereum", "base", or "bsc", from goPlus):
+   - BSC NOTE: BNB Chain has historically had the highest concentration of honeypots and high-tax scam tokens of any EVM chain. Be especially aggressive about flagging BSC tokens with isHoneypot, high taxes, hidden owner, mintable, or unlocked LP. The base rate of scams is much higher than ETH/Base — calibrate your skepticism accordingly.
    - HONEYPOT: If isHoneypot is true, OR cannotSellAll is true, OR cannotBuy is true → riskLevel MUST be "critical." This is a hard rug — users cannot sell. State plainly: "This contract is flagged as a honeypot — buyers cannot sell. Avoid."
    - HIGH TAX: buyTax or sellTax > 10% is a major red flag. > 25% is effectively a rug (you lose a quarter of your trade to the team). Flag explicitly with the percentages.
    - OWNERSHIP: If hiddenOwner is true OR canTakeBackOwnership is true OR ownerChangeBalance is true → flag aggressively. The deployer can pause trading, blacklist your address, or modify your balance. Combine with low ownerAddress activity for severity.

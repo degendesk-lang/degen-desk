@@ -37,7 +37,9 @@
     solana: "e.g. DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
     ethereum: "e.g. 0x6982508145454Ce325dDbE47a25d4ec3d2311933",
     base: "e.g. 0x1111111111166b7FE7bd91427724B487980aFc69",
+    bsc: "e.g. 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
   };
+  const CHAIN_LABELS = { solana: "Solana", ethereum: "Ethereum", base: "Base", bsc: "BNB Chain" };
   function isValidForChain(addr, chain) {
     if (chain === "solana") return SOLANA_ADDR_RE.test(addr);
     return EVM_ADDR_RE.test(addr);
@@ -238,8 +240,7 @@
     if (isAnalyzing) return;
     const ca = caInputEl.value.trim();
     if (!isValidForChain(ca, selectedChain)) {
-      const chainLabel = selectedChain === "solana" ? "Solana" : selectedChain === "base" ? "Base" : "Ethereum";
-      setInputError(`That doesn't look like a valid ${chainLabel} contract address.`);
+      setInputError(`That doesn't look like a valid ${CHAIN_LABELS[selectedChain] || "contract"} address.`);
       return;
     }
 

@@ -57,7 +57,7 @@
     /* Make sure the hidden attribute wins over class-based display:flex */
     #ta-app [hidden] { display: none !important; }
   </style>
-  <link rel="stylesheet" href="styles.css?v=40" />
+  <link rel="stylesheet" href="styles.css?v=41" />
 </head>
 <body class="ta-body" style="background:#060610;">
   <div id="ta-app" class="ta-app">
@@ -102,7 +102,7 @@
         <div class="ta-gate-card">
           <div class="ta-gate-icon">🔒</div>
           <h2 id="ta-gate-title">Pro Feature</h2>
-          <p id="ta-gate-message">Token Analysis is a Pro-only feature. Upgrade to unlock deep on-chain intelligence on Solana, Ethereum, and Base tokens.</p>
+          <p id="ta-gate-message">Token Analysis is a Pro-only feature. Upgrade to unlock deep on-chain intelligence on Solana, Ethereum, Base, and BNB Chain tokens.</p>
           <div class="ta-gate-features">
             <div class="ta-gate-feature">✓ Holder distribution analysis</div>
             <div class="ta-gate-feature">✓ Bundled supply detection</div>
@@ -135,6 +135,10 @@
             <button class="ta-chain-tab" data-chain="base" type="button" role="tab" aria-selected="false">
               <span class="ta-chain-dot ta-chain-dot-base"></span>
               Base
+            </button>
+            <button class="ta-chain-tab" data-chain="bsc" type="button" role="tab" aria-selected="false">
+              <span class="ta-chain-dot ta-chain-dot-bsc"></span>
+              BNB
             </button>
           </div>
           <div class="ta-input-row">
@@ -200,6 +204,6 @@
   <script src="sentry.js"></script>
   <script src="auth.js?v=14"></script>
   <script src="share-card.js?v=1"></script>
-  <script src="token-analysis.js?v=6"></script>
+  <script src="token-analysis.js?v=7"></script>
 </body>
 </html>
