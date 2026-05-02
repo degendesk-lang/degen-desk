@@ -80,6 +80,66 @@
     return null;
   }
 
+  // Collect every plausible CA on the page (URL + DOM). Used as the candidate
+  // set we try in order — first one with trading data wins. Solves the Axiom
+  // problem where /meme/<id> uses an internal identifier and the real SPL
+  // mint only appears in the sidebar.
+  function collectCandidates() {
+    const set = new Set();
+    const urlCa = detectAddress();
+    if (urlCa) set.add(urlCa);
+
+    // Visible text — quick body sweep
+    try {
+      const re = new RegExp(`${SOL_ADDR.source}|${EVM_ADDR.source}`, "g");
+      const text = document.body?.innerText || "";
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        if (looksLikeRealCa(m[0])) set.add(m[0]);
+      }
+    } catch (_) {}
+
+    // Anchor hrefs (most dex sites link the CA to Solscan/Etherscan/etc.)
+    try {
+      const anchors = document.querySelectorAll("a[href]");
+      for (const a of anchors) {
+        const ca = extractCa(a.getAttribute("href") || "");
+        if (ca) set.add(ca);
+      }
+    } catch (_) {}
+
+    // data-* attributes
+    try {
+      const ATTRS = ["data-mint", "data-address", "data-ca", "data-token", "data-token-address"];
+      for (const attr of ATTRS) {
+        const els = document.querySelectorAll(`[${attr}]`);
+        for (const el of els) {
+          const ca = extractCa(el.getAttribute(attr) || "");
+          if (ca) set.add(ca);
+        }
+      }
+    } catch (_) {}
+
+    // Heuristic ordering:
+    //  1. Solana mints ending in "pump" (pump.fun tokens) — almost always
+    //     the real mint when on a memecoin dex
+    //  2. URL CA (still useful for explorers + EVM chains)
+    //  3. Everything else
+    const all = Array.from(set);
+    all.sort((a, b) => {
+      const aPump = /pump$/.test(a) ? 1 : 0;
+      const bPump = /pump$/.test(b) ? 1 : 0;
+      if (aPump !== bPump) return bPump - aPump;
+      // URL CA second priority
+      if (urlCa) {
+        if (a === urlCa) return -1;
+        if (b === urlCa) return 1;
+      }
+      return 0;
+    });
+    return all;
+  }
+
   // ---- Panel ----
   let panelEl = null;
   let currentAddr = null;
@@ -265,30 +325,59 @@
     });
   }
 
-  async function render(addr) {
+  async function tryCandidates(candidates, panel) {
+    // Iterate the candidate list and pick the first CA that returns data.
+    for (const addr of candidates) {
+      const resp = await quickCheck(addr);
+      if (resp?.ok && resp.data) {
+        return { addr, data: resp.data };
+      }
+    }
+    return null;
+  }
+
+  async function render(initialAddr) {
     if (!panelEl) {
       panelEl = document.createElement("div");
       panelEl.className = "dd-panel";
       document.documentElement.appendChild(panelEl);
     }
-    panelEl.innerHTML = renderPanel(addr, "loading");
+    panelEl.innerHTML = renderPanel(initialAddr, "loading");
     bindActions();
-    const resp = await quickCheck(addr);
+
+    // Build the full candidate list and try them in priority order
+    const candidates = collectCandidates();
+    if (candidates.length === 0) {
+      panelEl.innerHTML = renderPanel(initialAddr, "error", "No contract address detected on this page.");
+      bindActions();
+      return;
+    }
+
+    const result = await tryCandidates(candidates, panelEl);
     if (panelEl.classList.contains("dd-panel-collapsed")) return;
-    if (resp?.ok && resp.data) {
-      panelEl.innerHTML = renderPanel(addr, "ok", resp.data);
+
+    if (result) {
+      currentAddr = result.addr;
+      panelEl.innerHTML = renderPanel(result.addr, "ok", result.data);
     } else {
-      panelEl.innerHTML = renderPanel(addr, "error", resp?.error || null);
+      panelEl.innerHTML = renderPanel(initialAddr, "error", "No DexScreener data found for any address on this page.");
     }
     bindActions();
   }
 
   async function init() {
     if (window.__ddPanelDismissed) return;
-    const addr = detectAddress();
-    if (!addr) return;
-    if (currentAddr === addr) return;
-    currentAddr = addr;
+
+    // Wait briefly for SPA-rendered DOM to settle so the candidate sweep
+    // has something to work with on Axiom/Bullx/etc.
+    await new Promise((r) => setTimeout(r, 600));
+
+    const candidates = collectCandidates();
+    if (candidates.length === 0) return;
+    const initialAddr = candidates[0];
+    if (currentAddr === initialAddr) return;
+    currentAddr = initialAddr;
+
     const collapsed = await loadCollapsed();
     if (collapsed) {
       if (!panelEl) {
@@ -300,7 +389,7 @@
       bindActions();
       return;
     }
-    render(addr);
+    render(initialAddr);
   }
 
   init();
@@ -310,9 +399,7 @@
   setInterval(() => {
     if (window.location.href !== lastHref) {
       lastHref = window.location.href;
-      // Reset panel for the new page if a different address shows up
-      const newAddr = detectAddress();
-      if (newAddr && newAddr !== currentAddr && !window.__ddPanelDismissed) {
+      if (!window.__ddPanelDismissed) {
         currentAddr = null;
         init();
       }
