@@ -20,6 +20,31 @@ dd-ca:hover, .dd-ca:hover {
   border-bottom-color: rgba(0, 255, 136, 0.85) !important;
 }
 
+/* Elements where the CA lives in href/data-* (dex sites: Axiom, Photon,
+   Bullx, Dexscreener, etc.). We don't wrap their text — we attach hover
+   behavior to the existing element and add a subtle marker so users
+   know it's hoverable. */
+.dd-ca-link {
+  position: relative !important;
+}
+
+.dd-ca-link::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: -2px !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, rgba(0, 255, 136, 0), rgba(0, 255, 136, 0.7), rgba(0, 255, 136, 0)) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.15s ease !important;
+}
+
+.dd-ca-link:hover::after {
+  opacity: 1 !important;
+}
+
 /* ---- Popover ---- */
 .dd-popover {
   position: absolute !important;

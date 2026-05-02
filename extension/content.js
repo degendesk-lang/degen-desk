@@ -299,7 +299,60 @@
     return false;
   }
 
+  // Extract a CA substring from any string. Walks the regex once
+  // and returns the first plausible match (real-CA gated).
+  function extractCa(s) {
+    if (!s || typeof s !== "string" || s.length < 32) return null;
+    const re = new RegExp(`${SOL_ADDR.source}|${EVM_ADDR.source}`, "g");
+    let m;
+    while ((m = re.exec(s)) !== null) {
+      if (looksLikeRealCa(m[0])) return m[0];
+    }
+    return null;
+  }
+
+  // Mark an element as a Degen Desk chip without wrapping its content.
+  // Used for elements where the CA lives in an attribute, not visible text
+  // (links on dex sites like Axiom/Photon/Bullx, dexscreener pair pages,
+  // X cards with copy buttons, etc.)
+  const ATTR_SOURCES = ["data-mint", "data-address", "data-ca", "data-token", "data-token-address", "title", "aria-label"];
+
+  function markElementWithCa(el, addr) {
+    if (!el || el.dataset.ddBound === "1") return;
+    el.dataset.ddBound = "1";
+    el.dataset.ddAddr = addr;
+    el.classList.add("dd-ca-link");
+    el.addEventListener("mouseenter", () => showPopover(el, addr));
+    el.addEventListener("mouseleave", scheduleHide);
+    // Don't intercept the click — host site's link/button behavior should
+    // still work. Hover is the discovery surface; click goes to the report
+    // via the popover CTA.
+  }
+
+  function scanAttributes(root) {
+    if (!root || !root.querySelectorAll) return;
+    // <a href="..."> — primary source for dex sites and explorers
+    const links = root.querySelectorAll("a[href]");
+    for (const a of links) {
+      if (a.dataset.ddBound === "1") continue;
+      const addr = extractCa(a.getAttribute("href") || "");
+      if (addr) markElementWithCa(a, addr);
+    }
+    // Generic data-* attributes (Axiom, Photon, Bullx, Dexscreener, etc.)
+    for (const attr of ATTR_SOURCES) {
+      const els = root.querySelectorAll(`[${attr}]`);
+      for (const el of els) {
+        if (el.dataset.ddBound === "1") continue;
+        const addr = extractCa(el.getAttribute(attr) || "");
+        if (addr) markElementWithCa(el, addr);
+      }
+    }
+  }
+
   function scan(root) {
+    if (!root) return;
+
+    // 1) Wrap visible text nodes (regular pages, X tweets, Discord messages)
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         if (shouldSkip(node)) return NodeFilter.FILTER_REJECT;
@@ -311,6 +364,33 @@
     let n;
     while ((n = walker.nextNode())) targets.push(n);
     targets.forEach(wrapTextNode);
+
+    // 2) Mark elements whose CA lives in attributes (dex sites, explorers)
+    if (root.nodeType === Node.ELEMENT_NODE || root === document.body) {
+      scanAttributes(root.nodeType === Node.ELEMENT_NODE ? root : document.body);
+    }
+
+    // 3) Recurse into open shadow roots — many SPAs use them (web components)
+    const shadowHosts = (root.querySelectorAll && root.querySelectorAll("*")) || [];
+    for (const host of shadowHosts) {
+      if (host.shadowRoot && !host.shadowRoot.__ddScanned) {
+        host.shadowRoot.__ddScanned = true;
+        try { scan(host.shadowRoot); } catch (_) {}
+      }
+    }
+
+    // 4) Also pick up CAs in the current page URL (token detail pages)
+    const fromUrl = extractCa(window.location.href);
+    if (fromUrl && !window.__ddPageCa) {
+      window.__ddPageCa = fromUrl;
+      // Mark common page-level title elements so the user can hover the heading
+      const candidates = document.querySelectorAll("h1, h2, [class*='token-name'], [class*='TokenName'], [class*='symbol']");
+      for (const el of candidates) {
+        if (el.dataset.ddBound === "1") continue;
+        markElementWithCa(el, fromUrl);
+        break; // mark just the first prominent heading
+      }
+    }
   }
 
   // Initial pass
