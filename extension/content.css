@@ -242,3 +242,223 @@ dd-ca:hover, .dd-ca:hover {
 @keyframes dd-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ============================================================
+   Floating site overlay panel — bottom-right, dex-aware
+   ============================================================ */
+.dd-panel {
+  position: fixed !important;
+  right: 18px !important;
+  bottom: 18px !important;
+  width: 320px !important;
+  z-index: 2147483646 !important;
+  background: linear-gradient(135deg, #0a0a14, #11111d) !important;
+  color: #f0f0f8 !important;
+  border: 1px solid rgba(167, 139, 250, 0.35) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.4) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  box-sizing: border-box !important;
+  text-align: left !important;
+  animation: dd-panel-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.dd-panel * {
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+}
+
+@keyframes dd-panel-in {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.dd-panel-collapsed {
+  width: 52px !important;
+  height: 52px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  background: linear-gradient(135deg, #0a0a14, #11111d) !important;
+  border: 1px solid rgba(167, 139, 250, 0.45) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 18px rgba(167, 139, 250, 0.15) !important;
+}
+
+.dd-panel-tab-btn {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.dd-panel-tab-btn img {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  vertical-align: middle !important;
+}
+
+.dd-panel-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.dd-panel-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #00ff88 !important;
+}
+
+.dd-panel-brand img {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 6px !important;
+}
+
+.dd-panel-actions {
+  display: flex !important;
+  gap: 4px !important;
+}
+
+.dd-panel-btn-ic {
+  width: 24px !important;
+  height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(240, 240, 248, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  transition: background 0.12s ease, color 0.12s ease !important;
+}
+
+.dd-panel-btn-ic:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+.dd-panel-body {
+  padding: 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.dd-panel-loading {
+  align-items: center !important;
+  text-align: center !important;
+  padding: 20px 14px !important;
+}
+
+.dd-panel-tokenrow {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.dd-panel-tlogo {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  flex-shrink: 0 !important;
+  object-fit: cover !important;
+}
+
+.dd-panel-tinfo {
+  min-width: 0 !important;
+}
+
+.dd-panel-tname {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 230px !important;
+}
+
+.dd-panel-tsym {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: #a78bfa !important;
+  margin-top: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+}
+
+.dd-panel-pitch {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  padding: 9px 12px !important;
+  background: rgba(167, 139, 250, 0.06) !important;
+  border: 1px solid rgba(167, 139, 250, 0.2) !important;
+  border-radius: 9px !important;
+}
+
+.dd-panel-pitch strong {
+  color: #fff !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+}
+
+.dd-panel-pitch span {
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  color: rgba(240, 240, 248, 0.6) !important;
+  letter-spacing: 0.1px !important;
+}
+
+.dd-panel-cta {
+  display: block !important;
+  width: 100% !important;
+  padding: 10px 12px !important;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 9px !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  letter-spacing: 0.2px !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease !important;
+  font-family: inherit !important;
+}
+
+.dd-panel-cta:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 22px rgba(167, 139, 250, 0.45) !important;
+}
+
+.dd-panel-addr {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace !important;
+  font-size: 10.5px !important;
+  color: rgba(240, 240, 248, 0.4) !important;
+  text-align: center !important;
+}
+
+@media (max-width: 600px) {
+  .dd-panel { width: 280px !important; right: 10px !important; bottom: 10px !important; }
+}

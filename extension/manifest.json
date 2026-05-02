@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Degen Desk",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "On-chain risk verdicts on every page. Hover any Solana, Ethereum, Base, or BNB Chain contract address to see live metrics — and get the full Pro analysis in one click.",
   "author": "Degen Desk",
   "homepage_url": "https://degendesk.xyz",
@@ -36,7 +36,7 @@
         "https://www.degendesk.xyz/*",
         "*://localhost/*"
       ],
-      "js": ["content.js"],
+      "js": ["content.js", "sites.js"],
       "css": ["content.css"],
       "run_at": "document_idle",
       "all_frames": false
