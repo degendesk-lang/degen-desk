@@ -206,6 +206,57 @@
     });
   }
 
+  function searchToken(query, chainHint) {
+    return new Promise((resolve) => {
+      try {
+        chrome.runtime.sendMessage({ type: "SEARCH_TOKEN", query, chainHint }, (resp) => {
+          resolve(resp || { ok: false, error: "no response" });
+        });
+      } catch (e) {
+        resolve({ ok: false, error: e?.message || "send failed" });
+      }
+    });
+  }
+
+  // Best-effort token-name extraction for the search fallback. Looks at
+  // og:title meta, the document title, and the most prominent heading.
+  function extractTokenName() {
+    const candidates = [];
+    const og = document.querySelector('meta[property="og:title"]')?.getAttribute("content");
+    if (og) candidates.push(og);
+    if (document.title) candidates.push(document.title);
+    const h1 = document.querySelector("h1")?.textContent;
+    if (h1) candidates.push(h1);
+    const h2 = document.querySelector("h2")?.textContent;
+    if (h2) candidates.push(h2);
+
+    // Clean each candidate: strip currency symbols, arrows, price strings,
+    // site name suffixes ("| Axiom", "· Pump"), and excess whitespace.
+    const cleaned = candidates
+      .map((s) =>
+        String(s || "")
+          .replace(/[↑↓→]/g, "")
+          .replace(/\$[\d.,]+[KMB]?/gi, "")
+          .replace(/\|\s*[a-z0-9 .]+$/i, "")
+          .replace(/·.*$/i, "")
+          .replace(/—.*$/, "")
+          .replace(/\s+/g, " ")
+          .trim()
+      )
+      .filter((s) => s && s.length >= 2 && s.length <= 60);
+    return cleaned[0] || null;
+  }
+
+  function chainHintFromHost() {
+    const h = window.location.hostname.toLowerCase();
+    if (/(axiom\.trade|pump\.fun|photon-sol|solscan)/.test(h)) return "solana";
+    if (/etherscan/.test(h)) return "ethereum";
+    if (/basescan/.test(h)) return "base";
+    if (/bscscan/.test(h)) return "bsc";
+    // Bullx + Dexscreener can be any chain
+    return null;
+  }
+
   function renderPanel(addr, state, data) {
     const short = `${addr.slice(0, 6)}…${addr.slice(-4)}`;
     if (state === "loading") {
@@ -334,7 +385,7 @@
     });
   }
 
-  async function tryCandidates(candidates, panel) {
+  async function tryCandidates(candidates) {
     // Iterate the candidate list and pick the first CA that returns data.
     for (const addr of candidates) {
       const resp = await quickCheck(addr);
@@ -356,20 +407,36 @@
 
     // Build the full candidate list and try them in priority order
     const candidates = collectCandidates();
-    if (candidates.length === 0) {
-      panelEl.innerHTML = renderPanel(initialAddr, "error", "No contract address detected on this page.");
-      bindActions();
-      return;
+    console.log("[Degen Desk] CA candidates collected:", candidates);
+
+    let result = candidates.length > 0 ? await tryCandidates(candidates) : null;
+
+    // Fallback: when no on-page CA resolves (Axiom uses an internal page id),
+    // search DexScreener by the visible token name and pick the highest-
+    // liquidity match on the chain hint.
+    if (!result) {
+      const name = extractTokenName();
+      const chainHint = chainHintFromHost();
+      console.log("[Degen Desk] CA fallback search:", { name, chainHint });
+      if (name) {
+        const resp = await searchToken(name, chainHint);
+        if (resp?.ok && resp.data?.address) {
+          result = { addr: resp.data.address, data: resp.data };
+        }
+      }
     }
 
-    const result = await tryCandidates(candidates, panelEl);
     if (panelEl.classList.contains("dd-panel-collapsed")) return;
 
     if (result) {
       currentAddr = result.addr;
       panelEl.innerHTML = renderPanel(result.addr, "ok", result.data);
     } else {
-      panelEl.innerHTML = renderPanel(initialAddr, "error", "No DexScreener data found for any address on this page.");
+      panelEl.innerHTML = renderPanel(
+        initialAddr || "—",
+        "error",
+        "Couldn't resolve a token on this page. Try the toolbar popup or refresh."
+      );
     }
     bindActions();
   }
@@ -382,9 +449,13 @@
     await new Promise((r) => setTimeout(r, 600));
 
     const candidates = collectCandidates();
-    if (candidates.length === 0) return;
-    const initialAddr = candidates[0];
-    if (currentAddr === initialAddr) return;
+    const tokenName = extractTokenName();
+    // Show the panel if we have either a CA candidate or a token name we
+    // can search by — covers Axiom's internal-id case where no CA is in DOM.
+    if (candidates.length === 0 && !tokenName) return;
+
+    const initialAddr = candidates[0] || null;
+    if (initialAddr && currentAddr === initialAddr) return;
     currentAddr = initialAddr;
 
     const collapsed = await loadCollapsed();
