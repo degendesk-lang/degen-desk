@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "Degen Desk",
+  "version": "0.1.0",
+  "description": "On-chain risk verdicts on every page. Hover any Solana, Ethereum, Base, or BNB Chain contract address to see live metrics — and get the full Pro analysis in one click.",
+  "author": "Degen Desk",
+  "homepage_url": "https://degendesk.xyz",
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "action": {
+    "default_title": "Degen Desk",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+    }
+  },
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "exclude_matches": [
+        "https://degendesk.xyz/*",
+        "https://www.degendesk.xyz/*",
+        "*://localhost/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+
+  "host_permissions": [
+    "https://degendesk.xyz/*",
+    "https://api.dexscreener.com/*"
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

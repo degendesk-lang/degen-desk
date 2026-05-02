@@ -705,6 +705,26 @@
       // Pro user — show the analyzer
       showAnalyzer();
 
+      // Deep-link from the browser extension: ?ca=<address>&chain=<chain>
+      // Pre-fill the input, switch to the right chain tab, and auto-run.
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const linkedCa = params.get("ca");
+        const linkedChain = params.get("chain");
+        if (linkedCa) {
+          if (linkedChain && CHAIN_LABELS[linkedChain]) {
+            setSelectedChain(linkedChain);
+          }
+          caInputEl.value = linkedCa.trim();
+          caInputEl.dispatchEvent(new Event("input", { bubbles: true }));
+          if (!analyzeBtnEl.disabled) {
+            setTimeout(() => runAnalysis(), 350);
+          }
+        }
+      } catch (err) {
+        // non-fatal — deep link parsing should never break the page
+      }
+
       // Load daily count from Firestore if available
       try {
         const db = firebase.firestore();

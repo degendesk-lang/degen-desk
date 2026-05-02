@@ -1,0 +1,219 @@
+/* ============================================================
+   Degen Desk content-script styles
+   Scoped via the dd- prefix. We use CSS-in-shadow-DOM-style
+   reset rules on .dd-popover so host pages can't bleed in.
+   ============================================================ */
+
+dd-ca, .dd-ca {
+  display: inline !important;
+  background: linear-gradient(180deg, transparent 60%, rgba(0, 255, 136, 0.18) 60%) !important;
+  border-bottom: 1px dashed rgba(0, 255, 136, 0.45) !important;
+  cursor: pointer !important;
+  border-radius: 2px !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
+  font-family: inherit !important;
+  color: inherit !important;
+}
+
+dd-ca:hover, .dd-ca:hover {
+  background: linear-gradient(180deg, transparent 50%, rgba(0, 255, 136, 0.32) 50%) !important;
+  border-bottom-color: rgba(0, 255, 136, 0.85) !important;
+}
+
+/* ---- Popover ---- */
+.dd-popover {
+  position: absolute !important;
+  z-index: 2147483647 !important; /* max */
+  width: 320px !important;
+  padding: 14px !important;
+  background: linear-gradient(135deg, #0a0a14, #11111d) !important;
+  color: #f0f0f8 !important;
+  border: 1px solid rgba(167, 139, 250, 0.35) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.4) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(4px) !important;
+  transition: opacity 0.14s ease, transform 0.14s ease !important;
+  box-sizing: border-box !important;
+  text-align: left !important;
+}
+
+.dd-popover.dd-pop-visible {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateY(0) !important;
+}
+
+.dd-popover * {
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+}
+
+.dd-pop-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+.dd-pop-logo {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  flex-shrink: 0 !important;
+  object-fit: cover !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dd-pop-titlewrap {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+}
+
+.dd-pop-title {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #00ff88 !important;
+}
+
+.dd-pop-name {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 240px !important;
+}
+
+.dd-pop-sym {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: #a78bfa !important;
+  margin-top: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+}
+
+.dd-chain-badge {
+  display: inline-block !important;
+  padding: 1.5px 6px !important;
+  border-radius: 999px !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.4px !important;
+  text-transform: uppercase !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.dd-chain-solana { color: #14f195 !important; border-color: rgba(20, 241, 149, 0.35) !important; }
+.dd-chain-ethereum { color: #8a92ff !important; border-color: rgba(98, 126, 234, 0.35) !important; }
+.dd-chain-base { color: #5a9bff !important; border-color: rgba(0, 82, 255, 0.35) !important; }
+.dd-chain-bsc { color: #f3ba2f !important; border-color: rgba(243, 186, 47, 0.4) !important; }
+
+.dd-pop-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+.dd-pop-cell {
+  padding: 8px 10px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 8px !important;
+}
+
+.dd-pop-cell-label {
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(240, 240, 248, 0.55) !important;
+  margin-bottom: 3px !important;
+}
+
+.dd-pop-cell-val {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+}
+
+.dd-up { color: #00ff88 !important; }
+.dd-down { color: #ff5555 !important; }
+
+.dd-pop-foot {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.dd-pop-cta {
+  display: block !important;
+  width: 100% !important;
+  padding: 9px 12px !important;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 9px !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  letter-spacing: 0.2px !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease !important;
+}
+
+.dd-pop-cta:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4) !important;
+}
+
+.dd-pop-addr {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace !important;
+  font-size: 11px !important;
+  color: rgba(240, 240, 248, 0.4) !important;
+  text-align: center !important;
+}
+
+.dd-pop-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.dd-pop-loading {
+  padding: 12px 0 !important;
+}
+
+.dd-pop-err {
+  padding: 8px 10px !important;
+  background: rgba(255, 85, 85, 0.08) !important;
+  border: 1px solid rgba(255, 85, 85, 0.25) !important;
+  border-radius: 8px !important;
+  color: #ff8a8a !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+}
+
+.dd-spinner {
+  width: 22px !important;
+  height: 22px !important;
+  border: 2.5px solid rgba(167, 139, 250, 0.2) !important;
+  border-top-color: #a78bfa !important;
+  border-radius: 50% !important;
+  animation: dd-spin 0.7s linear infinite !important;
+}
+
+@keyframes dd-spin {
+  to { transform: rotate(360deg); }
+}

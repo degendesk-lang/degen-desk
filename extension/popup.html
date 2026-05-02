@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Degen Desk</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="dd-pop-hdr">
+    <img src="icons/icon-32.png" alt="Degen Desk" />
+    <div>
+      <div class="dd-pop-title">Degen Desk</div>
+      <div class="dd-pop-sub">On-chain risk · Sol · ETH · Base · BNB</div>
+    </div>
+  </header>
+
+  <section class="dd-pop-section">
+    <label class="dd-pop-label">Paste a contract address</label>
+    <input
+      id="ca-input"
+      type="text"
+      class="dd-pop-input"
+      placeholder="Solana, Ethereum, Base, or BNB Chain CA"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <button id="open-btn" class="dd-pop-btn" disabled>Open full report →</button>
+    <div id="ca-error" class="dd-pop-err" hidden></div>
+  </section>
+
+  <section class="dd-pop-section dd-pop-tip">
+    <strong>Tip:</strong> Hover any contract address on any page to see live metrics. Underlined in green.
+  </section>
+
+  <footer class="dd-pop-footer">
+    <a href="https://degendesk.xyz/" target="_blank" rel="noopener">degendesk.xyz</a>
+    <span class="dd-pop-dot">·</span>
+    <a href="https://degendesk.xyz/pricing.html" target="_blank" rel="noopener">Upgrade to Pro</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
