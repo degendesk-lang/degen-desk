@@ -346,21 +346,47 @@
       reasonable steps to protect your information.
     </p>
 
-    <h2>9. International users</h2>
+    <h2>9. Browser extension</h2>
+    <p>
+      The Degen Desk browser extension (Chrome / Chromium) is governed by this same Privacy Policy. It runs as a
+      content script on web pages and is designed to read the minimum data needed to surface token information
+      where you encounter it.
+    </p>
+    <p><strong>What the extension does:</strong></p>
+    <ul>
+      <li>Detects 32&ndash;44 character base58 strings (Solana mints) and <code>0x</code>-prefixed 40-hex strings (EVM addresses) in visible text and element attributes on pages you visit.</li>
+      <li>When you hover a detected address, the extension calls <code>https://degendesk.xyz/api/quick-check</code> with that address to fetch live market data (powered by DexScreener). Only the address is sent &mdash; not the URL, page content, or any other context.</li>
+      <li>On token detail pages of supported dex sites and explorers (Pump.fun, Axiom, Bullx, Photon, Dexscreener, Solscan, Etherscan, Basescan, Bscscan), it injects a floating panel showing the same metrics. If the address cannot be resolved from the page, the extension may call DexScreener&rsquo;s public search API (<code>api.dexscreener.com</code>) with a token name extracted from the page title to find a matching address.</li>
+      <li>Stores a single boolean preference (panel collapsed or expanded) in <code>chrome.storage.local</code>. No other data is persisted.</li>
+    </ul>
+    <p><strong>What the extension does NOT do:</strong></p>
+    <ul>
+      <li>It does <strong>not</strong> read, store, or transmit any page content beyond contract-address strings you actively interact with.</li>
+      <li>It does <strong>not</strong> track your browsing history, the pages you visit, or your activity on those pages.</li>
+      <li>It does <strong>not</strong> read cookies, passwords, form data, or any authenticated content on websites.</li>
+      <li>It does <strong>not</strong> include any third-party analytics, advertising, or tracking SDKs.</li>
+      <li>It does <strong>not</strong> sell or transfer user data to any third party.</li>
+    </ul>
+    <p>
+      You may uninstall the extension at any time from <code>chrome://extensions</code>. Uninstalling removes all
+      stored preferences immediately.
+    </p>
+
+    <h2>10. International users</h2>
     <p>
       Degen Desk is operated from the United States. If you use the Service from outside the U.S., you
       understand that your information will be processed in the U.S. where data protection laws may differ
       from those of your country.
     </p>
 
-    <h2>10. Changes to this policy</h2>
+    <h2>11. Changes to this policy</h2>
     <p>
       We may update this Privacy Policy from time to time. If we make material changes, we will post the
       updated policy here and update the &ldquo;Last updated&rdquo; date at the top. Continued use of the Service
       after changes take effect constitutes acceptance of the updated policy.
     </p>
 
-    <h2>11. Contact us</h2>
+    <h2>12. Contact us</h2>
     <div class="card">
       <p>Questions about this policy or your data? We&rsquo;re happy to help.</p>
       <p><strong>Email:</strong> <a href="mailto:support@degendesk.xyz">support@degendesk.xyz</a></p>
