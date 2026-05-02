@@ -89,10 +89,12 @@
     const urlCa = detectAddress();
     if (urlCa) set.add(urlCa);
 
-    // Visible text — quick body sweep
+    // Body text — use textContent (not innerText) so CSS truncation doesn't
+    // hide the full address. Many dex sites visually truncate via
+    // text-overflow: ellipsis but the underlying text still has the full CA.
     try {
       const re = new RegExp(`${SOL_ADDR.source}|${EVM_ADDR.source}`, "g");
-      const text = document.body?.innerText || "";
+      const text = document.body?.textContent || "";
       let m;
       while ((m = re.exec(text)) !== null) {
         if (looksLikeRealCa(m[0])) set.add(m[0]);
@@ -108,13 +110,20 @@
       }
     } catch (_) {}
 
-    // data-* attributes
+    // ALL attributes on EVERY element — catches data-clipboard-text on copy
+    // buttons, aria-label on icon links, custom data-* attrs we don't know
+    // about, etc. This is the heaviest scan but only runs once per page load.
     try {
-      const ATTRS = ["data-mint", "data-address", "data-ca", "data-token", "data-token-address"];
-      for (const attr of ATTRS) {
-        const els = document.querySelectorAll(`[${attr}]`);
-        for (const el of els) {
-          const ca = extractCa(el.getAttribute(attr) || "");
+      const all = document.querySelectorAll("*");
+      // Cap at 10000 elements to avoid pathological pages — real dex pages
+      // usually have 1k-5k. Anything past that is unlikely to contain the CA.
+      const max = Math.min(all.length, 10000);
+      for (let i = 0; i < max; i++) {
+        const el = all[i];
+        if (!el.attributes) continue;
+        for (const attr of el.attributes) {
+          if (!attr.value || attr.value.length < 32) continue;
+          const ca = extractCa(attr.value);
           if (ca) set.add(ca);
         }
       }
