@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" class="ta-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk Wallet Analyzer — paste any Solana wallet to see holdings, trade history, PnL, smart-money signals, and KOL identity matches against the kolscan top-traders leaderboard. Free with daily limits, unlimited for Pro." />
+  <title>Wallet Analyzer &middot; Degen Desk</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/wallet-analysis.html" />
+  <meta property="og:title" content="Wallet Analyzer · Degen Desk" />
+  <meta property="og:description" content="Paste any Solana wallet — see holdings, PnL, win rate, and whether it matches a known KOL. Free with daily limits." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:secure_url" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Degen Desk — Research smarter. Trade safer." />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:title" content="Wallet Analyzer · Degen Desk" />
+  <meta name="twitter:description" content="Paste any Solana wallet — see holdings, PnL, win rate, and whether it matches a known KOL." />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=5" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* Same scroll-unlock as token-analysis: the chat app's html,body height/overflow
+       rules would otherwise clip this long-form page. */
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    #wa-app { min-height: 100vh; overflow: visible !important; height: auto !important; }
+    #wa-app [hidden] { display: none !important; }
+
+    /* Wallet-specific layout (uses ta- base styles where it makes sense) */
+    .wa-kol-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(167,139,250,0.18), rgba(167,139,250,0.08));
+      border: 1px solid rgba(167,139,250,0.45);
+      color: #d6c8ff; font-weight: 700; font-size: 13px;
+    }
+    .wa-kol-badge svg { width: 14px; height: 14px; }
+    .wa-stat-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px; margin-top: 16px;
+    }
+    .wa-stat {
+      background: #0f0f1a; border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .wa-stat-label { font-size: 11px; color: rgba(240,240,248,0.55); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .wa-stat-value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .wa-stat-value.pos { color: #00ff88; }
+    .wa-stat-value.neg { color: #ff5555; }
+    .wa-stat-sub { font-size: 12px; color: rgba(240,240,248,0.5); margin-top: 4px; }
+
+    .wa-section {
+      background: #0f0f1a; border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 18px 20px; margin-top: 16px;
+    }
+    .wa-section h3 { margin: 0 0 12px; font-size: 15px; font-weight: 700; }
+
+    .wa-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .wa-table th, .wa-table td { text-align: left; padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .wa-table th { font-weight: 600; color: rgba(240,240,248,0.55); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.06em; }
+    .wa-table td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+    .wa-table .pos { color: #00ff88; }
+    .wa-table .neg { color: #ff5555; }
+    .wa-token-cell { display: flex; align-items: center; gap: 10px; }
+    .wa-token-img { width: 26px; height: 26px; border-radius: 50%; background: #16162a; object-fit: cover; }
+    .wa-token-sym { font-weight: 600; }
+    .wa-token-name { font-size: 11.5px; color: rgba(240,240,248,0.5); }
+
+    .wa-signal-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .wa-signal {
+      background: #16162a; border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .wa-signal-label { font-size: 11px; color: rgba(240,240,248,0.55); text-transform: uppercase; letter-spacing: 0.06em; }
+    .wa-signal-value { font-size: 18px; font-weight: 700; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    .wa-empty { text-align: center; padding: 28px 12px; color: rgba(240,240,248,0.5); font-size: 13px; }
+
+    .wa-edge-banner {
+      background: linear-gradient(90deg, rgba(167,139,250,0.10), rgba(167,139,250,0.02));
+      border: 1px solid rgba(167,139,250,0.25);
+      border-radius: 12px; padding: 12px 16px; margin-top: 12px;
+      font-size: 13px; color: #d6c8ff;
+    }
+    .wa-edge-banner strong { color: #efe7ff; }
+
+    .wa-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    .wa-addr { color: rgba(240,240,248,0.6); word-break: break-all; }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=41" />
+</head>
+<body class="ta-body" style="background:#060610;">
+  <div id="wa-app" class="ta-app">
+
+    <!-- Header -->
+    <header class="ta-header">
+      <a href="/" class="ta-back-link" aria-label="Back to chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="ta-header-title">
+        <div class="ta-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Wallet Analyzer</h1>
+          <span class="ta-subtitle">Solana &middot; Holdings, PnL, KOL match</span>
+        </div>
+      </div>
+      <div class="ta-header-spacer"></div>
+    </header>
+
+    <main class="ta-main">
+
+      <!-- NFA BANNER (TOP) -->
+      <div class="ta-disclaimer-banner">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>This tool reports publicly available on-chain data. Nothing here is financial, investment, or trading advice. Wallet attribution is best-effort and may be wrong. DYOR.</p>
+      </div>
+
+      <!-- ANALYZER -->
+      <section id="wa-analyzer" class="ta-analyzer">
+        <div class="ta-input-card">
+          <label for="wa-addr-input" class="ta-input-label">Solana Wallet Address</label>
+          <div class="ta-input-row">
+            <input
+              id="wa-addr-input"
+              type="text"
+              class="ta-ca-input"
+              placeholder="e.g. 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+              autocomplete="off"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+            />
+            <button id="wa-paste-btn" class="ta-paste-btn" type="button" aria-label="Paste from clipboard">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </button>
+          </div>
+          <button id="wa-analyze-btn" class="ta-analyze-btn" type="button" disabled>
+            <span class="ta-btn-label">Analyze Wallet</span>
+            <span class="ta-btn-count" id="wa-btn-count"></span>
+          </button>
+          <div id="wa-input-error" class="ta-input-error" hidden></div>
+          <div class="wa-edge-banner">
+            <strong>Degen Desk Edge:</strong> we cross-reference every wallet against the kolscan top-trader leaderboard, so if it's a known KOL, you'll see exactly who — and their PnL ranks across daily / weekly / monthly. DexScreener and Birdeye don't do this.
+          </div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="wa-loading" class="ta-loading" hidden>
+          <div class="ta-spinner"></div>
+          <div class="ta-loading-text">Analyzing wallet&hellip;</div>
+          <div class="ta-loading-steps">
+            <div class="ta-loading-step" data-step="balance">Fetching SOL balance &amp; holdings (Helius DAS)</div>
+            <div class="ta-loading-step" data-step="txs">Pulling recent trades (Helius parsed transactions)</div>
+            <div class="ta-loading-step" data-step="kol">Cross-referencing kolscan leaderboard</div>
+            <div class="ta-loading-step" data-step="synth">Synthesizing PnL &amp; smart-money signals</div>
+          </div>
+        </div>
+
+        <!-- Report -->
+        <div id="wa-report" class="ta-report" hidden></div>
+      </section>
+
+      <!-- NFA BANNER (BOTTOM) -->
+      <div class="ta-disclaimer-banner ta-disclaimer-bottom">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>Trade history is parsed from public Solana transactions via Helius. PnL approximations use average cost basis and may differ from realized accounting. Token prices come from Jupiter via Helius DAS. Cryptocurrency trading involves substantial risk of loss. Never invest more than you can afford to lose.</p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
+
+  <!-- Shared auth + wallet analysis logic -->
+  <script src="sentry.js"></script>
+  <script src="auth.js?v=14"></script>
+  <script src="wallet-analysis.js?v=1"></script>
+</body>
+</html>
