@@ -249,51 +249,53 @@ function aggregateSwaps(txs, ownerAddress) {
   for (const tx of txs) {
     if (tx.type !== "SWAP") continue;
     const ts = tx.timestamp || 0;
-    const sw = tx.events?.swap;
-    if (!sw) continue;
+    const sw = tx.events?.swap || null;
 
     let solDeltaLamports = 0; // + = user received SOL, - = user spent SOL
     const tokenDelta = new Map(); // mint -> ui units (signed)
 
-    // Native legs — credit only if account matches owner (when present)
-    if (sw.nativeInput) {
-      const acct = sw.nativeInput.account;
-      const amt = Number(sw.nativeInput.amount || 0);
-      if (!acct || acct === ownerAddress) solDeltaLamports -= amt;
-    }
-    if (sw.nativeOutput) {
-      const acct = sw.nativeOutput.account;
-      const amt = Number(sw.nativeOutput.amount || 0);
-      if (!acct || acct === ownerAddress) solDeltaLamports += amt;
-    }
+    if (sw) {
+      // Native legs — credit only if account matches owner (when present)
+      if (sw.nativeInput) {
+        const acct = sw.nativeInput.account;
+        const amt = Number(sw.nativeInput.amount || 0);
+        if (!acct || acct === ownerAddress) solDeltaLamports -= amt;
+      }
+      if (sw.nativeOutput) {
+        const acct = sw.nativeOutput.account;
+        const amt = Number(sw.nativeOutput.amount || 0);
+        if (!acct || acct === ownerAddress) solDeltaLamports += amt;
+      }
 
-    // tokenInputs = tokens the user provided (negative for the user)
-    for (const t of sw.tokenInputs || []) {
-      const owner = t.userAccount || t.fromUserAccount;
-      if (owner && owner !== ownerAddress) continue;
-      const ui = parseTokenAmount(t);
-      if (!ui) continue;
-      if (t.mint === SOL_MINT) {
-        solDeltaLamports -= Math.round(ui * 1e9);
-      } else {
-        tokenDelta.set(t.mint, (tokenDelta.get(t.mint) || 0) - ui);
+      // tokenInputs = tokens the user provided (negative for the user)
+      for (const t of sw.tokenInputs || []) {
+        const owner = t.userAccount || t.fromUserAccount;
+        if (owner && owner !== ownerAddress) continue;
+        const ui = parseTokenAmount(t);
+        if (!ui) continue;
+        if (t.mint === SOL_MINT) {
+          solDeltaLamports -= Math.round(ui * 1e9);
+        } else {
+          tokenDelta.set(t.mint, (tokenDelta.get(t.mint) || 0) - ui);
+        }
+      }
+      // tokenOutputs = tokens the user received (positive for the user)
+      for (const t of sw.tokenOutputs || []) {
+        const owner = t.userAccount || t.toUserAccount;
+        if (owner && owner !== ownerAddress) continue;
+        const ui = parseTokenAmount(t);
+        if (!ui) continue;
+        if (t.mint === SOL_MINT) {
+          solDeltaLamports += Math.round(ui * 1e9);
+        } else {
+          tokenDelta.set(t.mint, (tokenDelta.get(t.mint) || 0) + ui);
+        }
       }
     }
-    // tokenOutputs = tokens the user received (positive for the user)
-    for (const t of sw.tokenOutputs || []) {
-      const owner = t.userAccount || t.toUserAccount;
-      if (owner && owner !== ownerAddress) continue;
-      const ui = parseTokenAmount(t);
-      if (!ui) continue;
-      if (t.mint === SOL_MINT) {
-        solDeltaLamports += Math.round(ui * 1e9);
-      } else {
-        tokenDelta.set(t.mint, (tokenDelta.get(t.mint) || 0) + ui);
-      }
-    }
 
-    // Fallback: if events.swap had nothing for the user (some aggregators only
-    // populate tokenTransfers), walk the top-level tokenTransfers array.
+    // Fallback: if events.swap was missing or didn't carry the user's leg
+    // (PUMP_AMM and several other DEX integrations leave events.swap empty),
+    // derive the delta directly from tokenTransfers + nativeTransfers.
     if (tokenDelta.size === 0) {
       for (const tt of tx.tokenTransfers || []) {
         if (tt.toUserAccount === ownerAddress) {
