@@ -20,8 +20,8 @@ const SOLANA_ADDR_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key=";
 const HELIUS_PARSED = "https://api.helius.xyz/v0/addresses/";
 
-const FREE_DAILY_CAP = 5;
-const PRO_DAILY_CAP = 25;
+const FREE_DAILY_CAP = 10;
+const PRO_DAILY_CAP = 50;
 
 // =============================================
 // RATE LIMITING (per-IP, in-memory)

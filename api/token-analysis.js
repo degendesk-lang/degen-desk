@@ -850,8 +850,8 @@ module.exports = async function handler(req, res) {
   // Anonymous (no uid) is rejected earlier — OpenAI calls cost real money,
   // and an unauthenticated free path opens a trivial abuse vector.
   // =========================================
-  const FREE_DAILY_CAP = 5;
-  const PRO_DAILY_CAP = 25;
+  const FREE_DAILY_CAP = 10;
+  const PRO_DAILY_CAP = 50;
   let userRef = null;
   let userData = null;
   let tier = "free";
