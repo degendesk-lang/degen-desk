@@ -352,7 +352,7 @@
               </div>
             </td>
             <td class="num">${fmtUnits(h.uiAmount)}</td>
-            <td class="num">${h.priceUsd != null ? fmtUsd(h.priceUsd) : "—"}</td>
+            <td class="num">${h.marketCapUsd != null ? fmtUsd(h.marketCapUsd) : "—"}</td>
             <td class="num">${h.valueUsd != null ? fmtUsd(h.valueUsd) : "—"}</td>
           </tr>
         `;
@@ -366,7 +366,7 @@
             <tr>
               <th>Token</th>
               <th style="text-align:right;">Balance</th>
-              <th style="text-align:right;">Price</th>
+              <th style="text-align:right;">Market Cap</th>
               <th style="text-align:right;">Value</th>
             </tr>
           </thead>

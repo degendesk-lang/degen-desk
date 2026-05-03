@@ -194,6 +194,15 @@ function buildHoldings(assets) {
     if (!ui || ui <= 0) continue;
     const price = ti.price_info?.price_per_token || null;
     const value = price != null ? ui * price : null;
+    // Market cap = circulating supply (in UI units) * price per token.
+    // Helius DAS returns total supply in raw units; convert with decimals.
+    const supplyRaw = ti.supply != null ? Number(ti.supply) : null;
+    const supplyUi =
+      supplyRaw != null && decimals > 0
+        ? supplyRaw / Math.pow(10, decimals)
+        : supplyRaw;
+    const marketCapUsd =
+      price != null && supplyUi != null && supplyUi > 0 ? supplyUi * price : null;
     out.push({
       mint: a.id,
       symbol: ti.symbol || a.content?.metadata?.symbol || "—",
@@ -203,18 +212,38 @@ function buildHoldings(assets) {
       decimals,
       priceUsd: price,
       valueUsd: value,
+      supplyUi,
+      marketCapUsd,
     });
   }
   out.sort((a, b) => (b.valueUsd || 0) - (a.valueUsd || 0));
   return out;
 }
 
-// Walk parsed Helius txs and aggregate per-token SOL flow from SWAP events.
-// Strategy: each tx with type SWAP has events.swap with nativeInput / nativeOutput
-// (lamports SOL) and tokenInputs/tokenOutputs. We attribute the SOL leg to the
-// non-SOL token side and tag it as a buy or sell.
+// Parse the various tokenAmount shapes Helius returns.
+function parseTokenAmount(t) {
+  if (t == null) return 0;
+  if (typeof t.tokenAmount === "number") return t.tokenAmount;
+  if (typeof t.tokenAmount === "string") return Number(t.tokenAmount);
+  if (t.tokenAmount && typeof t.tokenAmount === "object") {
+    if (t.tokenAmount.tokenAmount != null) return Number(t.tokenAmount.tokenAmount);
+    if (t.tokenAmount.uiAmount != null) return Number(t.tokenAmount.uiAmount);
+  }
+  if (t.rawTokenAmount) {
+    const dec = t.rawTokenAmount.decimals || 0;
+    return Number(t.rawTokenAmount.tokenAmount) / Math.pow(10, dec);
+  }
+  return 0;
+}
+
+// Walk parsed Helius txs and aggregate per-token SOL flow.
+// Robust to Jupiter / aggregator routes:
+//  - Compute the user's NET SOL delta for the tx (native + WSOL collapsed).
+//  - Compute the user's NET delta per non-SOL mint.
+//  - Match opposite-signed deltas → buy or sell of that mint.
+// Doesn't assume strict zero on either native leg (rent/refunds are common).
 function aggregateSwaps(txs, ownerAddress) {
-  const perToken = new Map(); // mint -> { buys, sells, buyCount, sellCount, firstTs, lastTs, trades:[] }
+  const perToken = new Map();
   const SOL_MINT = "So11111111111111111111111111111111111111112";
 
   for (const tx of txs) {
@@ -223,52 +252,104 @@ function aggregateSwaps(txs, ownerAddress) {
     const sw = tx.events?.swap;
     if (!sw) continue;
 
-    const inLamports = sw.nativeInput?.amount ? Number(sw.nativeInput.amount) : 0;
-    const outLamports = sw.nativeOutput?.amount ? Number(sw.nativeOutput.amount) : 0;
+    let solDeltaLamports = 0; // + = user received SOL, - = user spent SOL
+    const tokenDelta = new Map(); // mint -> ui units (signed)
 
-    // Token side relevant to this owner
-    const tokenIns = (sw.tokenInputs || []).filter((t) => t.userAccount === ownerAddress);
-    const tokenOuts = (sw.tokenOutputs || []).filter((t) => t.userAccount === ownerAddress);
+    // Native legs — credit only if account matches owner (when present)
+    if (sw.nativeInput) {
+      const acct = sw.nativeInput.account;
+      const amt = Number(sw.nativeInput.amount || 0);
+      if (!acct || acct === ownerAddress) solDeltaLamports -= amt;
+    }
+    if (sw.nativeOutput) {
+      const acct = sw.nativeOutput.account;
+      const amt = Number(sw.nativeOutput.amount || 0);
+      if (!acct || acct === ownerAddress) solDeltaLamports += amt;
+    }
 
-    // Buy: SOL out (user spent SOL), token in. tokenOutputs going TO owner.
-    if (outLamports === 0 && inLamports > 0 && tokenOuts.length > 0) {
-      const sol = inLamports / 1e9;
-      for (const t of tokenOuts) {
-        if (t.mint === SOL_MINT) continue;
-        const ui = t.tokenAmount?.tokenAmount
-          ? Number(t.tokenAmount.tokenAmount)
-          : t.rawTokenAmount
-          ? Number(t.rawTokenAmount.tokenAmount) / Math.pow(10, t.rawTokenAmount.decimals)
-          : 0;
-        const e = perToken.get(t.mint) || emptyAgg();
-        e.buys += sol;
-        e.boughtUnits += ui;
+    // tokenInputs = tokens the user provided (negative for the user)
+    for (const t of sw.tokenInputs || []) {
+      const owner = t.userAccount || t.fromUserAccount;
+      if (owner && owner !== ownerAddress) continue;
+      const ui = parseTokenAmount(t);
+      if (!ui) continue;
+      if (t.mint === SOL_MINT) {
+        solDeltaLamports -= Math.round(ui * 1e9);
+      } else {
+        tokenDelta.set(t.mint, (tokenDelta.get(t.mint) || 0) - ui);
+      }
+    }
+    // tokenOutputs = tokens the user received (positive for the user)
+    for (const t of sw.tokenOutputs || []) {
+      const owner = t.userAccount || t.toUserAccount;
+      if (owner && owner !== ownerAddress) continue;
+      const ui = parseTokenAmount(t);
+      if (!ui) continue;
+      if (t.mint === SOL_MINT) {
+        solDeltaLamports += Math.round(ui * 1e9);
+      } else {
+        tokenDelta.set(t.mint, (tokenDelta.get(t.mint) || 0) + ui);
+      }
+    }
+
+    // Fallback: if events.swap had nothing for the user (some aggregators only
+    // populate tokenTransfers), walk the top-level tokenTransfers array.
+    if (tokenDelta.size === 0) {
+      for (const tt of tx.tokenTransfers || []) {
+        if (tt.toUserAccount === ownerAddress) {
+          const ui = parseTokenAmount(tt);
+          if (!ui) continue;
+          if (tt.mint === SOL_MINT) {
+            solDeltaLamports += Math.round(ui * 1e9);
+          } else {
+            tokenDelta.set(tt.mint, (tokenDelta.get(tt.mint) || 0) + ui);
+          }
+        } else if (tt.fromUserAccount === ownerAddress) {
+          const ui = parseTokenAmount(tt);
+          if (!ui) continue;
+          if (tt.mint === SOL_MINT) {
+            solDeltaLamports -= Math.round(ui * 1e9);
+          } else {
+            tokenDelta.set(tt.mint, (tokenDelta.get(tt.mint) || 0) - ui);
+          }
+        }
+      }
+      // Also walk nativeTransfers for SOL legs we haven't captured
+      for (const nt of tx.nativeTransfers || []) {
+        const amt = Number(nt.amount || 0);
+        if (!amt) continue;
+        if (nt.toUserAccount === ownerAddress) solDeltaLamports += amt;
+        else if (nt.fromUserAccount === ownerAddress) solDeltaLamports -= amt;
+      }
+    }
+
+    if (tokenDelta.size === 0) continue;
+    const sol = solDeltaLamports / 1e9;
+
+    for (const [mint, units] of tokenDelta) {
+      if (units > 0 && sol < 0) {
+        // BUY — user received tokens, paid SOL
+        const e = perToken.get(mint) || emptyAgg();
+        e.buys += -sol;
+        e.boughtUnits += units;
         e.buyCount++;
         e.firstTs = e.firstTs ? Math.min(e.firstTs, ts) : ts;
         e.lastTs = Math.max(e.lastTs || 0, ts);
-        e.trades.push({ ts, kind: "buy", sol, units: ui, signature: tx.signature });
-        perToken.set(t.mint, e);
-      }
-    }
-    // Sell: SOL in (user got SOL), token out. tokenInputs leaving owner.
-    else if (outLamports > 0 && inLamports === 0 && tokenIns.length > 0) {
-      const sol = outLamports / 1e9;
-      for (const t of tokenIns) {
-        if (t.mint === SOL_MINT) continue;
-        const ui = t.tokenAmount?.tokenAmount
-          ? Number(t.tokenAmount.tokenAmount)
-          : t.rawTokenAmount
-          ? Number(t.rawTokenAmount.tokenAmount) / Math.pow(10, t.rawTokenAmount.decimals)
-          : 0;
-        const e = perToken.get(t.mint) || emptyAgg();
+        e.trades.push({ ts, kind: "buy", sol: -sol, units, signature: tx.signature });
+        perToken.set(mint, e);
+      } else if (units < 0 && sol > 0) {
+        // SELL — user sent tokens, received SOL
+        const e = perToken.get(mint) || emptyAgg();
         e.sells += sol;
-        e.soldUnits += ui;
+        e.soldUnits += -units;
         e.sellCount++;
         e.firstTs = e.firstTs ? Math.min(e.firstTs, ts) : ts;
         e.lastTs = Math.max(e.lastTs || 0, ts);
-        e.trades.push({ ts, kind: "sell", sol, units: ui, signature: tx.signature });
-        perToken.set(t.mint, e);
+        e.trades.push({ ts, kind: "sell", sol, units: -units, signature: tx.signature });
+        perToken.set(mint, e);
       }
+      // Same-sign deltas (e.g. token-for-token swap with no SOL leg) are skipped
+      // for v1 — pricing those needs a price oracle we don't have.
     }
   }
   return perToken;
