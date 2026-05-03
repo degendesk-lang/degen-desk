@@ -845,8 +845,13 @@ module.exports = async function handler(req, res) {
   }
 
   // =========================================
-  // PRO HARD GATE
+  // TIER + DAILY CAP
+  // Free signed-in users get 5/day, Pro gets 25/day.
+  // Anonymous (no uid) is rejected earlier — OpenAI calls cost real money,
+  // and an unauthenticated free path opens a trivial abuse vector.
   // =========================================
+  const FREE_DAILY_CAP = 5;
+  const PRO_DAILY_CAP = 25;
   let userRef = null;
   let userData = null;
   let tier = "free";
@@ -864,26 +869,22 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "Failed to verify subscription." });
   }
 
-  if (tier !== "pro") {
-    return res.status(403).json({
-      error: "Token Analysis is a Pro feature. Upgrade to unlock.",
-      upgrade: true,
-      proRequired: true,
-    });
-  }
-
-  // =========================================
-  // DAILY RATE LIMIT (20/day per Pro user, Firestore-tracked)
-  // =========================================
-  const DAILY_CAP = 20;
+  const DAILY_CAP = tier === "pro" ? PRO_DAILY_CAP : FREE_DAILY_CAP;
   const today = new Date().toISOString().split("T")[0];
   const storedDate = userData?.tokenAnalysesUsedDate;
   const currentCount = storedDate === today ? userData?.tokenAnalysesUsedToday || 0 : 0;
 
   if (currentCount >= DAILY_CAP) {
     return res.status(429).json({
-      error: `You've used your ${DAILY_CAP} daily token analyses. Please try again tomorrow.`,
+      error:
+        tier === "pro"
+          ? `You've used your ${PRO_DAILY_CAP} daily token analyses. Try again tomorrow.`
+          : `Daily limit reached (${FREE_DAILY_CAP}/day). Upgrade to Pro for ${PRO_DAILY_CAP}/day.`,
       dailyLimit: true,
+      tier,
+      cap: DAILY_CAP,
+      used: currentCount,
+      upgrade: tier !== "pro",
     });
   }
 

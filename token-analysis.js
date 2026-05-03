@@ -289,7 +289,17 @@
           return;
         }
         if (res.status === 429 && data.dailyLimit) {
-          renderError("Daily limit reached", data.error || "You've used your daily token analyses. Try again tomorrow.");
+          // Free users hitting their daily cap → upgrade prompt.
+          // Pro users at their cap → straightforward error.
+          if (data.upgrade) {
+            renderError(
+              "Daily limit reached",
+              `${data.error || "You've used your daily token analyses."} <a href="/pricing.html" style="color:#a78bfa; text-decoration:underline;">Upgrade to Pro →</a>`,
+              { allowHtml: true }
+            );
+          } else {
+            renderError("Daily limit reached", data.error || "You've used your daily token analyses. Try again tomorrow.");
+          }
           return;
         }
         if (res.status === 404) {
@@ -312,13 +322,14 @@
     }
   }
 
-  function renderError(title, msg) {
+  function renderError(title, msg, opts) {
     reportEl.hidden = false;
+    const body = opts?.allowHtml ? msg : escapeHtml(msg);
     reportEl.innerHTML = `
       <div class="ta-error-card">
         <div class="ta-error-icon">⚠️</div>
         <h3>${escapeHtml(title)}</h3>
-        <p>${escapeHtml(msg)}</p>
+        <p>${body}</p>
       </div>
     `;
   }
@@ -675,34 +686,9 @@
         return;
       }
 
-      // Signed in — check tier
-      let tier = "free";
-      try {
-        const db = firebase.firestore();
-        const doc = await db.collection("users").doc(user.uid).get();
-        if (doc.exists) {
-          const d = doc.data();
-          if (d.tier === "pro" && d.subscriptionStatus === "active") tier = "pro";
-        }
-        // Also check native IAP entitlement on iOS
-        if (tier !== "pro" && window.DegenDeskIAP && typeof window.DegenDeskIAP.isPro === "function") {
-          if (window.DegenDeskIAP.isPro()) tier = "pro";
-        }
-      } catch (err) {
-        console.error("Tier check failed:", err);
-      }
-
-      if (tier !== "pro") {
-        showGate({
-          title: "Pro Feature",
-          message: "Token Analysis is a Pro-only feature. Upgrade to unlock deep on-chain intelligence on any Solana token.",
-          ctaText: "Upgrade to Pro",
-          ctaHref: "/pricing.html",
-        });
-        return;
-      }
-
-      // Pro user — show the analyzer
+      // Signed in — show the analyzer for free + Pro alike. Daily caps
+      // are enforced server-side: free=5/day, Pro=25/day. The 429 response
+      // surfaces an upgrade CTA when free users hit the cap.
       showAnalyzer();
 
       // Deep-link from the browser extension: ?ca=<address>&chain=<chain>
