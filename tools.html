@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" class="ta-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk Advanced Tools — power-user research tools for Solana and EVM traders. Token Analysis (Pro on-chain risk verdicts) and Wallet Analyzer (PnL, holdings, KOL match) in one place." />
+  <title>Advanced Tools &middot; Degen Desk</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/tools.html" />
+  <meta property="og:title" content="Advanced Tools · Degen Desk" />
+  <meta property="og:description" content="Power-user research tools for Solana and EVM traders — token risk analysis, wallet PnL, smart-money signals, KOL matching." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:title" content="Advanced Tools · Degen Desk" />
+  <meta name="twitter:description" content="Power-user research tools for Solana and EVM traders — token risk analysis, wallet PnL, smart-money signals." />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=5" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* Same scroll-unlock as the other long-form pages — chat app's html,body
+       overflow:hidden rules would otherwise clip this page. */
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    #tools-app { min-height: 100vh; overflow: visible !important; height: auto !important; }
+
+    .tools-hero {
+      text-align: center;
+      padding: 24px 12px 8px;
+    }
+    .tools-hero h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin: 0 0 8px;
+      background: linear-gradient(90deg, #00ff88, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tools-hero p {
+      color: rgba(240, 240, 248, 0.6);
+      font-size: 14px;
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .tool-card {
+      background: #0f0f1a;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 22px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .tool-card:hover {
+      border-color: rgba(167, 139, 250, 0.35);
+      background: #13131f;
+      transform: translateY(-1px);
+    }
+    .tool-card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .tool-card-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(167,139,250,0.15), rgba(0,255,136,0.10));
+      border: 1px solid rgba(167,139,250,0.25);
+      display: flex; align-items: center; justify-content: center;
+      color: #a78bfa;
+    }
+    .tool-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      flex: 1;
+    }
+    .tool-card-badge {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .tool-card-badge.pro {
+      background: linear-gradient(90deg, rgba(167,139,250,0.20), rgba(167,139,250,0.10));
+      color: #d6c8ff;
+      border: 1px solid rgba(167,139,250,0.45);
+    }
+    .tool-card-badge.free {
+      background: rgba(0, 255, 136, 0.10);
+      color: #6effae;
+      border: 1px solid rgba(0, 255, 136, 0.30);
+    }
+    .tool-card-desc {
+      font-size: 13.5px;
+      color: rgba(240,240,248,0.7);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .tool-card-features {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(255,255,255,0.06);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tool-card-feature {
+      font-size: 11px;
+      color: rgba(240,240,248,0.55);
+      background: rgba(255,255,255,0.03);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .tool-card-cta {
+      margin-top: 16px;
+      align-self: flex-start;
+      font-size: 13px;
+      font-weight: 600;
+      color: #00ff88;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tool-card:hover .tool-card-cta { color: #6effae; }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=41" />
+</head>
+<body class="ta-body" style="background:#060610;">
+  <div id="tools-app" class="ta-app">
+
+    <!-- Header -->
+    <header class="ta-header">
+      <a href="/" class="ta-back-link" aria-label="Back to chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="ta-header-title">
+        <div class="ta-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Advanced Tools</h1>
+          <span class="ta-subtitle">Power-user research for Solana &amp; EVM traders</span>
+        </div>
+      </div>
+      <div class="ta-header-spacer"></div>
+    </header>
+
+    <main class="ta-main">
+
+      <div class="tools-hero">
+        <h2>Pick the right tool for the job</h2>
+        <p>Each tool below is built for serious research — token risk verdicts, wallet PnL, smart-money signals. New to crypto? Start a chat with the agent on the home page first.</p>
+      </div>
+
+      <div class="tools-grid">
+
+        <!-- Token Analysis -->
+        <a href="/token-analysis.html" class="tool-card">
+          <div class="tool-card-head">
+            <div class="tool-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </div>
+            <div class="tool-card-title">Token Analysis</div>
+            <span class="tool-card-badge pro">Pro</span>
+          </div>
+          <div class="tool-card-desc">
+            Paste any contract address — Solana, Ethereum, Base, or BNB — and get an AI-synthesized risk verdict from RugCheck, GoPlus, Helius, domain age (RDAP), and the project's GitHub repo.
+          </div>
+          <div class="tool-card-features">
+            <span class="tool-card-feature">Holder distribution</span>
+            <span class="tool-card-feature">Bundling detection</span>
+            <span class="tool-card-feature">Dev wallet trace</span>
+            <span class="tool-card-feature">Domain age</span>
+            <span class="tool-card-feature">GitHub health</span>
+            <span class="tool-card-feature">Risk gauge</span>
+          </div>
+          <span class="tool-card-cta">Open Token Analysis →</span>
+        </a>
+
+        <!-- Wallet Analyzer -->
+        <a href="/wallet-analysis.html" class="tool-card">
+          <div class="tool-card-head">
+            <div class="tool-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+              </svg>
+            </div>
+            <div class="tool-card-title">Wallet Analyzer</div>
+            <span class="tool-card-badge free">Free · 10/day</span>
+          </div>
+          <div class="tool-card-desc">
+            Paste any Solana wallet — see holdings, per-token PnL, smart-money signals, and whether the wallet matches a known KOL on the kolscan top-trader leaderboard.
+          </div>
+          <div class="tool-card-features">
+            <span class="tool-card-feature">KOL match</span>
+            <span class="tool-card-feature">Per-token PnL</span>
+            <span class="tool-card-feature">Win rate</span>
+            <span class="tool-card-feature">10× / 5× / 2× winners</span>
+            <span class="tool-card-feature">Avg hold time</span>
+            <span class="tool-card-feature">Trader style</span>
+          </div>
+          <span class="tool-card-cta">Open Wallet Analyzer →</span>
+        </a>
+
+      </div>
+
+      <!-- NFA BANNER -->
+      <div class="ta-disclaimer-banner ta-disclaimer-bottom" style="margin-top: 28px;">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>These tools surface and synthesize publicly available on-chain data. Nothing here is financial, investment, or trading advice. Always DYOR.</p>
+      </div>
+
+    </main>
+
+  </div>
+</body>
+</html>
