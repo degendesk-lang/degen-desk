@@ -600,37 +600,19 @@ module.exports = async function handler(req, res) {
   const trades = buildTrades(perToken, holdings, solPriceUsd);
   const signals = smartMoneySignals(trades);
 
-  // ----- DEBUG: surface tx-shape diagnostics so we can see why detection misses -----
+  // Lightweight operational diagnostics — useful when signals look off.
+  // For deep tx-shape inspection (e.g. a new DEX integration we haven't seen),
+  // re-add a ?debug=1 path that includes firstSwapShape.
   const txTypeCounts = {};
   for (const tx of txs) {
     const t = tx.type || "UNKNOWN";
     txTypeCounts[t] = (txTypeCounts[t] || 0) + 1;
   }
-  const firstSwap = txs.find((t) => t.type === "SWAP");
-  const swapShape = firstSwap
-    ? {
-        signature: firstSwap.signature,
-        source: firstSwap.source,
-        topLevelKeys: Object.keys(firstSwap),
-        eventsKeys: firstSwap.events ? Object.keys(firstSwap.events) : null,
-        swapKeys: firstSwap.events?.swap ? Object.keys(firstSwap.events.swap) : null,
-        nativeInput: firstSwap.events?.swap?.nativeInput || null,
-        nativeOutput: firstSwap.events?.swap?.nativeOutput || null,
-        tokenInputsCount: firstSwap.events?.swap?.tokenInputs?.length ?? null,
-        tokenOutputsCount: firstSwap.events?.swap?.tokenOutputs?.length ?? null,
-        firstTokenInput: firstSwap.events?.swap?.tokenInputs?.[0] || null,
-        firstTokenOutput: firstSwap.events?.swap?.tokenOutputs?.[0] || null,
-        tokenTransfersCount: firstSwap.tokenTransfers?.length ?? null,
-        firstTokenTransfer: firstSwap.tokenTransfers?.[0] || null,
-        nativeTransfersCount: firstSwap.nativeTransfers?.length ?? null,
-      }
-    : null;
   const debugInfo = {
     txCount: txs.length,
     txTypeCounts,
     matchedTokens: perToken.size,
     matchedTrades: trades.length,
-    firstSwapShape: swapShape,
   };
 
   const holdingsValueUsd = holdings.reduce((acc, h) => acc + (h.valueUsd || 0), 0);
