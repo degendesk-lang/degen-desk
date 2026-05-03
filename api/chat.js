@@ -189,6 +189,21 @@ module.exports = async function handler(req, res) {
       });
     }
     dailyMessageMap.set(key, count + 1);
+  } else {
+    // Pro tier — effectively unlimited but capped at 500/day per IP as a
+    // runaway-cost safety valve. No real human hits 500 chat messages a day,
+    // so the marketing claim of "unlimited" stays honest.
+    const today = new Date().toISOString().split("T")[0];
+    const key = `pro_${clientIP}_${today}`;
+    const count = dailyMessageMap.get(key) || 0;
+    if (count >= 500) {
+      return res.status(429).json({
+        error:
+          "You've sent 500 messages today — that's an unusually high volume. Please try again tomorrow or contact support@degendesk.xyz if this is legitimate usage.",
+        upgrade: false,
+      });
+    }
+    dailyMessageMap.set(key, count + 1);
   }
 
   // Select model based on tier

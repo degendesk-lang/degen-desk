@@ -18,6 +18,30 @@ const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60 * 1000;
 const RATE_LIMIT_MAX = 10; // max 10 analyses per minute per IP
 
+// Result cache — when a memecoin pumps, dozens of users analyze the same CA
+// in the same few minutes. Cache the synthesized report so we only pay OpenAI
+// once per CA per 5 minutes. Keyed by `${chain}:${address}:${tier}` so free
+// vs Pro cached responses don't cross-contaminate (different model output).
+const resultCache = new Map();
+const RESULT_TTL = 5 * 60 * 1000;
+function getCachedResult(key) {
+  const e = resultCache.get(key);
+  if (!e) return null;
+  if (Date.now() - e.at > RESULT_TTL) {
+    resultCache.delete(key);
+    return null;
+  }
+  return e.value;
+}
+function setCachedResult(key, value) {
+  resultCache.set(key, { at: Date.now(), value });
+  // simple LRU-ish prune
+  if (resultCache.size > 200) {
+    const oldest = [...resultCache.entries()].sort((a, b) => a[1].at - b[1].at)[0];
+    if (oldest) resultCache.delete(oldest[0]);
+  }
+}
+
 function isRateLimited(ip) {
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
@@ -733,11 +757,16 @@ OUTPUT FORMAT (JSON, no markdown wrapping):
 
 REMEMBER: The user is paying for Pro. They expect REAL trader-level analysis, not a polite data summary. If something looks like a coordinated pump, SAY IT (observationally). If the chart screams manipulation, DON'T give it "medium risk" and move on. Be the experienced trader friend who tells it straight — in legally safe, observational language.`;
 
-async function synthesizeWithGPT(rawData, apiKey) {
+async function synthesizeWithGPT(rawData, apiKey, tier) {
   // Inject today's date so the model can reason correctly about "recent"
   // launch ages, wallet age vs now, and any other time-sensitive signals.
   const today = new Date().toISOString().split("T")[0];
   const userMessage = `TODAY IS: ${today}. Use this for any "age" or "recency" calculations (e.g. token launch age, dev wallet age).\n\nAnalyze this Solana token based on the following raw data:\n\n${JSON.stringify(rawData, null, 2)}\n\nReturn the structured JSON report as specified.`;
+
+  // Pro: gpt-4.1 — flagship reasoning, sharper manipulation/synthesis nuance.
+  // Free: gpt-4.1-mini — same prompt, ~6× cheaper. Still produces a useful
+  //   structured report; the upgrade story is "Pro gets the trader-grade analysis."
+  const model = tier === "pro" ? "gpt-4.1" : "gpt-4.1-mini";
 
   const res = await fetchWithTimeout(
     "https://api.openai.com/v1/chat/completions",
@@ -748,11 +777,7 @@ async function synthesizeWithGPT(rawData, apiKey) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        // gpt-4.1 — strong default available without org verification.
-        // Once OpenAI org is verified, swap to "gpt-5" for flagship reasoning
-        // and best nuance on manipulation signals. Verify at:
-        // https://platform.openai.com/settings/organization/general
-        model: "gpt-4.1",
+        model,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userMessage },
@@ -889,6 +914,35 @@ module.exports = async function handler(req, res) {
   }
 
   // =========================================
+  // RESULT CACHE — when many users analyze the same CA in a short window
+  // (very common during memecoin pumps), serve the same synthesized report
+  // instead of paying OpenAI for each. Still counts against the user's
+  // daily cap and updates the counter so the user-visible limit is honest.
+  // =========================================
+  const cacheKey = `${chainKey}:${mint}:${tier}`;
+  const cached = getCachedResult(cacheKey);
+  if (cached) {
+    try {
+      await userRef.set(
+        {
+          tokenAnalysesUsedDate: today,
+          tokenAnalysesUsedToday: currentCount + 1,
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.error("Failed to increment analysis counter (cached):", err.message);
+    }
+    return res.status(200).json({
+      ...cached,
+      analysesUsedToday: currentCount + 1,
+      analysesDailyCap: DAILY_CAP,
+      cached: true,
+      generatedAt: cached.generatedAt,
+    });
+  }
+
+  // =========================================
   // FETCH DATA SOURCES (chain-aware, in parallel)
   // =========================================
   const isSolana = chainKey === "solana";
@@ -951,7 +1005,7 @@ module.exports = async function handler(req, res) {
   // =========================================
   let report;
   try {
-    report = await synthesizeWithGPT(rawData, apiKey);
+    report = await synthesizeWithGPT(rawData, apiKey, tier);
   } catch (err) {
     console.error("GPT synthesis failed:", err.message);
     return res
@@ -1007,7 +1061,7 @@ module.exports = async function handler(req, res) {
       }
     : { name: null, symbol: null };
 
-  return res.status(200).json({
+  const responseBody = {
     chain: chainKey,
     chainLabel: CHAINS[chainKey].label,
     explorerUrl: `${CHAINS[chainKey].explorer}${mint}`,
@@ -1024,8 +1078,14 @@ module.exports = async function handler(req, res) {
       domainAge: !!domain,
       github: !!github,
     },
+    generatedAt: new Date().toISOString(),
+  };
+  setCachedResult(cacheKey, responseBody);
+
+  return res.status(200).json({
+    ...responseBody,
     analysesUsedToday: currentCount + 1,
     analysesDailyCap: DAILY_CAP,
-    generatedAt: new Date().toISOString(),
+    cached: false,
   });
 };
