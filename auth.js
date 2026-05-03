@@ -254,9 +254,44 @@ window.DegenAuth = (function () {
     } catch (_) {}
   }
 
+  // Track whether we've already attempted auto-apply this session so we don't
+  // retry on every onAuthStateChanged tick (the callback fires multiple times
+  // during normal auth flows: token refresh, session restore, etc.).
+  let autoApplyAttempted = false;
+
+  async function applyPendingReferral(uid) {
+    const pendingCode = getReferralCode();
+    if (!pendingCode || !uid) return;
+    try {
+      const res = await fetch("/api/referral", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "apply", uid, code: pendingCode }),
+      });
+      // Clear on success OR on permanent client errors (400 self-referral,
+      // 404 code doesn't exist, 409 already has a code or already Pro).
+      // Only keep the code in localStorage on transient 5xx / network errors
+      // so the next sign-in retries.
+      if (res.ok || (res.status >= 400 && res.status < 500)) {
+        clearReferralCode();
+      }
+    } catch (err) {
+      console.warn("[Referral] auto-apply network error, will retry next signin:", err);
+    }
+  }
+
   auth.onAuthStateChanged(async (user) => {
     currentUser = user;
     authChangeCallbacks.forEach((cb) => cb(user));
+
+    // Auto-apply any ?ref=CODE captured before sign-in. Without this, links
+    // shared by partners (e.g. degendesk.xyz?ref=ABC) require the recipient
+    // to also manually enter the code on /referrals.html — which defeats
+    // the entire point of the referral link.
+    if (user && user.uid && !autoApplyAttempted) {
+      autoApplyAttempted = true;
+      applyPendingReferral(user.uid);
+    }
 
     // Sync RevenueCat with the signed-in Firebase user (native only).
     // This associates purchases with the correct Firebase uid so entitlements
