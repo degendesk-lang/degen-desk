@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" class="ta-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk KOL Alpha Feed — live X posts from top-ranked smart-money traders, cross-referenced with the kolscan PnL leaderboard. Auto-detects contract addresses and surfaces multi-KOL consensus signals." />
+  <title>KOL Alpha Feed &middot; Degen Desk</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/kol-feed.html" />
+  <meta property="og:title" content="KOL Alpha Feed · Degen Desk" />
+  <meta property="og:description" content="Live X posts from PnL-ranked smart-money KOLs. Auto-detected contract addresses. Multi-KOL consensus signals." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:title" content="KOL Alpha Feed · Degen Desk" />
+  <meta name="twitter:description" content="Live X posts from PnL-ranked smart-money KOLs. Auto-detected contract addresses." />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=5" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    #kf-app { min-height: 100vh; overflow: visible !important; height: auto !important; }
+    #kf-app [hidden] { display: none !important; }
+
+    /* Beta strip */
+    .kf-beta {
+      background: linear-gradient(90deg, rgba(255, 204, 51, 0.15), rgba(255, 204, 51, 0.05));
+      border: 1px solid rgba(255, 204, 51, 0.30);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 12.5px;
+      color: #ffe7a3;
+    }
+    .kf-beta strong { color: #ffd34d; }
+
+    /* Edge banner */
+    .kf-edge {
+      background: linear-gradient(90deg, rgba(167, 139, 250, 0.10), rgba(167, 139, 250, 0.02));
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #d6c8ff;
+    }
+    .kf-edge strong { color: #efe7ff; }
+
+    /* Refresh button */
+    .kf-toolbar {
+      display: flex; gap: 10px; align-items: center; margin-top: 14px;
+    }
+    .kf-refresh {
+      background: rgba(167, 139, 250, 0.10);
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      color: #d6c8ff;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .kf-refresh:hover { background: rgba(167, 139, 250, 0.18); }
+    .kf-stat {
+      font-size: 11.5px;
+      color: rgba(240, 240, 248, 0.55);
+    }
+
+    /* Section */
+    .kf-section {
+      background: #0f0f1a; border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 18px 20px; margin-top: 16px;
+    }
+    .kf-section h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; }
+
+    /* Consensus */
+    .kf-consensus-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 10px;
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.08), rgba(0, 255, 136, 0.02));
+      border: 1px solid rgba(0, 255, 136, 0.20);
+      margin-top: 8px;
+    }
+    .kf-consensus-row .num { color: #6effae; font-weight: 700; min-width: 30px; }
+    .kf-consensus-row .ca { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #f0f0f8; word-break: break-all; flex: 1; }
+    .kf-consensus-row .kols-count { font-size: 11px; color: rgba(240,240,248,0.65); }
+    .kf-consensus-row a {
+      background: #00ff88; color: #021015; text-decoration: none;
+      font-size: 11.5px; font-weight: 700; padding: 5px 11px; border-radius: 999px;
+    }
+
+    /* Post */
+    .kf-post {
+      padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .kf-post:last-child { border-bottom: none; }
+    .kf-post-head {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    }
+    .kf-rank-badge {
+      background: rgba(167, 139, 250, 0.15);
+      color: #d6c8ff;
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      font-size: 10.5px; font-weight: 700;
+      padding: 2px 7px; border-radius: 999px;
+    }
+    .kf-handle { font-weight: 600; font-size: 13px; color: #f0f0f8; text-decoration: none; }
+    .kf-handle:hover { color: #a78bfa; }
+    .kf-name { font-size: 12px; color: rgba(240,240,248,0.55); }
+    .kf-time { font-size: 11px; color: rgba(240,240,248,0.45); margin-left: auto; }
+    .kf-pnl { font-size: 11px; color: #6effae; font-family: 'JetBrains Mono', monospace; }
+    .kf-text {
+      font-size: 13.5px; line-height: 1.55; color: rgba(240,240,248,0.85);
+      word-wrap: break-word;
+    }
+    .kf-mentions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .kf-chip {
+      font-size: 11px; font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 255, 136, 0.10); color: #6effae;
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      padding: 3px 9px; border-radius: 999px;
+      text-decoration: none;
+    }
+    .kf-chip:hover { background: rgba(0, 255, 136, 0.18); }
+    .kf-chip.evm { background: rgba(99, 179, 237, 0.10); color: #8fc6ff; border-color: rgba(99, 179, 237, 0.25); }
+    .kf-chip.evm:hover { background: rgba(99, 179, 237, 0.18); }
+    .kf-chip.ticker { background: rgba(255, 204, 51, 0.08); color: #ffe7a3; border-color: rgba(255, 204, 51, 0.20); cursor: default; }
+    .kf-post-actions { display: flex; gap: 12px; margin-top: 8px; }
+    .kf-action {
+      font-size: 11.5px; color: rgba(167, 139, 250, 0.85);
+      text-decoration: none;
+    }
+    .kf-action:hover { color: #d6c8ff; }
+
+    .kf-empty {
+      text-align: center; padding: 32px 12px;
+      color: rgba(240, 240, 248, 0.5); font-size: 13px;
+    }
+    .kf-spinner {
+      width: 24px; height: 24px;
+      border: 2px solid rgba(167, 139, 250, 0.2);
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: kf-spin 0.7s linear infinite;
+      margin: 24px auto;
+    }
+    @keyframes kf-spin { to { transform: rotate(360deg); } }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=41" />
+</head>
+<body class="ta-body" style="background:#060610;">
+  <div id="kf-app" class="ta-app">
+
+    <header class="ta-header">
+      <a href="/tools.html" class="ta-back-link" aria-label="Back to Advanced Tools">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="ta-header-title">
+        <div class="ta-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+          </svg>
+        </div>
+        <div>
+          <h1>KOL Alpha Feed</h1>
+          <span class="ta-subtitle">Live X posts from PnL-ranked smart money</span>
+        </div>
+      </div>
+      <div class="ta-header-spacer"></div>
+    </header>
+
+    <main class="ta-main">
+
+      <div class="ta-disclaimer-banner">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>This feed surfaces public X posts from publicly ranked traders. Nothing here is financial advice. KOLs lose too. Always DYOR.</p>
+      </div>
+
+      <div class="kf-edge">
+        <strong>Degen Desk Edge:</strong> Posts are filtered to only the top-ranked KOLs by recent PnL on kolscan, weighted so #1-ranked posts surface above #20-ranked. Contract addresses are auto-detected and one click opens full Token Analysis. When 3+ ranked KOLs mention the same CA in a 6h window, you'll see a Consensus alert at the top.
+      </div>
+
+      <div class="kf-beta">
+        <strong>Beta:</strong> data flows through public Nitter RSS instances which can be unreliable. If the feed is empty, hit Refresh in a minute or two.
+      </div>
+
+      <div class="kf-toolbar">
+        <button id="kf-refresh-btn" class="kf-refresh" type="button">⟳ Refresh</button>
+        <span id="kf-stat" class="kf-stat"></span>
+      </div>
+
+      <div id="kf-loading" class="kf-spinner"></div>
+
+      <div id="kf-consensus-section" class="kf-section" hidden>
+        <h3>🔥 Consensus Signal — Multi-KOL CA Mentions (last 6h)</h3>
+        <div id="kf-consensus-list"></div>
+      </div>
+
+      <div id="kf-feed-section" class="kf-section" hidden>
+        <h3>Recent posts</h3>
+        <div id="kf-feed"></div>
+      </div>
+
+      <div class="ta-disclaimer-banner ta-disclaimer-bottom" style="margin-top: 28px;">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>"Smart money" rankings are based on past PnL and don't predict future performance. KOLs frequently buy positions before posting about them. Cryptocurrency trading involves substantial risk of loss.</p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="kol-feed.js?v=1"></script>
+</body>
+</html>
