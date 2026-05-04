@@ -1,8 +1,8 @@
 /**
- * Degen Desk - KOL Alpha Feed frontend
+ * Smart Money Tracker - frontend
  *
- * Renders /api/kol-feed: ranked-KOL X posts + consensus CA signal.
- * No auth required (read-only public data).
+ * Renders /api/kol-feed as a ranked leaderboard with one-click drill-downs
+ * into Wallet Analyzer (see what they're holding right now) and X profile.
  */
 (function () {
   "use strict";
@@ -11,12 +11,11 @@
   const refreshBtn = $("kf-refresh-btn");
   const statEl = $("kf-stat");
   const loadingEl = $("kf-loading");
-  const consensusSection = $("kf-consensus-section");
-  const consensusList = $("kf-consensus-list");
   const feedSection = $("kf-feed-section");
   const feedEl = $("kf-feed");
+  const tabs = document.querySelectorAll("[data-tf]");
 
-  const SOLANA_CA_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  let currentTimeframe = "weekly";
 
   function escapeHtml(s) {
     if (s == null) return "";
@@ -28,150 +27,99 @@
       .replace(/'/g, "&#39;");
   }
 
+  function fmtUsd(n) {
+    if (n == null || isNaN(n)) return "—";
+    const v = Number(n);
+    const sign = v < 0 ? "-" : "+";
+    const abs = Math.abs(v);
+    if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(2)}M`;
+    if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(1)}K`;
+    return `${sign}$${abs.toFixed(0)}`;
+  }
+
+  function fmtSol(n) {
+    if (n == null || isNaN(n)) return "—";
+    const v = Number(n);
+    const sign = v < 0 ? "-" : "+";
+    return `${sign}${Math.abs(v).toFixed(1)} SOL`;
+  }
+
   function shortAddr(a) {
     if (!a || a.length < 10) return a || "";
     return a.slice(0, 4) + "…" + a.slice(-4);
   }
 
-  function timeAgo(ts) {
-    const sec = Math.max(0, (Date.now() - ts) / 1000);
-    if (sec < 60) return `${Math.floor(sec)}s`;
-    const min = sec / 60;
-    if (min < 60) return `${Math.floor(min)}m`;
-    const hr = min / 60;
-    if (hr < 24) return `${hr.toFixed(1)}h`;
-    return `${(hr / 24).toFixed(1)}d`;
+  function rankMedal(rank) {
+    if (rank === 1) return "🥇";
+    if (rank === 2) return "🥈";
+    if (rank === 3) return "🥉";
+    return `#${rank}`;
   }
 
-  function fmtUsd(n) {
-    if (n == null || isNaN(n)) return "—";
-    const v = Number(n);
-    if (Math.abs(v) >= 1e6) return "$" + (v / 1e6).toFixed(2) + "M";
-    if (Math.abs(v) >= 1e3) return "$" + (v / 1e3).toFixed(1) + "K";
-    return "$" + v.toFixed(0);
-  }
-
-  // Highlight URLs and @mentions in post text. Be defensive — text may be
-  // malformed since RSS extraction is regex-based.
-  function linkifyText(text) {
-    if (!text) return "";
-    let out = escapeHtml(text);
-    // URLs (already plain after RSS strip; just linkify)
-    out = out.replace(
-      /(https?:\/\/[^\s]+)/g,
-      '<a href="$1" target="_blank" rel="noopener" style="color:#a78bfa;">$1</a>'
-    );
-    // @handles → x.com profile links
-    out = out.replace(
-      /@([A-Za-z0-9_]{2,15})\b/g,
-      '<a href="https://x.com/$1" target="_blank" rel="noopener" style="color:#a78bfa;">@$1</a>'
-    );
-    return out;
-  }
-
-  function renderConsensus(consensus) {
-    if (!consensus || consensus.length === 0) {
-      consensusSection.hidden = true;
-      return;
-    }
-    consensusSection.hidden = false;
-    consensusList.innerHTML = consensus
-      .slice(0, 8)
-      .map((c) => {
-        const reportUrl =
-          c.chain === "evm"
-            ? `/token-analysis.html?ca=${encodeURIComponent(c.address)}&chain=ethereum`
-            : `/token-analysis.html?ca=${encodeURIComponent(c.address)}&chain=solana`;
-        return `
-          <div class="kf-consensus-row">
-            <div class="num">${c.kolCount}×</div>
-            <div class="ca">${escapeHtml(c.address)}</div>
-            <div class="kols-count">${c.kols.map((k) => "@" + escapeHtml(k)).join(", ")}</div>
-            <a href="${reportUrl}">Analyze →</a>
-          </div>
-        `;
-      })
-      .join("");
-  }
-
-  function renderPost(p) {
-    const xPost = escapeHtml(p.url || `https://x.com/${p.handle}`);
-    const walletUrl = p.wallet ? `/wallet-analysis.html?wallet=${encodeURIComponent(p.wallet)}` : null;
-
-    const chips = [];
-    for (const ca of p.mentions?.solana || []) {
-      // Skip if it doesn't actually look like a CA on a strict check
-      if (!SOLANA_CA_RE.test(ca)) continue;
-      chips.push(
-        `<a class="kf-chip" href="/token-analysis.html?ca=${encodeURIComponent(ca)}&chain=solana" title="Open Token Analysis">${shortAddr(ca)}</a>`
-      );
-    }
-    for (const ca of p.mentions?.evm || []) {
-      chips.push(
-        `<a class="kf-chip evm" href="/token-analysis.html?ca=${encodeURIComponent(ca)}&chain=ethereum" title="Open Token Analysis">${shortAddr(ca)}</a>`
-      );
-    }
-    for (const tk of p.mentions?.tickers || []) {
-      chips.push(`<span class="kf-chip ticker">${escapeHtml(tk)}</span>`);
-    }
-
-    const pnl =
-      p.pnlUsd != null
-        ? `<span class="kf-pnl">${p.pnlUsd >= 0 ? "+" : ""}${fmtUsd(p.pnlUsd)}</span>`
-        : "";
-
+  function renderRow(k) {
+    const xUrl = k.twitter ? `https://x.com/${escapeHtml(k.twitter)}` : null;
+    const walletUrl = k.wallet ? `/wallet-analysis.html?wallet=${encodeURIComponent(k.wallet)}` : null;
+    const pnlClass = (k.pnlUsd ?? 0) >= 0 ? "pos" : "neg";
     return `
       <div class="kf-post">
         <div class="kf-post-head">
-          <span class="kf-rank-badge">#${p.rank ?? "—"}</span>
-          <a class="kf-handle" href="https://x.com/${escapeHtml(p.handle)}" target="_blank" rel="noopener">@${escapeHtml(p.handle)}</a>
-          ${p.name ? `<span class="kf-name">${escapeHtml(p.name)}</span>` : ""}
-          ${pnl}
-          <span class="kf-time">${timeAgo(p.ts)} ago</span>
+          <span class="kf-rank-badge">${rankMedal(k.rank)}</span>
+          ${k.twitter ? `<a class="kf-handle" href="${xUrl}" target="_blank" rel="noopener">@${escapeHtml(k.twitter)}</a>` : `<span class="kf-handle">${escapeHtml(k.name || "Unknown")}</span>`}
+          ${k.name && k.twitter ? `<span class="kf-name">${escapeHtml(k.name)}</span>` : ""}
+          <span class="kf-time" style="font-family: 'JetBrains Mono', monospace;">${escapeHtml(shortAddr(k.wallet))}</span>
         </div>
-        <div class="kf-text">${linkifyText(p.text)}</div>
-        ${chips.length ? `<div class="kf-mentions">${chips.join("")}</div>` : ""}
-        <div class="kf-post-actions">
-          <a class="kf-action" href="${xPost}" target="_blank" rel="noopener">Open on X ↗</a>
-          ${walletUrl ? `<a class="kf-action" href="${walletUrl}">Wallet →</a>` : ""}
+        <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:6px;">
+          <div>
+            <div style="font-size:10.5px; color:rgba(240,240,248,0.5); text-transform:uppercase; letter-spacing:0.06em;">PnL</div>
+            <div class="kf-pnl ${pnlClass}" style="font-size:15px; font-weight:700;">${fmtUsd(k.pnlUsd)}</div>
+            <div style="font-size:11px; color:rgba(240,240,248,0.45);">${fmtSol(k.pnlSol)}</div>
+          </div>
+          ${
+            k.wins != null && k.losses != null
+              ? `<div>
+                   <div style="font-size:10.5px; color:rgba(240,240,248,0.5); text-transform:uppercase; letter-spacing:0.06em;">Win Rate</div>
+                   <div style="font-size:15px; font-weight:700;">${k.winRate || "—"}</div>
+                   <div style="font-size:11px; color:rgba(240,240,248,0.45);">${k.wins}W · ${k.losses}L</div>
+                 </div>`
+              : ""
+          }
+        </div>
+        <div class="kf-post-actions" style="margin-top:10px;">
+          ${walletUrl ? `<a class="kf-action" href="${walletUrl}" style="background: rgba(0,255,136,0.10); border: 1px solid rgba(0,255,136,0.25); color: #6effae; padding: 5px 12px; border-radius: 999px; font-weight: 600;">See holdings →</a>` : ""}
+          ${xUrl ? `<a class="kf-action" href="${xUrl}" target="_blank" rel="noopener">Open on X ↗</a>` : ""}
         </div>
       </div>
     `;
   }
 
-  function renderFeed(posts) {
-    if (!posts || posts.length === 0) {
+  function renderFeed(kols) {
+    if (!kols || kols.length === 0) {
       feedSection.hidden = false;
-      feedEl.innerHTML = `<div class="kf-empty">No posts in the lookback window. Try Refresh in a minute or two — Nitter instances can be flaky.</div>`;
+      feedEl.innerHTML = `<div class="kf-empty">No KOL data right now. Try Refresh in a moment.</div>`;
       return;
     }
     feedSection.hidden = false;
-    feedEl.innerHTML = posts.map(renderPost).join("");
+    feedEl.innerHTML = kols.map(renderRow).join("");
   }
 
   async function load() {
     loadingEl.hidden = false;
-    consensusSection.hidden = true;
     feedSection.hidden = true;
     statEl.textContent = "";
 
     try {
-      const res = await fetch("/api/kol-feed", { method: "GET" });
+      const res = await fetch(`/api/kol-feed?timeframe=${currentTimeframe}`);
       const data = await res.json().catch(() => ({}));
-
       if (!res.ok) {
-        feedEl.innerHTML = `<div class="kf-empty">${escapeHtml(data?.error || "Couldn't load the feed.")}</div>`;
+        feedEl.innerHTML = `<div class="kf-empty">${escapeHtml(data?.error || "Couldn't load.")}</div>`;
         feedSection.hidden = false;
         return;
       }
-
-      renderConsensus(data.consensus);
-      renderFeed(data.posts);
-
+      renderFeed(data.kols);
       const updated = data.generatedAt ? new Date(data.generatedAt) : new Date();
-      statEl.textContent = `${data.kolsWithPosts || 0}/${data.kolsFollowed || 0} KOLs · ${data.posts?.length || 0} posts · updated ${updated.toLocaleTimeString()}${data.cached ? " (cached)" : ""}`;
+      statEl.textContent = `${data.count || 0} KOLs · ${currentTimeframe} · updated ${updated.toLocaleTimeString()}${data.cached ? " (cached)" : ""}`;
     } catch (err) {
-      console.error("KOL feed load error:", err);
+      console.error("Smart Money load error:", err);
       feedEl.innerHTML = `<div class="kf-empty">Network error. Try Refresh.</div>`;
       feedSection.hidden = false;
     } finally {
@@ -180,6 +128,14 @@
   }
 
   refreshBtn.addEventListener("click", load);
+  tabs.forEach((t) => {
+    t.addEventListener("click", () => {
+      tabs.forEach((x) => x.classList.remove("active"));
+      t.classList.add("active");
+      currentTimeframe = t.dataset.tf;
+      load();
+    });
+  });
   document.addEventListener("DOMContentLoaded", load);
   if (document.readyState === "interactive" || document.readyState === "complete") load();
 })();

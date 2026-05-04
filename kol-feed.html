@@ -185,8 +185,8 @@
           </svg>
         </div>
         <div>
-          <h1>KOL Alpha Feed</h1>
-          <span class="ta-subtitle">Live X posts from PnL-ranked smart money</span>
+          <h1>Smart Money Tracker</h1>
+          <span class="ta-subtitle">Top PnL-ranked KOLs &middot; one-click holdings drill-down</span>
         </div>
       </div>
       <div class="ta-header-spacer"></div>
@@ -200,27 +200,21 @@
       </div>
 
       <div class="kf-edge">
-        <strong>Degen Desk Edge:</strong> Posts are filtered to only the top-ranked KOLs by recent PnL on kolscan, weighted so #1-ranked posts surface above #20-ranked. Contract addresses are auto-detected and one click opens full Token Analysis. When 3+ ranked KOLs mention the same CA in a 6h window, you'll see a Consensus alert at the top.
-      </div>
-
-      <div class="kf-beta">
-        <strong>Beta:</strong> data flows through public Nitter RSS instances which can be unreliable. If the feed is empty, hit Refresh in a minute or two.
+        <strong>Degen Desk Edge:</strong> The top traders by PnL — pulled live from kolscan — with one-click drill-down into our Wallet Analyzer to see exactly what they're holding right now. DexScreener and Birdeye don't connect these dots. Live X feed is queued for v1.1.
       </div>
 
       <div class="kf-toolbar">
-        <button id="kf-refresh-btn" class="kf-refresh" type="button">⟳ Refresh</button>
+        <button data-tf="daily" class="kf-refresh" type="button">24h</button>
+        <button data-tf="weekly" class="kf-refresh active" type="button" style="background: rgba(167,139,250,0.25);">7d</button>
+        <button data-tf="monthly" class="kf-refresh" type="button">30d</button>
+        <button id="kf-refresh-btn" class="kf-refresh" type="button" style="margin-left:auto;">⟳ Refresh</button>
         <span id="kf-stat" class="kf-stat"></span>
       </div>
 
       <div id="kf-loading" class="kf-spinner"></div>
 
-      <div id="kf-consensus-section" class="kf-section" hidden>
-        <h3>🔥 Consensus Signal — Multi-KOL CA Mentions (last 6h)</h3>
-        <div id="kf-consensus-list"></div>
-      </div>
-
       <div id="kf-feed-section" class="kf-section" hidden>
-        <h3>Recent posts</h3>
+        <h3>Top Smart Money</h3>
         <div id="kf-feed"></div>
       </div>
 
@@ -233,6 +227,6 @@
 
   </div>
 
-  <script src="kol-feed.js?v=1"></script>
+  <script src="kol-feed.js?v=2"></script>
 </body>
 </html>
