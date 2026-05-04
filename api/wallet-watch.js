@@ -35,7 +35,8 @@ if (!admin.apps.length) {
 
 const SOLANA_ADDR_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const HELIUS_PARSED = "https://api.helius.xyz/v0/addresses/";
-const MAX_WATCHES_PER_USER = 10;
+const FREE_WATCH_CAP = 10;
+const PRO_WATCH_CAP = 25;
 const RECENT_TX_LIMIT = 25; // small page for diff polling
 const CHECK_RATE_MS = 30 * 1000; // user can manually re-check at most every 30s
 
@@ -192,22 +193,17 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const { tier, userRef, userData } = await checkUserTier(uid);
-  if (tier !== "pro") {
-    return res.status(403).json({
-      error: "Wallet Watch is a Pro feature. Upgrade to track wallets and receive alerts.",
-      upgrade: true,
-      proRequired: true,
-    });
-  }
+  const { tier } = await checkUserTier(uid);
+  // Free users get 10 watches, Pro gets 25. Anyone signed in can use the
+  // tool — when email alerts ship next session, those will be Pro-only.
 
   try {
-    if (req.method === "GET") return await handleList(req, res, uid);
+    if (req.method === "GET") return await handleList(req, res, uid, tier);
     if (req.method === "DELETE") return await handleDelete(req, res, uid);
     if (req.method === "POST") {
       const action = req.query?.action || req.body?.action;
       if (action === "check") return await handleCheck(req, res, uid);
-      return await handleAdd(req, res, uid);
+      return await handleAdd(req, res, uid, tier);
     }
     return res.status(405).json({ error: "Method not allowed" });
   } catch (err) {
@@ -216,7 +212,7 @@ module.exports = async function handler(req, res) {
   }
 };
 
-async function handleList(req, res, uid) {
+async function handleList(req, res, uid, tier) {
   const snap = await watchesCol(uid).orderBy("addedAt", "desc").get();
   const items = snap.docs.map((d) => {
     const v = d.data();
@@ -233,11 +229,12 @@ async function handleList(req, res, uid) {
   return res.status(200).json({
     items,
     count: items.length,
-    cap: MAX_WATCHES_PER_USER,
+    cap: tier === "pro" ? PRO_WATCH_CAP : FREE_WATCH_CAP,
+    tier,
   });
 }
 
-async function handleAdd(req, res, uid) {
+async function handleAdd(req, res, uid, tier) {
   const { wallet, label } = req.body || {};
   if (!wallet || typeof wallet !== "string") {
     return res.status(400).json({ error: "wallet is required" });
@@ -248,16 +245,23 @@ async function handleAdd(req, res, uid) {
   }
   const cleanLabel = label && typeof label === "string" ? label.trim().slice(0, 60) : null;
 
+  const cap = tier === "pro" ? PRO_WATCH_CAP : FREE_WATCH_CAP;
+
   // Cap per user
   const colRef = watchesCol(uid);
   const countSnap = await colRef.count().get();
   const count = countSnap.data().count;
   // Allow re-adding existing wallet (overwrites label, doesn't increment count)
   const existing = await colRef.doc(w).get();
-  if (!existing.exists && count >= MAX_WATCHES_PER_USER) {
+  if (!existing.exists && count >= cap) {
     return res.status(409).json({
-      error: `You've hit the ${MAX_WATCHES_PER_USER}-wallet watch limit. Remove one to add another.`,
-      cap: MAX_WATCHES_PER_USER,
+      error:
+        tier === "pro"
+          ? `You've hit the ${PRO_WATCH_CAP}-wallet Pro limit. Remove one to add another.`
+          : `Free tier limit reached (${FREE_WATCH_CAP} watches). Upgrade to Pro for ${PRO_WATCH_CAP}.`,
+      cap,
+      tier,
+      upgrade: tier !== "pro",
     });
   }
 

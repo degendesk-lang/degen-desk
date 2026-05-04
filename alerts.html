@@ -203,21 +203,21 @@
         <div class="ta-loading-text">Checking access&hellip;</div>
       </section>
 
-      <!-- Pro gate -->
+      <!-- Sign-in gate (free users CAN use Wallet Watch — they just need an account) -->
       <section id="ww-gate" class="ta-gate" hidden>
         <div class="ta-gate-card">
           <div class="ta-gate-icon">🔒</div>
-          <h2 id="ww-gate-title">Pro Feature</h2>
-          <p id="ww-gate-message">Wallet Watch is a Pro-only feature. Track up to 10 Solana wallets and see new trades the moment you check.</p>
+          <h2 id="ww-gate-title">Sign in to use Wallet Watch</h2>
+          <p id="ww-gate-message">Track up to 10 Solana wallets free. Pro gets 25.</p>
           <div class="ta-gate-features">
-            <div class="ta-gate-feature">✓ Track up to 10 wallets</div>
+            <div class="ta-gate-feature">✓ 10 watches free, 25 with Pro</div>
             <div class="ta-gate-feature">✓ See new buys/sells on demand</div>
             <div class="ta-gate-feature">✓ One-click drill-down to Token Analysis</div>
-            <div class="ta-gate-feature">✓ Email alerts coming soon</div>
+            <div class="ta-gate-feature">✓ Email alerts coming soon (Pro)</div>
             <div class="ta-gate-feature">✓ Custom labels per wallet</div>
           </div>
           <div class="ta-gate-actions">
-            <a id="ww-gate-cta" href="/pricing.html" class="ta-btn-primary">Upgrade to Pro</a>
+            <a id="ww-gate-cta" href="#" class="ta-btn-primary">Sign in with Google</a>
             <a id="ww-gate-signin" href="#" class="ta-btn-ghost" hidden>Sign in</a>
           </div>
         </div>
@@ -271,6 +271,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <script src="auth.js?v=21"></script>
-  <script src="alerts.js?v=1"></script>
+  <script src="alerts.js?v=2"></script>
 </body>
 </html>

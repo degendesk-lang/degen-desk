@@ -65,6 +65,19 @@
   }
 
   // ----- auth flow -----
+  async function triggerSignIn(e) {
+    if (e) e.preventDefault();
+    try {
+      if (window.DegenAuth?.signIn) await window.DegenAuth.signIn();
+      else {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await firebase.auth().signInWithPopup(provider);
+      }
+    } catch (err) {
+      console.error("Sign in failed:", err);
+    }
+  }
+
   function showGate(opts) {
     authLoading.hidden = true;
     appSection.hidden = true;
@@ -72,24 +85,15 @@
     if (opts?.title) gateTitle.textContent = opts.title;
     if (opts?.message) gateMessage.textContent = opts.message;
     if (opts?.ctaText) gateCta.textContent = opts.ctaText;
-    if (opts?.ctaHref) gateCta.href = opts.ctaHref;
-    if (opts?.showSignin) {
-      gateSignin.hidden = false;
-      gateSignin.onclick = async (e) => {
-        e.preventDefault();
-        try {
-          if (window.DegenAuth?.signIn) await window.DegenAuth.signIn();
-          else {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            await firebase.auth().signInWithPopup(provider);
-          }
-        } catch (err) {
-          console.error("Sign in failed:", err);
-        }
-      };
-    } else {
-      gateSignin.hidden = true;
+    if (opts?.ctaTriggersSignin) {
+      gateCta.removeAttribute("href");
+      gateCta.style.cursor = "pointer";
+      gateCta.onclick = triggerSignIn;
+    } else if (opts?.ctaHref) {
+      gateCta.href = opts.ctaHref;
+      gateCta.onclick = null;
     }
+    gateSignin.hidden = true;
   }
 
   function showApp() {
@@ -107,38 +111,15 @@
       if (!user) {
         showGate({
           title: "Sign in to use Wallet Watch",
-          message: "Wallet Watch is a Pro feature. Sign in with Google to continue.",
+          message: "Track up to 10 Solana wallets free. Pro gets 25.",
           ctaText: "Sign in with Google",
-          showSignin: true,
+          ctaTriggersSignin: true,
         });
         return;
       }
       currentUid = user.uid;
-
-      // Tier check
-      let tier = "free";
-      try {
-        const doc = await firebase.firestore().collection("users").doc(user.uid).get();
-        if (doc.exists) {
-          const d = doc.data();
-          if (d.tier === "pro" && d.subscriptionStatus === "active") tier = "pro";
-        }
-        if (tier !== "pro" && window.DegenDeskIAP?.isPro?.()) tier = "pro";
-      } catch (err) {
-        console.error("Tier check failed:", err);
-      }
-
-      if (tier !== "pro") {
-        showGate({
-          title: "Pro Feature",
-          message:
-            "Wallet Watch is a Pro-only feature. Upgrade to track wallets and receive alerts.",
-          ctaText: "Upgrade to Pro",
-          ctaHref: "/pricing.html",
-        });
-        return;
-      }
-
+      // Free users get 10 watches, Pro gets 25. Tier-aware cap is enforced
+      // server-side; the API tells the frontend which cap applies.
       showApp();
       await loadWatches();
     });
