@@ -130,7 +130,25 @@
 
       if (!data.found) {
         resultsSection.hidden = false;
-        results.innerHTML = `<div class="hh-empty">${escapeHtml(data.message || "No history found.")}</div>`;
+        const xUrl = `https://x.com/${encodeURIComponent(raw)}`;
+        results.innerHTML = `
+          <div class="hh-empty" style="text-align:left;">
+            <div style="margin-bottom:10px;"><strong>No archived history for @${escapeHtml(raw)}.</strong></div>
+            <div style="margin-bottom:10px; line-height:1.6;">
+              memory.lol archives X handle changes by scraping public Twitter data. Smaller accounts often aren't captured — especially if the rename happened recently or the account didn't get heavy scraping coverage during the change window. Even Twitter's own API doesn't expose historical handle changes publicly, so this is a real gap with no perfect fix.
+            </div>
+            <div style="margin-bottom:10px; line-height:1.6;">
+              <strong>Recommended manual checks:</strong>
+              <ul style="margin: 6px 0 0 20px; padding: 0; line-height: 1.7;">
+                <li>Open the profile and check the account creation date (X shows "Joined [Month Year]" on every profile).</li>
+                <li>Look at the followers / following ratio and account age — fresh accounts with high follower counts can be a red flag.</li>
+                <li>Check the earliest tweets — does the content match the project's claimed history?</li>
+              </ul>
+            </div>
+            <a href="${escapeHtml(xUrl)}" target="_blank" rel="noopener" style="display:inline-block; background:#a78bfa; color:#021015; text-decoration:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:13px;">Open @${escapeHtml(raw)} on X ↗</a>
+          </div>
+        `;
+        flagsSection.hidden = true;
         goBtn.disabled = false;
         return;
       }
