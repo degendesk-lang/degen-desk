@@ -63,6 +63,28 @@ async function fetchSearch(query, chainHint) {
   }
 }
 
+// Handle History — public archive lookup of X handle renames.
+const handleCache = new Map();
+const HANDLE_TTL_MS = 10 * 60 * 1000;
+async function fetchHandleHistory(handle) {
+  const key = handle.toLowerCase();
+  const now = Date.now();
+  const hit = handleCache.get(key);
+  if (hit && hit.expires > now) return hit.payload;
+
+  try {
+    const url = `${API_BASE}/api/handle-history?q=${encodeURIComponent(handle)}`;
+    const res = await fetch(url, { method: "GET" });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) return { ok: false, error: data?.error || `HTTP ${res.status}` };
+    const payload = { ok: true, data };
+    handleCache.set(key, { expires: now + HANDLE_TTL_MS, payload });
+    return payload;
+  } catch (err) {
+    return { ok: false, error: err?.message || "fetch failed" };
+  }
+}
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type === "QUICK_CHECK" && typeof msg.address === "string") {
     fetchQuickCheck(msg.address)
@@ -74,6 +96,12 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     fetchSearch(msg.query, msg.chainHint || null)
       .then(sendResponse)
       .catch((err) => sendResponse({ ok: false, error: err?.message || "search failed" }));
+    return true;
+  }
+  if (msg?.type === "HANDLE_HISTORY" && typeof msg.handle === "string") {
+    fetchHandleHistory(msg.handle)
+      .then(sendResponse)
+      .catch((err) => sendResponse({ ok: false, error: err?.message || "fetch failed" }));
     return true;
   }
   if (msg?.type === "OPEN_REPORT" && typeof msg.address === "string") {

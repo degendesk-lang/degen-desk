@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Degen Desk",
-  "version": "0.2.3",
-  "description": "Hover any Solana, Ethereum, Base, or BNB Chain contract address for live metrics. One click to the full Pro analysis.",
+  "version": "0.3.0",
+  "description": "Hover any Solana, Ethereum, Base, or BNB Chain contract address for live metrics. On X, see profile rename history inline.",
   "author": "Degen Desk",
   "homepage_url": "https://degendesk.xyz",
 
@@ -38,6 +38,12 @@
       ],
       "js": ["content.js", "sites.js"],
       "css": ["content.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": ["https://x.com/*", "https://www.x.com/*", "https://twitter.com/*", "https://www.twitter.com/*"],
+      "js": ["x-profile.js"],
       "run_at": "document_idle",
       "all_frames": false
     }
