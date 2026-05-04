@@ -71,21 +71,24 @@ function normalizeHandle(twitter) {
   return s;
 }
 
-// Try Nitter hosts in order until one returns RSS.
+// Try Nitter hosts in order until one returns RSS. Returns {posts, debug}.
 async function fetchKolPosts(handle) {
   const username = normalizeHandle(handle);
-  if (!username) return [];
+  if (!username) return { posts: [], debug: { handle, reason: "invalid_handle" } };
+  const attempts = [];
   for (const host of NITTER_HOSTS) {
     try {
       const res = await fetchWithTimeout(`${host}/${username}/rss`, RSS_TIMEOUT_MS);
+      attempts.push({ host, status: res.status });
       if (!res.ok) continue;
       const xml = await res.text();
-      return parseRss(xml, username);
+      const posts = parseRss(xml, username);
+      return { posts, debug: { handle: username, attempts, parsedCount: posts.length, xmlBytes: xml.length } };
     } catch (err) {
-      // try next host
+      attempts.push({ host, error: err.name || String(err).slice(0, 40) });
     }
   }
-  return [];
+  return { posts: [], debug: { handle: username, attempts } };
 }
 
 function parseRss(xml, username) {
@@ -236,21 +239,25 @@ module.exports = async function handler(req, res) {
       .slice(0, TOP_N_KOLS);
 
     // 2. Fetch X posts for each KOL in parallel
-    const postArrays = await Promise.all(
+    const fetchResults = await Promise.all(
       kols.map(async (k) => {
-        const posts = await fetchKolPosts(k.twitter);
-        return posts.map((p) => ({
-          ...p,
-          rank: k.rank,
-          name: k.name,
-          wallet: k.wallet,
-          pnlSol: k.pnlSol,
-          pnlUsd: k.pnlUsd,
-          winRate: k.winRate,
-        }));
+        const { posts, debug } = await fetchKolPosts(k.twitter);
+        return {
+          debug,
+          posts: posts.map((p) => ({
+            ...p,
+            rank: k.rank,
+            name: k.name,
+            wallet: k.wallet,
+            pnlSol: k.pnlSol,
+            pnlUsd: k.pnlUsd,
+            winRate: k.winRate,
+          })),
+        };
       })
     );
-    const allPosts = postArrays.flat();
+    const allPosts = fetchResults.flatMap((r) => r.posts);
+    const fetchDebug = fetchResults.map((r) => r.debug);
 
     // 3. Annotate posts with extracted CAs / tickers
     for (const p of allPosts) {
@@ -293,6 +300,7 @@ module.exports = async function handler(req, res) {
       lookbackHours: POST_LOOKBACK_HOURS,
       consensusWindowHours: CONSENSUS_WINDOW_HOURS,
       generatedAt: new Date().toISOString(),
+      debug: { fetchResults: fetchDebug },
     };
 
     feedCache = responseBody;
