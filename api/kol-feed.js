@@ -58,9 +58,22 @@ function fetchWithTimeout(url, ms = RSS_TIMEOUT_MS) {
   }).finally(() => clearTimeout(t));
 }
 
+// Kolscan stores Twitter as a full URL ("https://x.com/Cented7"), but
+// we sometimes get plain handles or @-prefixed handles too. Normalize
+// to bare username, return null if it doesn't look like a valid handle.
+function normalizeHandle(twitter) {
+  if (!twitter) return null;
+  let s = String(twitter).trim();
+  s = s.replace(/^https?:\/\/(?:www\.)?(?:x|twitter)\.com\//i, "");
+  s = s.replace(/^@/, "");
+  s = s.split(/[?#/]/)[0];
+  if (!/^[A-Za-z0-9_]{1,15}$/.test(s)) return null;
+  return s;
+}
+
 // Try Nitter hosts in order until one returns RSS.
 async function fetchKolPosts(handle) {
-  const username = String(handle).replace(/^@/, "").trim();
+  const username = normalizeHandle(handle);
   if (!username) return [];
   for (const host of NITTER_HOSTS) {
     try {
@@ -206,17 +219,21 @@ module.exports = async function handler(req, res) {
     // 1. Fetch top KOLs from kolscan (weekly = broadest signal-to-noise)
     const traders = await scrapeLeaderboard("weekly");
     const kols = (traders || [])
-      .filter((t) => t.twitter && t.wallet)
-      .slice(0, TOP_N_KOLS)
-      .map((t) => ({
-        rank: t.rank,
-        name: t.name,
-        wallet: t.wallet,
-        twitter: String(t.twitter).replace(/^@/, ""),
-        pnlSol: t.pnl_sol ? Number(t.pnl_sol) : null,
-        pnlUsd: t.pnl_usd ? Number(t.pnl_usd) : null,
-        winRate: t.win_rate || null,
-      }));
+      .map((t) => {
+        const handle = normalizeHandle(t.twitter);
+        if (!handle || !t.wallet) return null;
+        return {
+          rank: t.rank,
+          name: t.name,
+          wallet: t.wallet,
+          twitter: handle,
+          pnlSol: t.pnl_sol ? Number(t.pnl_sol) : null,
+          pnlUsd: t.pnl_usd ? Number(t.pnl_usd) : null,
+          winRate: t.win_rate || null,
+        };
+      })
+      .filter(Boolean)
+      .slice(0, TOP_N_KOLS);
 
     // 2. Fetch X posts for each KOL in parallel
     const postArrays = await Promise.all(
