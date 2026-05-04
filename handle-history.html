@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" class="ta-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk X Handle History — paste any X (Twitter) handle to see every previous handle that account has used. Many memecoin scams rebrand accounts to look like fresh projects. Catch them before you ape." />
+  <title>X Handle History &middot; Degen Desk</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/handle-history.html" />
+  <meta property="og:title" content="X Handle History · Degen Desk" />
+  <meta property="og:description" content="Paste any X handle, see every previous handle that account has used. Catch scam rebrands before you ape." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:title" content="X Handle History · Degen Desk" />
+  <meta name="twitter:description" content="Paste any X handle, see every previous handle that account has used. Catch scam rebrands before you ape." />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=5" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    #hh-app { min-height: 100vh; overflow: visible !important; height: auto !important; }
+    #hh-app [hidden] { display: none !important; }
+
+    .hh-edge {
+      background: linear-gradient(90deg, rgba(167, 139, 250, 0.10), rgba(167, 139, 250, 0.02));
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #d6c8ff;
+    }
+    .hh-edge strong { color: #efe7ff; }
+
+    .hh-section {
+      background: #0f0f1a; border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 18px 20px; margin-top: 16px;
+    }
+    .hh-section h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; }
+
+    .hh-flag {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px; border-radius: 10px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    .hh-flag.high {
+      background: linear-gradient(90deg, rgba(255, 85, 85, 0.10), rgba(255, 85, 85, 0.02));
+      border: 1px solid rgba(255, 85, 85, 0.30);
+      color: #ffb8b8;
+    }
+    .hh-flag.medium {
+      background: linear-gradient(90deg, rgba(255, 204, 51, 0.10), rgba(255, 204, 51, 0.02));
+      border: 1px solid rgba(255, 204, 51, 0.30);
+      color: #ffe7a3;
+    }
+    .hh-flag.low {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.08), rgba(0, 255, 136, 0.02));
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      color: #c2ffd9;
+    }
+    .hh-flag .icon { font-size: 16px; }
+
+    .hh-account {
+      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .hh-account:last-child { border-bottom: none; }
+    .hh-account-head {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .hh-current {
+      font-weight: 700; font-size: 15px; color: #f0f0f8;
+      text-decoration: none;
+    }
+    .hh-current:hover { color: #a78bfa; }
+    .hh-id {
+      font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+      color: rgba(240, 240, 248, 0.5);
+    }
+    .hh-meta {
+      font-size: 11.5px; color: rgba(240, 240, 248, 0.55);
+      margin-left: auto;
+    }
+    .hh-handle-list {
+      list-style: none; margin: 6px 0 0 0; padding: 0;
+    }
+    .hh-handle-item {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 8px 12px; border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      margin-top: 6px;
+      font-size: 13px;
+    }
+    .hh-handle-item .h {
+      font-weight: 600; color: #f0f0f8;
+    }
+    .hh-handle-item .range {
+      font-size: 11px; color: rgba(240, 240, 248, 0.55);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .hh-handle-item .duration {
+      font-size: 11px; color: rgba(167, 139, 250, 0.85);
+      margin-left: auto;
+    }
+    .hh-handle-item.current {
+      border: 1px solid rgba(0, 255, 136, 0.30);
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.08), rgba(0, 255, 136, 0.02));
+    }
+
+    .hh-empty {
+      text-align: center; padding: 32px 12px;
+      color: rgba(240, 240, 248, 0.5); font-size: 13px;
+    }
+    .hh-spinner {
+      width: 24px; height: 24px;
+      border: 2px solid rgba(167, 139, 250, 0.2);
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: hh-spin 0.7s linear infinite;
+      margin: 24px auto;
+    }
+    @keyframes hh-spin { to { transform: rotate(360deg); } }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=41" />
+</head>
+<body class="ta-body" style="background:#060610;">
+  <div id="hh-app" class="ta-app">
+
+    <header class="ta-header">
+      <a href="/tools.html" class="ta-back-link" aria-label="Back to Advanced Tools">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="ta-header-title">
+        <div class="ta-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div>
+          <h1>X Handle History</h1>
+          <span class="ta-subtitle">Catch scam rebrands before you ape</span>
+        </div>
+      </div>
+      <div class="ta-header-spacer"></div>
+    </header>
+
+    <main class="ta-main">
+
+      <div class="ta-disclaimer-banner">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>This tool surfaces public X handle history from memory.lol's archive. Absence of history doesn't mean an account is safe — it may just be too new for the archive. Always cross-check via account creation date and external sources.</p>
+      </div>
+
+      <section class="ta-analyzer">
+        <div class="ta-input-card">
+          <label for="hh-input" class="ta-input-label">X Handle or Account ID</label>
+          <div class="ta-input-row">
+            <input
+              id="hh-input"
+              type="text"
+              class="ta-ca-input"
+              placeholder="e.g. @elonmusk, elonmusk, or 44196397"
+              autocomplete="off"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+            />
+            <button id="hh-paste" class="ta-paste-btn" type="button" aria-label="Paste from clipboard">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </button>
+          </div>
+          <button id="hh-go" class="ta-analyze-btn" type="button" disabled>
+            <span class="ta-btn-label">Look up history</span>
+          </button>
+          <div id="hh-error" class="ta-input-error" hidden></div>
+          <div class="hh-edge">
+            <strong>Degen Desk Edge:</strong> Memecoin scams routinely <em>rebrand</em> X accounts — taking a previously-flagged scam handle, renaming it, and launching a "fresh" project. We surface every prior handle, when it changed, and flag suspicious patterns (recent rename, handle reuse across multiple accounts).
+          </div>
+        </div>
+
+        <div id="hh-loading" class="hh-spinner" hidden></div>
+
+        <div id="hh-flags-section" class="hh-section" hidden>
+          <h3 id="hh-flags-title">Signals</h3>
+          <div id="hh-flags-list"></div>
+        </div>
+
+        <div id="hh-results-section" class="hh-section" hidden>
+          <h3>Account history</h3>
+          <div id="hh-results"></div>
+        </div>
+      </section>
+
+      <div class="ta-disclaimer-banner ta-disclaimer-bottom" style="margin-top: 28px;">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>Data sourced from memory.lol's public archive of X handle/account-ID mappings. Coverage is best-effort and not exhaustive — newly-created accounts and recent renames may not yet be archived. This tool is one signal among many; always combine with on-chain analysis, community due diligence, and common sense.</p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="handle-history.js?v=1"></script>
+</body>
+</html>
