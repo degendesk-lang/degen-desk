@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" class="ta-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk Smart Money Heatmap — tokens currently held by 3+ ranked KOLs at the same time. Holdings beat tweets — see what smart money is putting their SOL on, not just talking about." />
+  <title>Smart Money Heatmap &middot; Degen Desk</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/heatmap.html" />
+  <meta property="og:title" content="Smart Money Heatmap · Degen Desk" />
+  <meta property="og:description" content="Tokens currently held by 3+ ranked KOLs at the same time. Holdings beat tweets." />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:title" content="Smart Money Heatmap · Degen Desk" />
+  <meta name="twitter:description" content="Tokens currently held by 3+ ranked KOLs at the same time. Holdings beat tweets." />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=5" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    #hm-app { min-height: 100vh; overflow: visible !important; height: auto !important; }
+    #hm-app [hidden] { display: none !important; }
+
+    .hm-edge {
+      background: linear-gradient(90deg, rgba(167, 139, 250, 0.10), rgba(167, 139, 250, 0.02));
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #d6c8ff;
+      line-height: 1.55;
+    }
+    .hm-edge strong { color: #efe7ff; }
+
+    .hm-section {
+      background: #0f0f1a; border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 18px 20px; margin-top: 16px;
+    }
+    .hm-section h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; }
+
+    .hm-stat-bar {
+      display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+      font-size: 12px; color: rgba(240,240,248,0.55);
+      padding: 10px 0;
+    }
+    .hm-stat-bar strong { color: #f0f0f8; font-weight: 700; }
+
+    .hm-row {
+      padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .hm-row:last-child { border-bottom: none; }
+    .hm-row-head {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .hm-token-img {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #16162a; object-fit: cover;
+    }
+    .hm-token-meta { flex: 1; }
+    .hm-symbol { font-weight: 700; font-size: 15px; }
+    .hm-name {
+      font-size: 12px; color: rgba(240,240,248,0.55);
+    }
+    .hm-kol-count {
+      background: linear-gradient(90deg, rgba(0,255,136,0.15), rgba(0,255,136,0.06));
+      border: 1px solid rgba(0,255,136,0.30);
+      color: #6effae;
+      font-weight: 700; font-size: 13px;
+      padding: 5px 12px; border-radius: 999px;
+    }
+    .hm-kol-count.hot {
+      background: linear-gradient(90deg, rgba(255,140,0,0.18), rgba(255,140,0,0.05));
+      border-color: rgba(255,140,0,0.35);
+      color: #ffb866;
+    }
+    .hm-kol-count.scorching {
+      background: linear-gradient(90deg, rgba(255,85,85,0.20), rgba(255,85,85,0.05));
+      border-color: rgba(255,85,85,0.40);
+      color: #ff9999;
+    }
+    .hm-value {
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      color: rgba(240,240,248,0.65);
+    }
+    .hm-row-actions {
+      display: flex; gap: 12px; align-items: center;
+      margin-top: 10px;
+    }
+    .hm-row-actions a {
+      font-size: 12px; color: #a78bfa; text-decoration: none;
+    }
+    .hm-row-actions a.primary {
+      background: rgba(167,139,250,0.15);
+      border: 1px solid rgba(167,139,250,0.30);
+      padding: 5px 12px; border-radius: 999px;
+      font-weight: 600;
+    }
+    .hm-row-actions a:hover { color: #d6c8ff; }
+
+    .hm-holders {
+      margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .hm-holder-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11.5px;
+      text-decoration: none; color: rgba(240,240,248,0.85);
+    }
+    .hm-holder-chip:hover {
+      background: rgba(167,139,250,0.10);
+      border-color: rgba(167,139,250,0.25);
+      color: #d6c8ff;
+    }
+    .hm-holder-chip .rank {
+      color: rgba(240,240,248,0.55); font-weight: 700;
+      font-size: 10.5px;
+    }
+    .hm-holder-chip .val {
+      font-family: 'JetBrains Mono', monospace;
+      color: #6effae; font-size: 10.5px;
+    }
+
+    .hm-empty { text-align: center; padding: 32px 12px; color: rgba(240,240,248,0.5); font-size: 13px; }
+    .hm-spinner {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(167, 139, 250, 0.2);
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: hm-spin 0.7s linear infinite;
+      margin: 30px auto;
+    }
+    @keyframes hm-spin { to { transform: rotate(360deg); } }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=41" />
+</head>
+<body class="ta-body" style="background:#060610;">
+  <div id="hm-app" class="ta-app">
+
+    <header class="ta-header">
+      <a href="/tools.html" class="ta-back-link" aria-label="Back to Advanced Tools">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="ta-header-title">
+        <div class="ta-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v6"/><path d="M12 22v-2"/><path d="m17 20.66-1-1.73"/><path d="M11 10.27 7 3.34"/><path d="m20.66 17-1.73-1"/><path d="m3.34 7 1.73 1"/><path d="M14 12h8"/><path d="M2 12h2"/><path d="m20.66 7-1.73 1"/><path d="m3.34 17 1.73-1"/><path d="m17 3.34-1 1.73"/><path d="m7 20.66 1-1.73"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Smart Money Heatmap</h1>
+          <span class="ta-subtitle">Tokens 3+ ranked KOLs are holding right now</span>
+        </div>
+      </div>
+      <div class="ta-header-spacer"></div>
+    </header>
+
+    <main class="ta-main">
+
+      <div class="ta-disclaimer-banner">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>"Smart money holding" is not a buy signal. KOLs lose trades all the time. Always DYOR before aping.</p>
+      </div>
+
+      <div class="hm-edge">
+        <strong>Why holdings &gt; tweets:</strong> a KOL might tweet about a coin they're about to dump. A KOL <em>holding</em> a coin right now has their own SOL on the line. When 3+ ranked smart-money traders are all holding the same memecoin simultaneously, that's a real signal — and we're the only tool stitching kolscan's PnL ranks against current Helius holdings to surface it.
+      </div>
+
+      <div class="hm-stat-bar" id="hm-stat-bar"></div>
+
+      <div id="hm-loading" class="hm-spinner"></div>
+
+      <div id="hm-section" class="hm-section" hidden>
+        <h3 id="hm-section-title">Tokens with multi-KOL consensus</h3>
+        <div id="hm-list"></div>
+      </div>
+
+      <div class="ta-disclaimer-banner ta-disclaimer-bottom" style="margin-top: 28px;">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>Holdings data is pulled live from Solana via Helius DAS. Token prices come from Jupiter via Helius. KOL rankings come from kolscan's public weekly leaderboard. Every USD value is mark-to-market and reflects current liquidity, not necessarily what a holder could realistically exit at. Cryptocurrency trading involves substantial risk of loss.</p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="heatmap.js?v=1"></script>
+</body>
+</html>
