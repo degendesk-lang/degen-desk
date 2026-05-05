@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" class="ta-html">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="description" content="Degen Desk Insider Tracker — paste any Solana token to see the first 50 buyers, cross-referenced with the kolscan PnL leaderboard. Was the launch sniped by smart money or chased by FOMO retail?" />
+  <title>Insider Tracker &middot; Degen Desk</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Degen Desk" />
+  <meta property="og:url" content="https://degendesk.xyz/insiders.html" />
+  <meta property="og:title" content="Insider Tracker · Degen Desk" />
+  <meta property="og:description" content="See the first 50 buyers of any Solana token. Was it sniped by smart money or chased by retail FOMO?" />
+  <meta property="og:image" content="https://degendesk.xyz/og-image.png?v=5" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@DegenDeskXYZ" />
+  <meta name="twitter:title" content="Insider Tracker · Degen Desk" />
+  <meta name="twitter:description" content="See the first 50 buyers of any Solana token. Was it sniped by smart money or chased by retail FOMO?" />
+  <meta name="twitter:image" content="https://degendesk.xyz/og-image.png?v=5" />
+
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      background: #060610 !important;
+      color: #f0f0f8;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior: auto !important;
+      position: static !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    #ins-app { min-height: 100vh; overflow: visible !important; height: auto !important; }
+    #ins-app [hidden] { display: none !important; }
+
+    .ins-edge {
+      background: linear-gradient(90deg, rgba(167, 139, 250, 0.10), rgba(167, 139, 250, 0.02));
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #d6c8ff;
+      line-height: 1.55;
+    }
+    .ins-edge strong { color: #efe7ff; }
+
+    .ins-summary {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px; margin-top: 16px;
+    }
+    .ins-stat {
+      background: #0f0f1a; border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .ins-stat-label { font-size: 11px; color: rgba(240,240,248,0.55); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .ins-stat-value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .ins-stat-value.pos { color: #00ff88; }
+    .ins-stat-value.warn { color: #ffe7a3; }
+    .ins-stat-value.danger { color: #ff9999; }
+    .ins-stat-sub { font-size: 11.5px; color: rgba(240,240,248,0.5); margin-top: 4px; }
+
+    .ins-section {
+      background: #0f0f1a; border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 18px 20px; margin-top: 16px;
+    }
+    .ins-section h3 { margin: 0 0 12px; font-size: 15px; font-weight: 700; }
+
+    .ins-row {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 10px 12px; border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    .ins-row.kol {
+      background: linear-gradient(90deg, rgba(167,139,250,0.10), rgba(167,139,250,0.02));
+      border: 1px solid rgba(167,139,250,0.25);
+    }
+    .ins-rank-num {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      color: rgba(240,240,248,0.55); min-width: 32px;
+    }
+    .ins-row.kol .ins-rank-num { color: #d6c8ff; }
+    .ins-wallet {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: rgba(240,240,248,0.65);
+    }
+    .ins-kol-tag {
+      background: rgba(167,139,250,0.20);
+      border: 1px solid rgba(167,139,250,0.40);
+      color: #d6c8ff; font-size: 11px; font-weight: 700;
+      padding: 3px 9px; border-radius: 999px;
+    }
+    .ins-meta {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: rgba(240,240,248,0.65);
+      margin-left: auto;
+    }
+    .ins-actions {
+      display: flex; gap: 8px;
+    }
+    .ins-actions a {
+      font-size: 11.5px; color: #a78bfa; text-decoration: none;
+    }
+    .ins-actions a:hover { color: #d6c8ff; }
+
+    .ins-empty { text-align: center; padding: 32px 12px; color: rgba(240,240,248,0.5); font-size: 13px; }
+    .ins-spinner {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(167, 139, 250, 0.2);
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: ins-spin 0.7s linear infinite;
+      margin: 30px auto;
+    }
+    @keyframes ins-spin { to { transform: rotate(360deg); } }
+  </style>
+  <link rel="stylesheet" href="styles.css?v=41" />
+</head>
+<body class="ta-body" style="background:#060610;">
+  <div id="ins-app" class="ta-app">
+
+    <header class="ta-header">
+      <a href="/tools.html" class="ta-back-link" aria-label="Back to Advanced Tools">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <div class="ta-header-title">
+        <div class="ta-header-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Insider Tracker</h1>
+          <span class="ta-subtitle">Were the first 50 buyers smart money or retail FOMO?</span>
+        </div>
+      </div>
+      <div class="ta-header-spacer"></div>
+    </header>
+
+    <main class="ta-main">
+
+      <div class="ta-disclaimer-banner">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>Smart money sniping a launch isn't a buy signal — it tells you who got in early, not whether the coin is going to pump. Always DYOR.</p>
+      </div>
+
+      <section class="ta-analyzer">
+        <div class="ta-input-card">
+          <label for="ins-input" class="ta-input-label">Solana Token Contract Address</label>
+          <div class="ta-input-row">
+            <input
+              id="ins-input"
+              type="text"
+              class="ta-ca-input"
+              placeholder="e.g. DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
+              autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+            />
+            <button id="ins-paste" class="ta-paste-btn" type="button" aria-label="Paste from clipboard">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </button>
+          </div>
+          <button id="ins-go" class="ta-analyze-btn" type="button" disabled>
+            <span class="ta-btn-label">Show insiders</span>
+          </button>
+          <div id="ins-error" class="ta-input-error" hidden></div>
+          <div class="ins-edge">
+            <strong>Degen Desk Edge:</strong> we walk Helius transaction history backwards to find the earliest 50 buyers of any token, then cross-reference each wallet against the kolscan PnL leaderboard. The result: you instantly see whether a coin was sniped by ranked smart money or chased by retail. <em>Holdings beat tweets — and being early beats both.</em>
+          </div>
+        </div>
+
+        <div id="ins-loading" class="ins-spinner" hidden></div>
+
+        <div id="ins-summary-section" class="ins-section" hidden>
+          <h3>Insider summary</h3>
+          <div id="ins-summary"></div>
+        </div>
+
+        <div id="ins-list-section" class="ins-section" hidden>
+          <h3 id="ins-list-title">First buyers</h3>
+          <div id="ins-list"></div>
+        </div>
+      </section>
+
+      <div class="ta-disclaimer-banner ta-disclaimer-bottom" style="margin-top: 28px;">
+        <strong>⚠️ NOT FINANCIAL ADVICE &middot; DO YOUR OWN RESEARCH</strong>
+        <p>Buyers are extracted from public Solana on-chain data via Helius. KOL identity is matched against the kolscan public leaderboard. We walk up to 800 transactions back from current — for very high-volume tokens we may not reach the literal launch, in which case the response will tell you so explicitly.</p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="insiders.js?v=1"></script>
+</body>
+</html>
