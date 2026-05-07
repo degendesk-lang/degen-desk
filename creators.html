@@ -459,18 +459,15 @@
             });
           }
 
-          const db = firebase.firestore();
-          // Doc ID = email so dupes are upserts, not duplicates
-          await db.collection("partner_applications").doc(data.email).set(
-            {
-              ...data,
-              status: "pending",
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              userAgent: navigator.userAgent || null,
-              referrer: document.referrer || null,
-            },
-            { merge: true }
-          );
+          const r = await fetch("/api/partner-application", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          if (!r.ok) {
+            const j = await r.json().catch(() => ({}));
+            throw new Error(j.error || `HTTP ${r.status}`);
+          }
 
           showMsg("Thanks — application received. We review within ~48 hours and reach out by email or DM if you're a fit.", "success");
           form.reset();
