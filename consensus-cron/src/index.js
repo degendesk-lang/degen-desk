@@ -31,6 +31,7 @@ const CONSENSUS_THRESHOLD = 5; // unique KOL wallets required to fire
 const WINDOW_SECONDS = 60 * 60; // 1 hour rolling window
 const DEDUP_HOURS = 24; // don't re-fire same token within this many hours
 const SWAPS_PER_KOL = 50; // Helius page size — covers a hyperactive KOL's hour
+const HELIUS_CONCURRENCY = 5; // Workers caps in-flight fetches at 6; stay under it
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
 const STABLECOINS = new Set([
@@ -71,30 +72,35 @@ async function runTick(env, source) {
 
 	const cutoffTs = Math.floor(Date.now() / 1000) - WINDOW_SECONDS;
 
-	// Fetch all KOL swap activity in parallel.
+	// Fetch KOL swap activity in bounded-concurrency batches.
+	// Workers caps concurrent in-flight fetches; firing all KOLs in parallel
+	// causes the runtime to cancel older requests, silently dropping data.
 	const allBuys = [];
-	await Promise.all(
-		kols.map(async (kol) => {
-			try {
-				const swaps = await fetchRecentSwaps(kol.wallet, env.HELIUS_API_KEY, SWAPS_PER_KOL);
-				for (const tx of swaps) {
-					if ((tx.timestamp || 0) < cutoffTs) continue;
-					const summary = summarizeSwap(tx, kol.wallet);
-					if (!summary || summary.kind !== "buy") continue;
-					if (summary.tokenMint === SOL_MINT || STABLECOINS.has(summary.tokenMint)) continue;
-					allBuys.push({
-						wallet: kol.wallet,
-						label: kol.label,
-						twitter: kol.twitter,
-						rank: kol.rank,
-						...summary,
-					});
+	for (let i = 0; i < kols.length; i += HELIUS_CONCURRENCY) {
+		const batch = kols.slice(i, i + HELIUS_CONCURRENCY);
+		await Promise.all(
+			batch.map(async (kol) => {
+				try {
+					const swaps = await fetchRecentSwaps(kol.wallet, env.HELIUS_API_KEY, SWAPS_PER_KOL);
+					for (const tx of swaps) {
+						if ((tx.timestamp || 0) < cutoffTs) continue;
+						const summary = summarizeSwap(tx, kol.wallet);
+						if (!summary || summary.kind !== "buy") continue;
+						if (summary.tokenMint === SOL_MINT || STABLECOINS.has(summary.tokenMint)) continue;
+						allBuys.push({
+							wallet: kol.wallet,
+							label: kol.label,
+							twitter: kol.twitter,
+							rank: kol.rank,
+							...summary,
+						});
+					}
+				} catch (err) {
+					console.error(`Helius fetch failed for ${kol.wallet}: ${err.message}`);
 				}
-			} catch (err) {
-				console.error(`Helius fetch failed for ${kol.wallet}: ${err.message}`);
-			}
-		}),
-	);
+			}),
+		);
+	}
 
 	// Group by tokenMint, count unique KOL wallets.
 	const byToken = new Map();
