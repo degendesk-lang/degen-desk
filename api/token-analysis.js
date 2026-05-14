@@ -202,15 +202,92 @@ async function fetchRugCheck(mint) {
   }
 }
 
-// RugCheck full report (gives us top holders + insider analysis + markets)
+// Fetch authoritative on-chain top-holder data via Helius RPC.
+//
+// Why this exists: RugCheck's `pct` field on `topHolders` has been observed
+// to be wildly wrong on some tokens — most notoriously, on the Hantavirus
+// token (CA: 2tXpgu2DLTsPUf9zFmuZmA4xrYxXKBTpVq9wAM7hzs9y) RugCheck reported
+// the top holder at 20.7% while on-chain truth was ~2%. The internal
+// inconsistency in RugCheck's response (it returned pct=20.69 alongside
+// uiAmount=0 for the same holder) indicates their pct field is computed
+// from a different source than uiAmount. We treat Helius as ground truth
+// and override RugCheck's pct values where we can resolve them by address.
+async function fetchHeliusTopHolders(mint) {
+  const apiKey = process.env.HELIUS_API_KEY;
+  if (!apiKey) return null;
+
+  const rpcUrl = `https://mainnet.helius-rpc.com/?api-key=${apiKey}`;
+
+  try {
+    const [supplyRes, holdersRes] = await Promise.all([
+      fetchWithTimeout(rpcUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "getTokenSupply",
+          params: [mint],
+        }),
+      }),
+      fetchWithTimeout(rpcUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 2,
+          method: "getTokenLargestAccounts",
+          params: [mint],
+        }),
+      }),
+    ]);
+
+    if (!supplyRes.ok || !holdersRes.ok) return null;
+    const supplyJson = await supplyRes.json();
+    const holdersJson = await holdersRes.json();
+
+    const supplyUi = supplyJson?.result?.value?.uiAmount;
+    const holdersArr = holdersJson?.result?.value;
+
+    if (typeof supplyUi !== "number" || supplyUi <= 0 || !Array.isArray(holdersArr)) {
+      return null;
+    }
+
+    // Build a map keyed by token-account address with computed pct.
+    const byAddress = new Map();
+    for (const h of holdersArr) {
+      const addr = h?.address;
+      const ui = typeof h?.uiAmount === "number" ? h.uiAmount : 0;
+      if (!addr) continue;
+      byAddress.set(addr, {
+        address: addr,
+        uiAmount: ui,
+        pct: (ui / supplyUi) * 100,
+      });
+    }
+
+    return { supplyUiAmount: supplyUi, byAddress };
+  } catch (err) {
+    console.error("Helius top-holders fetch failed:", err.message);
+    return null;
+  }
+}
+
+// RugCheck full report (gives us top holders + insider analysis + markets).
+// Merges Helius-computed on-chain pct over RugCheck's pct field for accuracy.
 async function fetchRugCheckFull(mint) {
   try {
-    const res = await fetchWithTimeout(
-      `https://api.rugcheck.xyz/v1/tokens/${mint}/report`,
-      { headers: { "Accept": "application/json" } }
-    );
-    if (!res.ok) return null;
-    const data = await res.json();
+    // Fetch RugCheck and Helius on-chain truth in parallel.
+    const [rugRes, helius] = await Promise.all([
+      fetchWithTimeout(
+        `https://api.rugcheck.xyz/v1/tokens/${mint}/report`,
+        { headers: { "Accept": "application/json" } }
+      ),
+      fetchHeliusTopHolders(mint),
+    ]);
+
+    if (!rugRes.ok) return null;
+    const data = await rugRes.json();
 
     // Build a set of addresses that are known AMM liquidity pools so we
     // can tag those entries inside topHolders. RugCheck's `markets` array
@@ -230,32 +307,44 @@ async function fetchRugCheckFull(mint) {
     }
 
     // Tag each top holder with isLiquidityPool based on the LP address set.
+    // Override RugCheck's pct with Helius-computed pct when we can resolve
+    // the token-account address — RugCheck's pct field is unreliable on
+    // some tokens (see fetchHeliusTopHolders comment for details).
     const rawTopHolders = Array.isArray(data.topHolders) ? data.topHolders.slice(0, 10) : [];
-    const tagged = rawTopHolders.map((h) => ({
-      address: h.address || null,
-      owner: h.owner || null,
-      pct: typeof h.pct === "number" ? h.pct : null,
-      uiAmount: h.uiAmount ?? null,
-      insider: !!h.insider,
-      isLiquidityPool:
-        lpAddresses.has(h.address) ||
-        lpAddresses.has(h.owner) ||
-        // Heuristic fallback: RugCheck sometimes labels these inline
-        (typeof h.address === "string" && h.address.toLowerCase().includes("pool")),
-    }));
+    const tagged = rawTopHolders.map((h) => {
+      const heliusEntry = helius?.byAddress?.get(h.address) || null;
+      const heliusPct = heliusEntry?.pct;
+      const usingHelius = typeof heliusPct === "number" && Number.isFinite(heliusPct);
+      const rugPct = typeof h.pct === "number" ? h.pct : null;
+      return {
+        address: h.address || null,
+        owner: h.owner || null,
+        pct: usingHelius ? heliusPct : rugPct,
+        pctSource: usingHelius ? "helius_onchain" : (rugPct !== null ? "rugcheck" : null),
+        uiAmount: heliusEntry?.uiAmount ?? h.uiAmount ?? null,
+        insider: !!h.insider,
+        isLiquidityPool:
+          lpAddresses.has(h.address) ||
+          lpAddresses.has(h.owner) ||
+          // Heuristic fallback: RugCheck sometimes labels these inline
+          (typeof h.address === "string" && h.address.toLowerCase().includes("pool")),
+      };
+    });
 
     // Non-LP view — the one we care about for "top wallet concentration"
     const nonLpTopHolders = tagged.filter((h) => !h.isLiquidityPool);
 
-    // Aggregate LP share so GPT can report it separately
+    // Aggregate LP share so GPT can report it separately. Uses the corrected
+    // pct values when Helius resolved them, RugCheck's otherwise.
     const lpShareTotalPct = tagged
       .filter((h) => h.isLiquidityPool)
       .reduce((sum, h) => sum + (h.pct || 0), 0);
 
     return {
-      topHolders: tagged,               // full list with LP tagging
+      topHolders: tagged,               // full list with LP tagging + corrected pct
       topHoldersNonLp: nonLpTopHolders, // wallets only (the list users care about)
       lpShareTotalPct: lpShareTotalPct || null,
+      onchainSupplyUiAmount: helius?.supplyUiAmount || null,
       creator: data.creator || null,
       mintAuthority: data.mintAuthority || null,
       freezeAuthority: data.freezeAuthority || null,
