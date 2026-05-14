@@ -214,7 +214,10 @@ async function fetchRugCheck(mint) {
 // and override RugCheck's pct values where we can resolve them by address.
 async function fetchHeliusTopHolders(mint) {
   const apiKey = process.env.HELIUS_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey) {
+    console.warn("[heliusTopHolders] HELIUS_API_KEY not set");
+    return null;
+  }
 
   const rpcUrl = `https://mainnet.helius-rpc.com/?api-key=${apiKey}`;
 
@@ -242,7 +245,10 @@ async function fetchHeliusTopHolders(mint) {
       }),
     ]);
 
-    if (!supplyRes.ok || !holdersRes.ok) return null;
+    if (!supplyRes.ok || !holdersRes.ok) {
+      console.warn(`[heliusTopHolders] non-ok responses: supply=${supplyRes.status} holders=${holdersRes.status}`);
+      return null;
+    }
     const supplyJson = await supplyRes.json();
     const holdersJson = await holdersRes.json();
 
@@ -250,8 +256,10 @@ async function fetchHeliusTopHolders(mint) {
     const holdersArr = holdersJson?.result?.value;
 
     if (typeof supplyUi !== "number" || supplyUi <= 0 || !Array.isArray(holdersArr)) {
+      console.warn(`[heliusTopHolders] bad shape for mint=${mint}: supplyUi=${supplyUi} holdersArrLen=${Array.isArray(holdersArr) ? holdersArr.length : 'not-array'} supplyErr=${JSON.stringify(supplyJson?.error)} holdersErr=${JSON.stringify(holdersJson?.error)}`);
       return null;
     }
+    console.log(`[heliusTopHolders] OK mint=${mint} supplyUi=${supplyUi} top=${holdersArr.length} firstAddr=${holdersArr[0]?.address?.slice(0,12)} firstUi=${holdersArr[0]?.uiAmount}`);
 
     // Build a map keyed by token-account address with computed pct.
     const byAddress = new Map();
@@ -1166,6 +1174,16 @@ module.exports = async function handler(req, res) {
       etherscan: !isSolana && !!devTrace,
       domainAge: !!domain,
       github: !!github,
+    },
+    // TEMP DEBUG — to verify the holder-concentration fix. Remove after diagnosis.
+    _debug: {
+      onchainSupplyUiAmount: rugFull?.onchainSupplyUiAmount || null,
+      topHoldersNonLp: (rugFull?.topHoldersNonLp || []).slice(0, 5).map((h) => ({
+        address: h.address?.slice(0, 16),
+        pct: h.pct,
+        pctSource: h.pctSource,
+        uiAmount: h.uiAmount,
+      })),
     },
     generatedAt: new Date().toISOString(),
   };
